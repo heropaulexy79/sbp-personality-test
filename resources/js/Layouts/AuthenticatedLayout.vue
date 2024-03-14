@@ -108,8 +108,15 @@ const showingNavigationDropdown = ref(false);
                                                 $page.props.auth.user.role ===
                                                 'ADMIN'
                                             "
+                                            as-child
                                         >
-                                            Organisation
+                                            <Link
+                                                :href="
+                                                    route('organisation.edit')
+                                                "
+                                            >
+                                                Organisation
+                                            </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
@@ -214,7 +221,7 @@ const showingNavigationDropdown = ref(false);
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
-                                :href="route('profile.edit')"
+                                :href="route('organisation.edit')"
                                 v-if="$page.props.auth.user.role === 'ADMIN'"
                             >
                                 Organisation
