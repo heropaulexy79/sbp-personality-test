@@ -30,7 +30,35 @@ class OrganisationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = $request->user();
+
+        if ($user->organisation_id) {
+            return redirect()->back(400)->with("global:message", [
+                "status" => "error",
+                "message" => "Account is already a member of an organisation.",
+            ]);
+        }
+
+        $request->validate([
+            "name" => "required|string|max:255",
+        ]);
+
+        $organisation = Organisation::create([
+            "name" => $request->input("name"),
+        ]);
+
+
+        $user->organisation_id = $organisation->id;
+        $user->save();
+
+        return redirect()->back()->with("global:message", [
+            "status" => "success",
+            "message" => "Organisation has been created. You can now invite members to your organisation!",
+            "action" => [
+                "cta:link" => route("dashboard"),
+                "cta:text" => "Invite"
+            ]
+        ]);
     }
 
     /**
