@@ -24,6 +24,11 @@ const table = useVueTable({
         return props.columns;
     },
     getCoreRowModel: getCoreRowModel(),
+    defaultColumn: {
+        size: Number.MAX_SAFE_INTEGER,
+        maxSize: Number.MAX_SAFE_INTEGER,
+        minSize: 50,
+    },
 });
 </script>
 
@@ -38,7 +43,13 @@ const table = useVueTable({
                     <TableHead
                         v-for="header in headerGroup.headers"
                         :key="header.id"
-                        :style="{ width: header.getSize() }"
+                        :style="{
+                            width:
+                                header.getSize() === Number.MAX_SAFE_INTEGER
+                                    ? 'auto'
+                                    : header.getSize() + 'px',
+                            colSpan: header.colSpan,
+                        }"
                     >
                         <FlexRender
                             v-if="!header.isPlaceholder"
@@ -60,7 +71,13 @@ const table = useVueTable({
                         <TableCell
                             v-for="cell in row.getVisibleCells()"
                             :key="cell.id"
-                            :style="{ width: cell.column.getSize() }"
+                            :style="{
+                                width:
+                                    cell.column.getSize() ===
+                                    Number.MAX_SAFE_INTEGER
+                                        ? 'auto'
+                                        : cell.column.getSize() + 'px',
+                            }"
                         >
                             <FlexRender
                                 :render="cell.column.columnDef.cell"

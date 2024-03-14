@@ -27,7 +27,7 @@ export const employeeColumns = [
                 })
             );
         },
-        maxSize: 200,
+        size: 200,
     }),
 
     // TODO: DELETE MEMBERSHIP
@@ -59,12 +59,12 @@ export const employeeInviteColumns = [
         cell(props) {
             return h("div", { class: "" }, props.row.getValue("role"));
         },
-        maxSize: 200,
     }),
 
     inviteColumnHelper2.display({
         id: "actions",
         enableHiding: false,
+        size: 100,
         cell: ({ row }) => {
             const payment = row.original;
 
