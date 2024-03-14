@@ -20,6 +20,7 @@
         "vue-tsc": "^1.8.27"
     },
     "dependencies": {
+        "@tanstack/vue-table": "^8.13.2",
         "@vueuse/core": "^10.9.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.0",

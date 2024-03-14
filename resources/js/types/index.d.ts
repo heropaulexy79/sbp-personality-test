@@ -13,4 +13,17 @@ export type PageProps<
     auth: {
         user: User;
     };
+    query: { [key: string]: string };
 };
+
+export interface Organisation {
+    id: number;
+    name: string;
+}
+
+export interface OrganisationInvite {
+    id: number;
+    email: string;
+    role: string;
+    organisation_id: Organisation["id"];
+}
