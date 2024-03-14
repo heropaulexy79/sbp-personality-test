@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrganisationInvitation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -19,9 +20,22 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Register');
+
+        $invitationEmail = "";
+
+        if ($request->has('tk')) {
+            $invitation = OrganisationInvitation::where('token', $request->get('tk'))->first();
+            $invitationEmail =  $invitation->email ?? "";;
+        }
+
+
+        return Inertia::render('Auth/Register', [
+            "prefilled" => [
+                "email" => $invitationEmail
+            ]
+        ]);
     }
 
     /**
@@ -35,7 +49,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'invitation_token' => ['nullable' | 'string']
+            'invitation_token' => 'nullable|string'
         ]);
 
         $user = User::create([
@@ -47,9 +61,25 @@ class RegisteredUserController extends Controller
 
         // from verify-email controller
         if ($request->invitation_token) {
+
+
+            $invitation = OrganisationInvitation::where('token', $request->invitation_token)->first();
+
+            if (!$invitation) {
+                // abort invitation expired
+            }
+
+
             if ($user->markEmailAsVerified()) {
                 event(new Verified($user));
             }
+
+            $user->organisation_id = $invitation->organisation_id;
+            $user->role = $invitation->role ?? "MEMBER";
+
+            $user->save();
+
+            $invitation->delete();
         }
 
         event(new Registered($user));

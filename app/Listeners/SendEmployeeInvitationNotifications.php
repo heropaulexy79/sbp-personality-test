@@ -25,6 +25,6 @@ class SendEmployeeInvitationNotifications
     {
         $invitation = $event->invitation;
         $notification = new NewEmployeeInvitation($invitation);
-        Notification::send($invitation->email, $notification);
+        Notification::route('mail', $invitation->email)->notify($notification);
     }
 }

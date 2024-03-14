@@ -23,7 +23,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Organisation
     Route::resource('organisation', OrganisationController::class)->only(['store', 'update']);
-    Route::post('/organisation/{id}/invite', [OrganisationController::class, 'inviteEmployee'])->name('organisation.invite');
+    Route::get('/settings/organisation', [OrganisationController::class, 'edit'])->name('organisation.edit');
+    Route::post('/organisation/{organisation}/invite', [OrganisationController::class, 'inviteEmployee'])->name('organisation.invite');
+    Route::delete('/organisation/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite');
+    Route::patch('/organisation/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee');
 
 
     // 
