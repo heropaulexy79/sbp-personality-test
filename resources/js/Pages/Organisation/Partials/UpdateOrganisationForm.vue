@@ -2,18 +2,23 @@
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
+import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
+
+const props = defineProps<{
+    organisation: Organisation;
+}>();
 
 const form = useForm({
-    name: "",
+    name: props.organisation.name,
 });
 
-const createOrganisation = () => {
-    form.post(route("organisation.store"), {
+const updateOrganisation = () => {
+    form.patch(route("organisation.update", { id: props.organisation.id }), {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset();
+            // form.reset();
         },
         onError: () => {
             // if (form.errors.password) {
@@ -28,15 +33,15 @@ const createOrganisation = () => {
 <template>
     <section class="space-y-6">
         <header>
-            <h2 class="text-lg font-medium">Setup organisation</h2>
+            <h2 class="text-lg font-medium">Update organisation</h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <!-- <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 Once your organisation is setup, you can invite other members to
                 join you!
-            </p>
+            </p> -->
         </header>
 
-        <form @submit.prevent="createOrganisation">
+        <form @submit.prevent="updateOrganisation">
             <div class="space-y-6">
                 <div>
                     <Label for="name">Name</Label>
@@ -48,7 +53,7 @@ const createOrganisation = () => {
                 </div>
 
                 <div>
-                    <Button type="submit">Create organisation</Button>
+                    <Button type="submit">Save</Button>
                 </div>
             </div>
         </form>

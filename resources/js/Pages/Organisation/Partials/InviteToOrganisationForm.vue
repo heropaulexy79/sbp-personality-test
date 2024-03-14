@@ -1,16 +1,22 @@
 <script setup lang="ts">
+import InputError from "@/Components/InputError.vue";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
+import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
+
+const props = defineProps<{
+    organisation: Organisation;
+}>();
 
 const form = useForm({
-    name: "",
+    email: "",
 });
 
-const createOrganisation = () => {
-    form.post(route("organisation.store"), {
+const inviteToOrganisation = () => {
+    form.post(route("organisation.invite", { id: props.organisation.id }), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
@@ -28,27 +34,28 @@ const createOrganisation = () => {
 <template>
     <section class="space-y-6">
         <header>
-            <h2 class="text-lg font-medium">Setup organisation</h2>
+            <h2 class="text-lg font-medium">Invite to organisation</h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Once your organisation is setup, you can invite other members to
-                join you!
+                Invite other members to join your organisation
             </p>
         </header>
 
-        <form @submit.prevent="createOrganisation">
+        <form @submit.prevent="inviteToOrganisation">
             <div class="space-y-6">
                 <div>
-                    <Label for="name">Name</Label>
+                    <Label for="email">Email</Label>
                     <Input
-                        id="name"
-                        placeholder="Enter the name of your organisation"
-                        v-model="form.name"
+                        id="email"
+                        type="email"
+                        placeholder="Enter the email address"
+                        v-model="form.email"
                     />
+                    <InputError class="mt-2" :message="form.errors.email" />
                 </div>
 
                 <div>
-                    <Button type="submit">Create organisation</Button>
+                    <Button type="submit">Send invite</Button>
                 </div>
             </div>
         </form>
