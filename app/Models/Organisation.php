@@ -20,4 +20,10 @@ class Organisation extends Model
     {
         return $this->hasMany(User::class, 'organisation_id');
     }
+
+
+    public function invites()
+    {
+        return $this->hasMany(OrganisationInvitation::class, 'organisation_id');
+    }
 }

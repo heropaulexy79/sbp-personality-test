@@ -34,4 +34,10 @@ class OrganisationInvitation extends Model
         }
         return $token;
     }
+
+
+    public function getRoleFormattedAttribute()
+    {
+        return strtoupper($this->role);
+    }
 }
