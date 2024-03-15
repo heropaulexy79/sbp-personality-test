@@ -50,12 +50,20 @@ const inviteToOrganisation = () => {
                         type="email"
                         placeholder="Enter the email address"
                         v-model="form.email"
+                        class="mt-2"
+                        required
                     />
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
 
                 <div>
-                    <Button type="submit">Send invite</Button>
+                    <Button
+                        type="submit"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Send invite
+                    </Button>
                 </div>
             </div>
         </form>

@@ -50,12 +50,19 @@ const updateOrganisation = () => {
                         id="name"
                         placeholder="Enter the name of your organisation"
                         v-model="form.name"
+                        required="mt-2"
                     />
                     <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
                 <div>
-                    <Button type="submit">Save</Button>
+                    <Button
+                        type="submit"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Save
+                    </Button>
                 </div>
             </div>
         </form>

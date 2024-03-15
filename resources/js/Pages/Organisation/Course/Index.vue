@@ -45,9 +45,9 @@ Update your account's profile information and email address.
                                         hidden
                                         class="invisible h-0 w-0"
                                     >
-                                        <DialogTitle
-                                            >Create a course</DialogTitle
-                                        >
+                                        <DialogTitle>
+                                            Create a course
+                                        </DialogTitle>
                                         <DialogDescription>
                                             <!-- Create a course -->
                                         </DialogDescription>

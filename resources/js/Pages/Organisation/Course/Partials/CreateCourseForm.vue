@@ -45,6 +45,7 @@ function createCourse() {
                         id="title"
                         placeholder="Enter the title of your course"
                         v-model="form.title"
+                        class="mt-2"
                     />
                     <InputError class="mt-2" :message="form.errors.title" />
                 </div>
@@ -55,6 +56,7 @@ function createCourse() {
                         id="description"
                         placeholder="Enter the description of your course"
                         v-model="form.description"
+                        class="mt-2"
                     />
                     <InputError
                         class="mt-2"
@@ -63,7 +65,13 @@ function createCourse() {
                 </div>
 
                 <div>
-                    <Button type="submit">Create</Button>
+                    <Button
+                        type="submit"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Create
+                    </Button>
                 </div>
             </div>
         </form>

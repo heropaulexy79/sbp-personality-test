@@ -8,8 +8,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
+import { errorBagToString } from "@/lib/errors";
 import { Organisation, User } from "@/types";
 import { useForm } from "@inertiajs/vue3";
+import { toast } from "vue-sonner";
 
 const props = defineProps<{
     organisation_id: Organisation["id"];
@@ -34,8 +36,9 @@ function updateRole(value: string) {
         {
             preserveScroll: true,
             onError(errors) {
-                // TODO: TOAST ERROR
-                console.log(errors);
+                toast.error("Updating employee", {
+                    description: errorBagToString(errors),
+                });
                 form.reset();
             },
         }

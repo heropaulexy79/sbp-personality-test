@@ -43,14 +43,22 @@ const createOrganisation = () => {
                     <Label for="name">Name</Label>
                     <Input
                         id="name"
+                        class="mt-2"
                         placeholder="Enter the name of your organisation"
                         v-model="form.name"
+                        required
                     />
                     <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
                 <div>
-                    <Button type="submit">Create organisation</Button>
+                    <Button
+                        type="submit"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Create organisation
+                    </Button>
                 </div>
             </div>
         </form>
