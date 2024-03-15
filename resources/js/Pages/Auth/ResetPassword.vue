@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Head, useForm } from "@inertiajs/vue3";
+import { Button } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import AuthLayout from "./Partials/AuthLayout.vue";
 
 const props = defineProps<{
     email: string;
@@ -14,31 +17,40 @@ const props = defineProps<{
 const form = useForm({
     token: props.token,
     email: props.email,
-    password: '',
-    password_confirmation: '',
+    password: "",
+    password_confirmation: "",
 });
 
 const submit = () => {
-    form.post(route('password.store'), {
+    form.post(route("password.store"), {
         onFinish: () => {
-            form.reset('password', 'password_confirmation');
+            form.reset("password", "password_confirmation");
         },
     });
 };
 </script>
 
 <template>
-    <GuestLayout>
+    <AuthLayout>
         <Head title="Reset Password" />
+
+        <div class="mb-4 text-center">
+            <h2 class="font-semibold tracking-tight text-2xl">
+                Reset your password
+            </h2>
+            <p class="text-sm text-muted-foreground">
+                Enter your your details below
+            </p>
+        </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <Label for="email">Email</Label>
 
-                <TextInput
+                <Input
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.email"
                     required
                     autofocus
@@ -49,12 +61,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <Label for="password">Password</Label>
 
-                <TextInput
+                <Input
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -64,25 +76,32 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <Label for="password_confirmation">Confirm Password </Label>
 
-                <TextInput
+                <Input
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                <InputError
+                    class="mt-2"
+                    :message="form.errors.password_confirmation"
+                />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="mt-8">
+                <Button
+                    class="w-full"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
                     Reset Password
-                </PrimaryButton>
+                </Button>
             </div>
         </form>
-    </GuestLayout>
+    </AuthLayout>
 </template>

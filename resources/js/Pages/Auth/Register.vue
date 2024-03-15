@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
+import { Button, buttonVariants } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import { cn } from "@/lib/utils";
 import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
+import AuthLayout from "./Partials/AuthLayout.vue";
 
 const page = usePage();
 
@@ -36,8 +37,17 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <AuthLayout>
         <Head title="Register" />
+
+        <div class="mb-4 text-center">
+            <h2 class="font-semibold tracking-tight text-2xl">
+                Create account
+            </h2>
+            <p class="text-sm text-muted-foreground">
+                Enter your your details below to get started
+            </p>
+        </div>
 
         <form @submit.prevent="submit">
             <input
@@ -48,12 +58,12 @@ const submit = () => {
             />
 
             <div>
-                <InputLabel for="name" value="Name" />
+                <Label for="name"> Name </Label>
 
-                <TextInput
+                <Input
                     id="name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.name"
                     required
                     autofocus
@@ -64,12 +74,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <Label for="email"> Email </Label>
 
-                <TextInput
+                <Input
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -83,12 +93,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <Label for="password"> Password </Label>
 
-                <TextInput
+                <Input
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -98,15 +108,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
+                <Label for="password_confirmation"> Confirm Password </Label>
 
-                <TextInput
+                <Input
                     id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="mt-1"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
@@ -118,22 +125,26 @@ const submit = () => {
                 />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
+            <div class="mt-8">
+                <Button
+                    class="w-full"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
                     Register
-                </PrimaryButton>
+                </Button>
+            </div>
+
+            <div class="text-center mt-4">
+                <Link
+                    :href="route('login')"
+                    :class="
+                        cn(buttonVariants({ variant: 'link', class: 'px-0' }))
+                    "
+                >
+                    Already have an account?
+                </Link>
             </div>
         </form>
-    </GuestLayout>
+    </AuthLayout>
 </template>
