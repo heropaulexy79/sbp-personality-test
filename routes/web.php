@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -28,8 +29,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/organisation/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite');
     Route::patch('/organisation/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee');
 
+    // Org-Course
+    Route::get("/organisation/course", [CourseController::class, 'index'])->name('course.index');
+    // Route::get("/organisation/{organisation}/course", [CourseController::class, 'index'])->name('course.index');
+    Route::post("/organisation/{organisation}/course", [CourseController::class, 'store'])->name('course.store');
+    Route::get("/organisation/{organisation}/course/create", [CourseController::class, 'create'])->name('course.create');
+    Route::get("/organisation/{organisation}/course/{course}/edit", [CourseController::class, 'edit'])->name('course.edit');
+    Route::patch("/organisation/{organisation}/course/{course}", [CourseController::class, 'update'])->name('course.update');
+    Route::delete("/organisation/{organisation}/course/{course}", [CourseController::class, 'destroy'])->name('course.destroy');
 
-    // 
+    Route::get("/organisation/course/{course}", [CourseController::class, 'show'])->name('course.show');
+
+    // Course
+    // Route::get("/course/{course}", [CourseController::class, 'show'])->name('course.show');
 });
 
 

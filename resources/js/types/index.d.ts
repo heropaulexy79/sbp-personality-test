@@ -27,3 +27,13 @@ export interface OrganisationInvite {
     role: string;
     organisation_id: Organisation["id"];
 }
+
+export interface Course {
+    id: number;
+    title: string;
+    description: string;
+    organisation_id: Organisation["id"];
+
+    created_at: Date;
+    deleted_at: Date | null;
+}
