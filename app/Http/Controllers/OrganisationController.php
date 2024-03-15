@@ -79,7 +79,7 @@ class OrganisationController extends Controller
         $user = $request->user();
 
 
-        if ($user->role_formatted !== 'ADMIN') {
+        if ($user->isAdminInOrganisation($user->organisation)) {
             return abort(404);
         }
 
@@ -100,7 +100,7 @@ class OrganisationController extends Controller
         //
         $user = $request->user();
 
-        if ($user->role_formatted !== 'ADMIN') {
+        if ($user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
 
@@ -134,8 +134,10 @@ class OrganisationController extends Controller
     public function updateEmployee(Request $request, Organisation $organisation, User $employee)
     {
 
+        $user = $request->user();
+
         // TODO: MAKE ROLE AN ENUM
-        if ($request->user()->role !== 'ADMIN') {
+        if ($user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -159,8 +161,11 @@ class OrganisationController extends Controller
     public function inviteEmployee(Request $request, Organisation $organisation)
     {
 
+        $user = $request->user();
+
+
         // TODO: MAKE ROLE AN ENUM
-        if ($request->user()->role !== 'ADMIN') {
+        if ($user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -187,8 +192,10 @@ class OrganisationController extends Controller
     public function uninviteEmployee(Request $request, Organisation $organisation, OrganisationInvitation $invitation)
     {
 
+        $user = $request->user();
+
         // TODO: MAKE ROLE AN ENUM
-        if ($request->user()->role !== 'ADMIN' || $request->user()->organisation_id !== $organisation->id) {
+        if ($user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
