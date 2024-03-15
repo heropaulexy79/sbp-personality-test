@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InputError from "@/Components/InputError.vue";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
@@ -45,6 +46,7 @@ const createOrganisation = () => {
                         placeholder="Enter the name of your organisation"
                         v-model="form.name"
                     />
+                    <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
                 <div>
