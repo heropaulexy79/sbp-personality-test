@@ -14,7 +14,13 @@ class Course extends Model
         'title',
         'description',
         'organisation_id',
+        'is_published'
     ];
+
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
 
 
     public function organisation()

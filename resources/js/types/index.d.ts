@@ -33,6 +33,7 @@ export interface Course {
     title: string;
     description: string;
     organisation_id: Organisation["id"];
+    is_published: boolean | 0 | 1;
 
     created_at: Date;
     deleted_at: Date | null;

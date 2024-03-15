@@ -1,3 +1,4 @@
+import { Badge } from "@/Components/ui/badge";
 import { Course, OrganisationInvite, User } from "@/types";
 import { Link } from "@inertiajs/vue3";
 import { createColumnHelper } from "@tanstack/vue-table";
@@ -20,6 +21,25 @@ export const courseColumns = [
                         }),
                     },
                     props.row.getValue("title")
+                )
+            );
+        },
+    }),
+    columnHelper.display({
+        id: "is_published",
+        header: () => h("div", { class: "" }, "Status"),
+        cell(props) {
+            const isPublished = Boolean(props.row.getValue("is_published"));
+            return h(
+                "div",
+                { class: "" },
+                h(
+                    Badge,
+                    {
+                        variant: isPublished ? "default" : "outline",
+                        class: "uppercase",
+                    },
+                    isPublished ? "Published" : "Draft"
                 )
             );
         },
