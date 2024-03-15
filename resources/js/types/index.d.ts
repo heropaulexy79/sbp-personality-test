@@ -14,6 +14,25 @@ export type PageProps<
         user: User;
     };
     query: { [key: string]: string };
+    flash: {
+        [key: string]: any;
+        message?: {
+            status: "success" | "error";
+            message: string;
+            action?: {
+                "cta:link": string;
+                "cta:text": string;
+            };
+        };
+        "global:message"?: {
+            status: "success" | "error";
+            message: string;
+            action?: {
+                "cta:link": string;
+                "cta:text": string;
+            };
+        };
+    };
 };
 
 export interface Organisation {
