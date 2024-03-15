@@ -79,7 +79,7 @@ class OrganisationController extends Controller
         $user = $request->user();
 
 
-        if ($user->isAdminInOrganisation($user->organisation)) {
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(404);
         }
 
@@ -100,7 +100,7 @@ class OrganisationController extends Controller
         //
         $user = $request->user();
 
-        if ($user->isAdminInOrganisation($organisation)) {
+        if (!$user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
 
@@ -136,8 +136,8 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-        // TODO: MAKE ROLE AN ENUM
-        if ($user->isAdminInOrganisation($user->organisation)) {
+
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -164,8 +164,8 @@ class OrganisationController extends Controller
         $user = $request->user();
 
 
-        // TODO: MAKE ROLE AN ENUM
-        if ($user->isAdminInOrganisation($user->organisation)) {
+
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -194,8 +194,8 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-        // TODO: MAKE ROLE AN ENUM
-        if ($user->isAdminInOrganisation($user->organisation)) {
+
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
