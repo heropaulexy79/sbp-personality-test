@@ -1,5 +1,5 @@
 import { Badge } from "@/Components/ui/badge";
-import { Course, OrganisationInvite, User } from "@/types";
+import { Course } from "@/types";
 import { Link } from "@inertiajs/vue3";
 import { createColumnHelper } from "@tanstack/vue-table";
 import { h } from "vue";

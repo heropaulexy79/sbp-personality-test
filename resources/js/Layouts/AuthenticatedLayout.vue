@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref } from "vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import NavLink from "@/Components/NavLink.vue";
@@ -64,7 +64,7 @@ const showingNavigationDropdown = ref(false);
                                                 //         .organisation_id,
                                             })
                                         "
-                                        :active="route().has('course.index')"
+                                        :active="route().current('course.*')"
                                     >
                                         Courses
                                     </NavLink>
@@ -232,7 +232,7 @@ const showingNavigationDropdown = ref(false);
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('course.index')"
-                                :active="route().has('course.index')"
+                                :active="route().current('course.*')"
                             >
                                 Courses
                             </ResponsiveNavLink>
