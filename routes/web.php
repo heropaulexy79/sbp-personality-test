@@ -32,13 +32,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Org-Course
     Route::get("/organisation/course", [CourseController::class, 'index'])->name('course.index');
     // Route::get("/organisation/{organisation}/course", [CourseController::class, 'index'])->name('course.index');
-    Route::post("/organisation/{organisation}/course", [CourseController::class, 'store'])->name('course.store');
-    Route::get("/organisation/{organisation}/course/create", [CourseController::class, 'create'])->name('course.create');
-    Route::get("/organisation/{organisation}/course/{course}/edit", [CourseController::class, 'edit'])->name('course.edit');
-    Route::patch("/organisation/{organisation}/course/{course}", [CourseController::class, 'update'])->name('course.update');
-    Route::delete("/organisation/{organisation}/course/{course}", [CourseController::class, 'destroy'])->name('course.destroy');
-
     Route::get("/organisation/course/{course}", [CourseController::class, 'show'])->name('course.show');
+    Route::get("/organisation/course/{course}/edit", [CourseController::class, 'edit'])->name('course.edit');
+    Route::get("/organisation/course/create", [CourseController::class, 'create'])->name('course.create');
+
+    Route::post("/organisation/course", [CourseController::class, 'store'])->name('course.store');
+    Route::patch("/organisation/course/{course}", [CourseController::class, 'update'])->name('course.update');
+    Route::delete("/organisation/course/{course}", [CourseController::class, 'destroy'])->name('course.destroy');
+
 
     // Course
     // Route::get("/course/{course}", [CourseController::class, 'show'])->name('course.show');

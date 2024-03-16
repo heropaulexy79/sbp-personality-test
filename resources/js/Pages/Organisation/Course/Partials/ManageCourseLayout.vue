@@ -1,60 +1,47 @@
 <script lang="ts" setup>
+import { buttonVariants } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
+import { Course } from "@/types";
+import { Link } from "@inertiajs/vue3";
 
-interface Item {
-    title: string;
-    href: string;
-}
-
-const sidebarNavItems: Item[] = [
-    {
-        title: "Profile",
-        href: "/examples/forms/forms",
-    },
-    {
-        title: "Account",
-        href: "/examples/forms/account",
-    },
-    {
-        title: "Appearance",
-        href: "/examples/forms/appearance",
-    },
-    {
-        title: "Notifications",
-        href: "/examples/forms/notifications",
-    },
-    {
-        title: "Display",
-        href: "/examples/forms/display",
-    },
-];
+defineProps<{ course: Course }>();
 </script>
 
 <template>
-    <div class="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <aside class="-mx-4 lg:w-1/5">
-            <nav class="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
-                <Button
-                    v-for="item in sidebarNavItems"
-                    :key="item.title"
-                    as="a"
-                    :href="item.href"
-                    variant="ghost"
-                    :class="
-                        cn(
-                            'w-full text-left justify-start'
-                            // $route.path === `${item.href}.html` && 'bg-muted hover:bg-muted',
-                        )
-                    "
+    <header class="bg-white dark:bg-gray-800 shadow">
+        <div
+            class="max-w-7xl py-6 mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between"
+        >
+            <Link
+                :href="
+                    route('course.show', {
+                        course: course.id,
+                    })
+                "
+            >
+                <h2
+                    class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
                 >
-                    {{ item.title }}
-                </Button>
-            </nav>
-        </aside>
-        <div class="flex-1 lg:max-w-2xl">
-            <div class="space-y-6">
-                <slot />
+                    {{ course.title }}
+                </h2>
+            </Link>
+
+            <div>
+                <Link
+                    :href="
+                        route('course.edit', {
+                            course: course.id,
+                        })
+                    "
+                    :class="cn(buttonVariants())"
+                >
+                    Settings
+                </Link>
             </div>
         </div>
+    </header>
+
+    <div class="mt-6">
+        <slot />
     </div>
 </template>

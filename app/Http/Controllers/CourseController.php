@@ -44,10 +44,12 @@ class CourseController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request, Organisation $organisation)
+    public function create(Request $request)
     {
         //
         $user = $request->user();
+        $organisation = $user->organisation;
+
         if (!$user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
@@ -60,10 +62,12 @@ class CourseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Organisation $organisation)
+    public function store(Request $request)
     {
         //
         $user = $request->user();
+        $organisation = $user->organisation;
+
         if (!$user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
@@ -121,7 +125,7 @@ class CourseController extends Controller
             return abort(404);
         }
 
-        return Inertia::render('Course/Edit', [
+        return Inertia::render('Organisation/Course/Edit', [
             'organisation' => $user->organisation,
             'course' => $course,
         ]);
@@ -130,10 +134,11 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Organisation $organisation, Course $course)
+    public function update(Request $request, Course $course)
     {
         //
         $user = $request->user();
+        $organisation = $user->organisation;
 
         if (!$user->isAdminInOrganisation($organisation)) {
             return abort(401);
@@ -155,10 +160,11 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, Organisation $organisation, Course $course)
+    public function destroy(Request $request, Course $course)
     {
         //
         $user = $request->user();
+        $organisation = $user->organisation;
 
         $this->authorizeGuard($user, $organisation, $course);
 

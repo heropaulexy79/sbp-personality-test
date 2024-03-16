@@ -17,7 +17,7 @@ const form = useForm({
 });
 
 function createCourse() {
-    form.post(route("course.store", { organisation: props.organisation_id }), {
+    form.post(route("course.store"), {
         onSuccess() {},
         onError(error) {
             console.log(error);

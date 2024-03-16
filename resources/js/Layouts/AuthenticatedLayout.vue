@@ -78,7 +78,7 @@ const showingNavigationDropdown = ref(false);
                                         <DropdownMenuTrigger as-child>
                                             <Button
                                                 variant="ghost"
-                                                class="hover:bg-transparent"
+                                                class="hover:bg-transparent -mr-4"
                                             >
                                                 <Avatar>
                                                     <AvatarImage

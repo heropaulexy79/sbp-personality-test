@@ -13,7 +13,7 @@ defineProps<{ course: Course }>();
     <AuthenticatedLayout>
         <ManageCourseLayout :course="course">
             <div class="py-4">
-                <div class="container">Lesson</div>
+                <div class="container">Edit form</div>
             </div>
         </ManageCourseLayout>
     </AuthenticatedLayout>
