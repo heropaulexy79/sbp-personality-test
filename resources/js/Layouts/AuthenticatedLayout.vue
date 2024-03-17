@@ -80,9 +80,11 @@ const showingNavigationDropdown = ref(false);
                                                 variant="ghost"
                                                 class="hover:bg-transparent -mr-4"
                                             >
-                                                <Avatar>
+                                                <Avatar
+                                                    class="border border-primary"
+                                                >
                                                     <AvatarImage
-                                                        src="https://images.pexels.com/photos/19033300/pexels-photo-19033300/free-photo-of-metropol-parasol-in-sevilla.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
+                                                        :src="`https://unavatar.io/${$page.props.auth.user.email}?ttl=1d`"
                                                         :alt="
                                                             $page.props.auth
                                                                 .user.name
