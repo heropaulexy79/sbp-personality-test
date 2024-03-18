@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -40,6 +41,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch("/organisation/course/{course}", [CourseController::class, 'update'])->name('course.update');
     Route::delete("/organisation/course/{course}", [CourseController::class, 'destroy'])->name('course.destroy');
 
+
+    // Lesson - public?
+    Route::get("/course/{course}/lesson/{lesson}", [LessonController::class, 'show'])->name('lesson.show');
+    // Lesson
+    Route::get("/organisation/course/{course}/lesson/{lesson}/edit", [LessonController::class, 'edit'])->name('lesson.edit');
+    Route::patch("/organisation/course/{course}/lesson/{lesson}", [LessonController::class, 'update'])->name('lesson.update');
+    Route::get("/organisation/course/{course}/lesson/create", [LessonController::class, 'create'])->name('lesson.create');
+    Route::post("/organisation/course/{course}/lesson", [LessonController::class, 'store'])->name('lesson.store');
 
     // Course
     // Route::get("/course/{course}", [CourseController::class, 'show'])->name('course.show');
