@@ -11,16 +11,6 @@ use Inertia\Inertia;
 class CourseController extends Controller
 {
 
-    private function authorizeGuard(User $user, Organisation $organisation, Course $course)
-    {
-        if (
-            !$user->isAdminInOrganisation($organisation) ||
-            $user->organisation_id !== $course->organisation_id
-        ) {
-            return abort(401, "You don't have permission to make this request");
-        }
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -50,11 +40,11 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if (!$user->isAdminInOrganisation($organisation)) {
+        if ($request->user()->cannot('create', Organisation::class)) {
             return abort(404);
         }
 
-        return Inertia::render('Course/Create', [
+        return Inertia::render('Organisation/Course/Create', [
             'organisation' => $organisation,
         ]);
     }
@@ -68,7 +58,7 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if (!$user->isAdminInOrganisation($organisation)) {
+        if ($request->user()->cannot('update', $organisation)) {
             return abort(404);
         }
 
@@ -101,13 +91,14 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if (!$user->isMemberOfOrganisation($organisation) || $organisation->id !== $course->organisation_id) {
+        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $course->organisation_id) {
             return abort(404);
         }
 
         return Inertia::render('Organisation/Course/View', [
             'organisation' => $user->organisation,
-            'course' => $course,
+            'course' => $course->withoutRelations(),
+            'lessons' => $course->lessons->makeHidden(['content', 'content_json'])
         ]);
     }
 
@@ -121,7 +112,7 @@ class CourseController extends Controller
         $user = $request->user();
 
 
-        if (!$user->isAdminInOrganisation($user->organisation)) {
+        if ($request->user()->cannot('update', $user->organisation)) {
             return abort(404);
         }
 
@@ -140,7 +131,7 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if (!$user->isAdminInOrganisation($organisation)) {
+        if ($request->user()->cannot('update', $organisation)) {
             return abort(401);
         }
 
@@ -166,7 +157,9 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        $this->authorizeGuard($user, $organisation, $course);
+        if ($request->user()->cannot('delete', $organisation)) {
+            return abort(401);
+        }
 
         $course->delete();
 
