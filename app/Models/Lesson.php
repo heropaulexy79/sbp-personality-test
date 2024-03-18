@@ -39,32 +39,4 @@ class Lesson extends Model
 
     const TYPE_DEFAULT = 'DEFAULT';
     const TYPE_QUIZ = 'QUIZ';
-
-    // // Mutator to handle content based on type
-    // public function getContentAttribute()
-    // {
-    //     if ($this->type === self::TYPE_DEFAULT) {
-    //         return $this->content;
-    //     } else if ($this->type === self::TYPE_QUIZ) {
-    //         return json_decode($this->content_json, true);
-    //     } else {
-    //         return null; // Or throw an exception for invalid type
-    //     }
-    // }
-
-    // // Mutator to handle setting content based on type
-    // public function setContentAttribute($value)
-    // {
-    //     if (is_string($value)) {
-    //         $this->type = self::TYPE_DEFAULT;
-    //         $this->content = $value;
-    //         $this->content_json = null;
-    //     } else if (is_array($value)) {
-    //         $this->type = self::TYPE_QUIZ;
-    //         $this->content = null;
-    //         $this->content_json = json_encode($value);
-    //     } else {
-    //         throw new InvalidArgumentException('Invalid lesson content type');
-    //     }
-    // }
 }
