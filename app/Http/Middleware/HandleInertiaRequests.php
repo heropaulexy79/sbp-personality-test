@@ -32,7 +32,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user()->makeHidden(['organisation']),
+                'user' => $request->user()?->makeHidden(['organisation']),
             ],
             'query' => $request->query(),
             'flash' => [
