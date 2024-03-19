@@ -14,7 +14,7 @@ import {
 import { VisuallyHidden } from "radix-vue";
 import { Button } from "@/Components/ui/button";
 import CreateCourseForm from "./Partials/CreateCourseForm.vue";
-import BaseBreadcrumb from "@/Components/BaseBreadcrumb.vue";
+import BaseBreadcrumb from "@/Components/ui/BaseBreadcrumb.vue";
 
 defineProps<{ courses: Course[] }>();
 </script>

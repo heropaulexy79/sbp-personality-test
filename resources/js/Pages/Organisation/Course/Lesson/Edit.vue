@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { Course, Lesson } from "@/types";
 import UpdateLessonForm from "./Partials/UpdateLessonForm.vue";
-import BaseBreadcrumb from "@/Components/BaseBreadcrumb.vue";
+import BaseBreadcrumb from "@/Components/ui/BaseBreadcrumb.vue";
 
 defineProps<{ course: Course; lesson: Lesson }>();
 </script>

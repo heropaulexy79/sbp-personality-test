@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import BaseBreadcrumb from "@/Components/BaseBreadcrumb.vue";
+import BaseBreadcrumb from "@/Components/ui/BaseBreadcrumb.vue";
 import { buttonVariants } from "@/Components/ui/button";
 import { cn } from "@/lib/utils";
 import { Course } from "@/types";
