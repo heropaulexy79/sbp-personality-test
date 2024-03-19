@@ -35,31 +35,30 @@ class OrganisationController extends Controller
         $user = $request->user();
 
         if ($user->organisation_id) {
-            return redirect()->back(400)->with("global:message", [
-                "status" => "error",
-                "message" => "Account is already a member of an organisation.",
+            return redirect()->back(400)->with('global:message', [
+                'status' => 'error',
+                'message' => 'Account is already a member of an organisation.',
             ]);
         }
 
         $request->validate([
-            "name" => "required|string|max:255",
+            'name' => 'required|string|max:255',
         ]);
 
         $organisation = Organisation::create([
-            "name" => $request->input("name"),
+            'name' => $request->input('name'),
         ]);
-
 
         $user->organisation_id = $organisation->id;
         $user->save();
 
-        return redirect()->back()->with("global:message", [
-            "status" => "success",
-            "message" => "Organisation has been created. You can now invite members to your organisation!",
-            "action" => [
-                "cta:link" => route("organisation.edit"),
-                "cta:text" => "Invite"
-            ]
+        return redirect()->back()->with('global:message', [
+            'status' => 'success',
+            'message' => 'Organisation has been created. You can now invite members to your organisation!',
+            'action' => [
+                'cta:link' => route('organisation.edit'),
+                'cta:text' => 'Invite',
+            ],
         ]);
     }
 
@@ -78,12 +77,9 @@ class OrganisationController extends Controller
     {
         $user = $request->user();
 
-
-        if (!$user->isAdminInOrganisation($user->organisation)) {
+        if (! $user->isAdminInOrganisation($user->organisation)) {
             return abort(404);
         }
-
-
 
         return Inertia::render('Organisation/Edit', [
             'organisation' => $user->organisation,
@@ -100,21 +96,21 @@ class OrganisationController extends Controller
         //
         $user = $request->user();
 
-        if (!$user->isAdminInOrganisation($organisation)) {
+        if (! $user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
 
         $request->validate([
-            "name" => "required|string|max:255",
+            'name' => 'required|string|max:255',
         ]);
 
         $organisation->name = $request->name;
 
         $organisation->save();
 
-        return redirect()->back()->with("global:message", [
-            "status" => "success",
-            "message" => "Changes have been saved!",
+        return redirect()->back()->with('global:message', [
+            'status' => 'success',
+            'message' => 'Changes have been saved!',
         ]);
     }
 
@@ -126,18 +122,12 @@ class OrganisationController extends Controller
         //
     }
 
-
-
-
-
-
     public function updateEmployee(Request $request, Organisation $organisation, User $employee)
     {
 
         $user = $request->user();
 
-
-        if (!$user->isAdminInOrganisation($user->organisation)) {
+        if (! $user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -145,10 +135,10 @@ class OrganisationController extends Controller
             'role' => 'required|in:MEMBER,ADMIN',
         ]);
 
-        if (!$employee || $employee->organisation_id !== $organisation->id) {
-            return back()->with("global:message", [
-                "status" => "error",
-                "message" => "Employee not found!",
+        if (! $employee || $employee->organisation_id !== $organisation->id) {
+            return back()->with('global:message', [
+                'status' => 'error',
+                'message' => 'Employee not found!',
             ]);
         }
 
@@ -163,9 +153,7 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-
-
-        if (!$user->isAdminInOrganisation($user->organisation)) {
+        if (! $user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -174,14 +162,12 @@ class OrganisationController extends Controller
             'role' => 'nullable|in:MEMBER,ADMIN',
         ]);
 
-
         $invitation = OrganisationInvitation::create([
             'email' => $request->input('email'),
             'organisation_id' => $organisation->id,
             'token' => OrganisationInvitation::generateUniqueToken(),
             'role' => $request->input('role', 'MEMBER'),
         ]);
-
 
         // Send Notification
         event(new EmployeeInvited($invitation));
@@ -194,14 +180,11 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-
-        if (!$user->isAdminInOrganisation($user->organisation)) {
+        if (! $user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
-
         $invitation->delete();
-
 
         // "global:message", [
         //     "status" => "success",

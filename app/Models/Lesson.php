@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use InvalidArgumentException;
 
 class Lesson extends Model
 {
     use HasFactory;
 
-
     protected $fillable = ['title', 'course_id', 'type', 'content', 'content_json', 'is_published'];
 
     protected $casts = [
-        "content_json" => "json",
-        "is_published" => 'boolean'
+        'content_json' => 'json',
+        'is_published' => 'boolean',
     ];
 
     public function scopePublished($query)
@@ -24,12 +22,10 @@ class Lesson extends Model
         return $query->where('is_published', true);
     }
 
-
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
-
 
     public function quizWithoutCorrectAnswer()
     {
@@ -42,7 +38,7 @@ class Lesson extends Model
         return $filtered;
     }
 
-
     const TYPE_DEFAULT = 'DEFAULT';
+
     const TYPE_QUIZ = 'QUIZ';
 }

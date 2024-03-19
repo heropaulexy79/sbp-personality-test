@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Public;
 
-use App\Models\Course;
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,7 +24,6 @@ class CourseController extends Controller
         ]);
     }
 
-
     /**
      * Display the specified resource.
      */
@@ -34,7 +33,7 @@ class CourseController extends Controller
         $user = $request->user();
 
         // If it is public allow?
-        if (!$course->is_published || $course->organisation_id !== $user->organisation_id) {
+        if (! $course->is_published || $course->organisation_id !== $user->organisation_id) {
             abort(404);
         }
 
@@ -44,7 +43,7 @@ class CourseController extends Controller
         return Inertia::render('Course/View', [
             'course' => $course,
             'enrolled_count' => $course->enrolledUsers()->count(),
-            'lessons' => $course->lessons()->published()->get(['title', 'position'])
+            'lessons' => $course->lessons()->published()->get(['title', 'position']),
         ]);
     }
 }

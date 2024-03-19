@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
-        'password'
+        'password',
     ];
 
     /**
@@ -45,25 +45,24 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-
     public function getRoleFormattedAttribute()
     {
         return strtoupper($this->role);
     }
 
-
     const ROLE_ADMIN = 'ADMIN';
+
     const ROLE_MEMBER = 'MEMBER';
 
     public function isMemberOfOrganisation(Organisation $organisation)
     {
         return $this->organisation->is($organisation); // belong to relationsip
     }
+
     public function isAdminInOrganisation(Organisation $organisation)
     {
         return $this->isMemberOfOrganisation($organisation) && $this->role === self::ROLE_ADMIN;
     }
-
 
     public function organisation()
     {

@@ -9,18 +9,14 @@ class Organisation extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'name',
     ];
-
-
 
     public function employees()
     {
         return $this->hasMany(User::class, 'organisation_id');
     }
-
 
     public function invites()
     {

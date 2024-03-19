@@ -17,9 +17,6 @@ class OrganisationInvitation extends Model
         'role',
     ];
 
-
-
-
     public function organisation()
     {
         return $this->belongsTo(Organisation::class);
@@ -32,9 +29,9 @@ class OrganisationInvitation extends Model
         while (OrganisationInvitation::where('token', $token)->exists()) {
             $token = Str::random(60);
         }
+
         return $token;
     }
-
 
     public function getRoleFormattedAttribute()
     {

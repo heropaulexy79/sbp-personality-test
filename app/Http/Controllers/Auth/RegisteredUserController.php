@@ -23,18 +23,17 @@ class RegisteredUserController extends Controller
     public function create(Request $request): Response
     {
 
-        $invitationEmail = "";
+        $invitationEmail = '';
 
         if ($request->has('tk')) {
             $invitation = OrganisationInvitation::where('token', $request->get('tk'))->first();
-            $invitationEmail =  $invitation->email ?? "";;
+            $invitationEmail = $invitation->email ?? '';
         }
 
-
         return Inertia::render('Auth/Register', [
-            "prefilled" => [
-                "email" => $invitationEmail
-            ]
+            'prefilled' => [
+                'email' => $invitationEmail,
+            ],
         ]);
     }
 
@@ -47,9 +46,9 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'invitation_token' => 'nullable|string'
+            'invitation_token' => 'nullable|string',
         ]);
 
         $user = User::create([
@@ -58,24 +57,21 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-
         // from verify-email controller
         if ($request->invitation_token) {
 
-
             $invitation = OrganisationInvitation::where('token', $request->invitation_token)->first();
 
-            if (!$invitation) {
+            if (! $invitation) {
                 // abort invitation expired
             }
-
 
             if ($user->markEmailAsVerified()) {
                 event(new Verified($user));
             }
 
             $user->organisation_id = $invitation->organisation_id;
-            $user->role = $invitation->role ?? "MEMBER";
+            $user->role = $invitation->role ?? 'MEMBER';
 
             $user->save();
 

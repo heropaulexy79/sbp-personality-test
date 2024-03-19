@@ -17,7 +17,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -36,9 +36,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'query' => $request->query(),
             'flash' => [
-                "global:message" => fn () => $request->session()->get('global:message'),
-                "message" => fn () => $request->session()->get('message')
-            ]
+                'global:message' => fn () => $request->session()->get('global:message'),
+                'message' => fn () => $request->session()->get('message'),
+            ],
         ];
     }
 }

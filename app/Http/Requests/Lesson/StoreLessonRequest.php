@@ -14,14 +14,15 @@ class StoreLessonRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-        $organisation  = $user->organisation;
+        $organisation = $user->organisation;
+
         return $user->can('update', $organisation);
     }
 
     public function prepareForValidation()
     {
         $this->merge([
-            "is_published" => $this->is_published === 'true' ? true : false,
+            'is_published' => $this->is_published === 'true' ? true : false,
         ]);
     }
 
@@ -38,7 +39,7 @@ class StoreLessonRequest extends FormRequest
             'type' => 'nullable|in:QUIZ,DEFAULT',
             'is_published' => 'boolean',
 
-            "content" => [Rule::requiredIf($this->input('type', Lesson::TYPE_DEFAULT) === Lesson::TYPE_DEFAULT), 'nullable', 'string'],
+            'content' => [Rule::requiredIf($this->input('type', Lesson::TYPE_DEFAULT) === Lesson::TYPE_DEFAULT), 'nullable', 'string'],
         ];
 
         $quizRules = [
@@ -81,7 +82,6 @@ class StoreLessonRequest extends FormRequest
             //     Rule::exists('question_options', 'id')
             //         ->where('question_id', Rule::exists('quiz', 'id')), // Ensure correct options exist for the question
             // ],
-
 
             'quiz' => [
                 Rule::requiredIf($this->input('type') === Lesson::TYPE_QUIZ),
@@ -129,14 +129,9 @@ class StoreLessonRequest extends FormRequest
             ],
         ];
 
-
-
-
-
-
-
         return $this->input('type') === Lesson::TYPE_QUIZ ? array_merge($rules, $quizRules) : $rules;
     }
+
     public function messages()
     {
         return [

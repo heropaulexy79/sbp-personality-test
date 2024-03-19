@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Organisation;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CourseController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      */
@@ -21,10 +19,9 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if (!$organisation || !$user->isAdminInOrganisation($organisation)) {
+        if (! $organisation || ! $user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
-
 
         return Inertia::render('Organisation/Course/Index', [
             'courses' => $organisation->courses,
@@ -63,16 +60,16 @@ class CourseController extends Controller
         }
 
         $request->validate([
-            "title" => "required|string|max:255",
-            'description' => "string|max:1500",
+            'title' => 'required|string|max:255',
+            'description' => 'string|max:1500',
         ]);
 
         // dd($organisation);
 
         $course = Course::create([
-            "title" => $request->input("title"),
-            "description" => $request->input("description"),
-            "organisation_id" => $organisation->id,
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'organisation_id' => $organisation->id,
         ]);
 
         // Redirect to course lesson management
@@ -98,7 +95,7 @@ class CourseController extends Controller
         return Inertia::render('Organisation/Course/View', [
             'organisation' => $user->organisation,
             'course' => $course->withoutRelations(),
-            'lessons' => $course->lessons->makeHidden(['content', 'content_json'])
+            'lessons' => $course->lessons->makeHidden(['content', 'content_json']),
         ]);
     }
 
@@ -110,7 +107,6 @@ class CourseController extends Controller
         //
 
         $user = $request->user();
-
 
         if ($request->user()->cannot('update', $user->organisation)) {
             return abort(404);
@@ -136,8 +132,8 @@ class CourseController extends Controller
         }
 
         $request->validate([
-            'title' => "required|string|max:255",
-            'description' => "string|max:1500",
+            'title' => 'required|string|max:255',
+            'description' => 'string|max:1500',
         ]);
 
         $course->title = $request->title;
@@ -146,7 +142,7 @@ class CourseController extends Controller
 
         $course->save();
 
-        return redirect()->back()->with('message', ["status" => "error", "message" => "Changes saved!"]);
+        return redirect()->back()->with('message', ['status' => 'error', 'message' => 'Changes saved!']);
     }
 
     /**

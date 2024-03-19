@@ -14,11 +14,11 @@ class Course extends Model
         'title',
         'description',
         'organisation_id',
-        'is_published'
+        'is_published',
     ];
 
     protected $casts = [
-        'is_published' => 'boolean'
+        'is_published' => 'boolean',
     ];
 
     // public function getIsPublishedAttribute($value)
@@ -27,12 +27,10 @@ class Course extends Model
     //     return true;
     // }
 
-
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
     }
-
 
     public function organisation()
     {
@@ -43,7 +41,6 @@ class Course extends Model
     {
         return $this->hasMany(Lesson::class, 'course_id');
     }
-
 
     public function enrolledUsers()
     {

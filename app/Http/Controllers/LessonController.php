@@ -46,10 +46,10 @@ class LessonController extends Controller
         //
         $lesson = new Lesson;
 
-        $lesson->title = $request->input("title");
+        $lesson->title = $request->input('title');
         $lesson->course_id = $course->id;
 
-        if ($request->input("type", "DEFAULT")) {
+        if ($request->input('type', 'DEFAULT')) {
             $lesson->type = $request->type;
             if ($lesson->type === Lesson::TYPE_QUIZ) {
                 $lesson->content_json = $request->quiz;
@@ -84,7 +84,7 @@ class LessonController extends Controller
         return Inertia::render('Organisation/Course/Lesson/View', [
             // 'organisation' => $user->organisation,
             // 'course' => $course,
-            "lesson" => $lesson
+            'lesson' => $lesson,
         ]);
     }
 
@@ -105,11 +105,10 @@ class LessonController extends Controller
         // $lesson->content_json = Arr::except($lesson->content_json, ['correctOption']);
         // $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
 
-
         return Inertia::render('Organisation/Course/Lesson/Edit', [
             // 'organisation' => $user->organisation,
             'course' => $course,
-            "lesson" => $lesson
+            'lesson' => $lesson,
         ]);
     }
 
@@ -119,10 +118,10 @@ class LessonController extends Controller
     public function update(StoreLessonRequest $request, Course $course, Lesson $lesson)
     {
 
-        $lesson->title = $request->input("title");
-        $lesson->is_published = $request->input("is_published");
+        $lesson->title = $request->input('title');
+        $lesson->is_published = $request->input('is_published');
 
-        if ($request->input("type", "DEFAULT")) {
+        if ($request->input('type', 'DEFAULT')) {
             $lesson->type = $request->type;
             if ($request->has('content') || $request->has('quiz')) {
                 if ($lesson->type === Lesson::TYPE_QUIZ) {
@@ -135,9 +134,9 @@ class LessonController extends Controller
 
         $lesson->save();
 
-        return redirect()->back()->with("global:message", [
-            "status" => "success",
-            "message" => "Changes have been saved!",
+        return redirect()->back()->with('global:message', [
+            'status' => 'success',
+            'message' => 'Changes have been saved!',
         ]);
     }
 
