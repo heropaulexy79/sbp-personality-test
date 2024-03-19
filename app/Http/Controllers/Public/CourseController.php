@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
 
 use App\Models\Course;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class PublicCourseController extends Controller
+class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
