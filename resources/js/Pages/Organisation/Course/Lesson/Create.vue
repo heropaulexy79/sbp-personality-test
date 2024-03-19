@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { Course } from "@/types";
 import CreateLessonForm from "./Partials/CreateLessonForm.vue";
+import BaseBreadcrumb from "@/Components/BaseBreadcrumb.vue";
 
 defineProps<{ course: Course }>();
 </script>
@@ -11,16 +12,30 @@ defineProps<{ course: Course }>();
     <Head :title="course.title + ' Lesson'" />
 
     <AuthenticatedLayout>
+        <header class="bg-white dark:bg-gray-800 shadow">
+            <div class="container py-6 flex items-center justify-between">
+                <div>
+                    <BaseBreadcrumb
+                        :items="[
+                            {
+                                href: route('course.index'),
+                                label: 'Courses',
+                            },
+                            {
+                                href: route('course.show', {
+                                    course: course.id,
+                                }),
+                                label: course.title,
+                            },
+                            { label: 'Create course' },
+                        ]"
+                    />
+                </div>
+            </div>
+        </header>
         <div class="py-12">
             <div class="container">
                 <div class="space-y-6">
-                    <header class="flex items-start gap-6 justify-between">
-                        <div>
-                            <h2 class="text-lg font-medium">Create Lesson</h2>
-                        </div>
-                    </header>
-                    <!--  -->
-
                     <div>
                         <!-- Form -->
                         <CreateLessonForm :course="course" />

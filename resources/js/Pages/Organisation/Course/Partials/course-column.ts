@@ -16,6 +16,7 @@ export const courseColumns = [
                 h(
                     Link,
                     {
+                        class: "block",
                         href: route("course.show", {
                             course: props.row.original.id,
                         }),
@@ -29,7 +30,7 @@ export const courseColumns = [
         id: "is_published",
         header: () => h("div", { class: "" }, "Status"),
         cell(props) {
-            const isPublished = Boolean(props.row.getValue("is_published"));
+            const isPublished = props.row.original.is_published;
             return h(
                 "div",
                 { class: "" },

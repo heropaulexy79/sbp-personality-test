@@ -3,31 +3,40 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { Course, Lesson } from "@/types";
 import UpdateLessonForm from "./Partials/UpdateLessonForm.vue";
+import BaseBreadcrumb from "@/Components/BaseBreadcrumb.vue";
 
-defineProps<{ lesson: Lesson }>();
+defineProps<{ course: Course; lesson: Lesson }>();
 </script>
 
 <template>
     <Head :title="lesson.title" />
 
     <AuthenticatedLayout>
+        <header class="bg-white dark:bg-gray-800 shadow">
+            <div class="container py-6 flex items-center justify-between">
+                <div>
+                    <BaseBreadcrumb
+                        :items="[
+                            {
+                                href: route('course.index'),
+                                label: 'Courses',
+                            },
+                            {
+                                href: route('course.show', {
+                                    course: course.id,
+                                }),
+                                label: course.title,
+                            },
+                            { label: lesson.title },
+                        ]"
+                    />
+                </div>
+            </div>
+        </header>
         <div class="py-12">
             <div class="container">
-                <div class="space-y-6">
-                    <header class="flex items-start gap-6 justify-between">
-                        <div>
-                            <h2 class="text-lg font-medium">
-                                {{ lesson.title }}
-                            </h2>
-                        </div>
-                    </header>
-                    <!--  -->
-
-                    <div>
-                        <!-- Form -->
-                        <UpdateLessonForm :lesson="lesson" />
-                    </div>
-                </div>
+                <!-- Form -->
+                <UpdateLessonForm :lesson="lesson" />
             </div>
         </div>
     </AuthenticatedLayout>
