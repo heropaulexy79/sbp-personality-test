@@ -105,5 +105,5 @@ module.exports = {
             },
         },
     },
-    plugins: [forms, animate],
+    plugins: [require("@tailwindcss/typography"), forms, animate],
 };
