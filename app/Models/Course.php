@@ -43,4 +43,10 @@ class Course extends Model
     {
         return $this->hasMany(Lesson::class, 'course_id');
     }
+
+
+    public function enrolledUsers()
+    {
+        return $this->belongsToMany(User::class, 'course_enrollments');
+    }
 }

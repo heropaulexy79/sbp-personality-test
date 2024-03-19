@@ -28,17 +28,23 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Course $course)
+    public function show(Request $request, Course $course)
     {
+
+        $user = $request->user();
+
         // If it is public allow?
-        if (!$course->is_published) {
+        if (!$course->is_published || $course->organisation_id !== $user->organisation_id) {
             abort(404);
         }
 
-        dd($course);
+        // dd($course->enrolledUsers()->count());
+        // dd($course->lessons()->published()->get());
 
         return Inertia::render('Course/View', [
             'course' => $course,
+            'enrolled_count' => $course->enrolledUsers()->count(),
+            'lessons' => $course->lessons()->published()->get(['title', 'position'])
         ]);
     }
 }

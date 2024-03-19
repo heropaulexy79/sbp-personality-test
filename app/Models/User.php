@@ -46,11 +46,6 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
 
-    public function organisation()
-    {
-        return $this->belongsTo(Organisation::class);
-    }
-
     public function getRoleFormattedAttribute()
     {
         return strtoupper($this->role);
@@ -67,5 +62,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdminInOrganisation(Organisation $organisation)
     {
         return $this->isMemberOfOrganisation($organisation) && $this->role === self::ROLE_ADMIN;
+    }
+
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class);
+    }
+
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'course_enrollments');
     }
 }

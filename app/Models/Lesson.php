@@ -19,6 +19,11 @@ class Lesson extends Model
         "is_published" => 'boolean'
     ];
 
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
+
 
     public function course()
     {

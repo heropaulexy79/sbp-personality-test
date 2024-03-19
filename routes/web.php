@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\CourseController as PublicCourseController;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,8 +20,12 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+Route::get('/dashboard', function (Request $request) {
+
+    $courses = $request->user()->enrolledCourses()->paginate();
+
+
+    return Inertia::render('Dashboard', ['courses' => $courses]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -45,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Course - public?
     Route::get("/course", [PublicCourseController::class, 'index'])->name('public.course.index');
     Route::get("/course/{course}", [PublicCourseController::class, 'show'])->name('public.course.show');
+    Route::post("/course/{course}/enroll", [CourseEnrollmentController::class, 'store'])->name('course.enroll');
 
     // Lesson - public?
     Route::get("/course/{course}/lesson/{lesson}", [LessonController::class, 'show'])->name('lesson.show');
