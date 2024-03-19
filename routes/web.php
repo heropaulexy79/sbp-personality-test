@@ -4,6 +4,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicCourseController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,6 +42,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch("/organisation/course/{course}", [CourseController::class, 'update'])->name('course.update');
     Route::delete("/organisation/course/{course}", [CourseController::class, 'destroy'])->name('course.destroy');
 
+    // Course - public?
+    Route::get("/course", [PublicCourseController::class, 'index'])->name('public.course.index');
+    Route::get("/course/{course}", [PublicCourseController::class, 'show'])->name('public.course.show');
 
     // Lesson - public?
     Route::get("/course/{course}/lesson/{lesson}", [LessonController::class, 'show'])->name('lesson.show');
