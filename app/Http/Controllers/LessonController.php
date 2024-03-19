@@ -108,7 +108,7 @@ class LessonController extends Controller
 
         return Inertia::render('Organisation/Course/Lesson/Edit', [
             // 'organisation' => $user->organisation,
-            // 'course' => $course,
+            'course' => $course,
             "lesson" => $lesson
         ]);
     }
@@ -118,14 +118,18 @@ class LessonController extends Controller
      */
     public function update(StoreLessonRequest $request, Course $course, Lesson $lesson)
     {
+
         $lesson->title = $request->input("title");
+        $lesson->is_published = $request->input("is_published");
 
         if ($request->input("type", "DEFAULT")) {
             $lesson->type = $request->type;
-            if ($lesson->type === Lesson::TYPE_QUIZ) {
-                $lesson->content_json = $request->quiz;
-            } else {
-                $lesson->content = $request->content;
+            if ($request->has('content') || $request->has('quiz')) {
+                if ($lesson->type === Lesson::TYPE_QUIZ) {
+                    $lesson->content_json = $request->quiz;
+                } else {
+                    $lesson->content = $request->content;
+                }
             }
         }
 

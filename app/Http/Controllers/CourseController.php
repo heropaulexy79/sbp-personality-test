@@ -142,10 +142,11 @@ class CourseController extends Controller
 
         $course->title = $request->title;
         $course->description = $request->description;
+        $course->is_published = $request->is_published === 'true' ? true : false;
 
         $course->save();
 
-        return $request->back()->with('message', ["status" => "error", "message" => "Changes saved!"]);
+        return redirect()->back()->with('message', ["status" => "error", "message" => "Changes saved!"]);
     }
 
     /**

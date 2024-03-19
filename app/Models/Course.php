@@ -17,6 +17,17 @@ class Course extends Model
         'is_published'
     ];
 
+    protected $casts = [
+        'is_published' => 'boolean'
+    ];
+
+    // public function getIsPublishedAttribute($value)
+    // {
+    //     if ($value === "" || $value === 0) return false;
+    //     return true;
+    // }
+
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);

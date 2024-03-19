@@ -18,6 +18,13 @@ class StoreLessonRequest extends FormRequest
         return $user->can('update', $organisation);
     }
 
+    public function prepareForValidation()
+    {
+        $this->merge([
+            "is_published" => $this->is_published === 'true' ? true : false,
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -29,6 +36,7 @@ class StoreLessonRequest extends FormRequest
         $rules = [
             'title' => 'required|string|max:255',
             'type' => 'nullable|in:QUIZ,DEFAULT',
+            'is_published' => 'boolean',
 
             "content" => [Rule::requiredIf($this->input('type', Lesson::TYPE_DEFAULT) === Lesson::TYPE_DEFAULT), 'nullable', 'string'],
         ];
@@ -132,6 +140,7 @@ class StoreLessonRequest extends FormRequest
     public function messages()
     {
         return [
+            'is_published.boolean' => 'Status field must be true or false',
             'quiz.*.text.required' => 'Question field is required',
             'quiz.*.text.min' => 'Question field has a minimum of :min',
             'quiz.*.text.max' => 'Question field has a maximum of :max',
