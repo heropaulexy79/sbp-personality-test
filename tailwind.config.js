@@ -18,10 +18,21 @@ module.exports = {
     theme: {
         container: {
             center: true,
-            padding: "2rem",
-            // screens: {
-            //     "2xl": "1400px",
-            // },
+            // padding: "2rem",
+            padding: {
+                DEFAULT: "1rem",
+                sm: "1.5rem",
+                lg: "2rem",
+                xl: "2rem",
+                "2xl": "2rem",
+            },
+            screens: {
+                md: "100%",
+                lg: "1024px",
+                xl: "1280px",
+                "2xl": "1400px",
+                // "2xl": "1536px",
+            },
         },
         extend: {
             fontFamily: {

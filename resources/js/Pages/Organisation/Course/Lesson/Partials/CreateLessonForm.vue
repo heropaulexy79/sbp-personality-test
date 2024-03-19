@@ -33,6 +33,7 @@ const form = useForm({
         },
     ],
     type: "DEFAULT",
+    is_published: "false",
 });
 
 function createLesson() {
@@ -65,10 +66,12 @@ function updateType(value: string) {
 <template>
     <form @submit.prevent="createLesson">
         <div
-            class="grid md:grid-cols-[1fr_200px] lg:grid-cols-[1fr_350px] gap-6 md:gap-10 relative"
+            class="grid md:grid-cols-[1fr_200px] lg:grid-cols-[1fr_250px] gap-6 md:gap-10 relative"
         >
             <!-- Left -->
-            <div class="grid md:grid-cols-2 gap-6">
+            <div
+                class="grid md:grid-cols-2 gap-6 bg-background rounded-md px-4 py-4"
+            >
                 <div>
                     <Label for="title">Title</Label>
                     <Input
@@ -121,9 +124,7 @@ function updateType(value: string) {
             </div>
 
             <!-- Right -->
-            <aside
-                class="self-start sticky top-0 bg-background rounded-md px-4 py-4"
-            >
+            <aside class="self-start sticky top-4 rounded-md px-4 space-y-6">
                 <Button
                     type="submit"
                     :class="{ 'opacity-25': form.processing }"
@@ -131,6 +132,19 @@ function updateType(value: string) {
                 >
                     Create
                 </Button>
+
+                <div>
+                    <Label for="type">Status</Label>
+                    <Select id="type" v-model:model-value="form.is_published">
+                        <SelectTrigger class="mt-2">
+                            <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="true"> Published </SelectItem>
+                            <SelectItem value="false"> Draft </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </aside>
         </div>
     </form>

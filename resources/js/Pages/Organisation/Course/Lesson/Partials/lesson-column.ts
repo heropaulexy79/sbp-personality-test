@@ -16,6 +16,7 @@ export const lessonColumns = [
                 h(
                     Link,
                     {
+                        class: "block",
                         href: route("lesson.edit", {
                             lesson: props.row.original.id,
                             course: props.row.original.course_id,
@@ -36,25 +37,25 @@ export const lessonColumns = [
             );
         },
     }),
-    // columnHelper.display({
-    //     id: "is_published",
-    //     header: () => h("div", { class: "" }, "Status"),
-    //     cell(props) {
-    //         const isPublished = Boolean(props.row.getValue("is_published"));
-    //         return h(
-    //             "div",
-    //             { class: "" },
-    //             h(
-    //                 Badge,
-    //                 {
-    //                     variant: isPublished ? "default" : "outline",
-    //                     class: "uppercase",
-    //                 },
-    //                 isPublished ? "Published" : "Draft"
-    //             )
-    //         );
-    //     },
-    // }),
+    columnHelper.display({
+        id: "is_published",
+        header: () => h("div", { class: "" }, "Status"),
+        cell(props) {
+            const isPublished = props.row.original.is_published;
+            return h(
+                "div",
+                { class: "" },
+                h(
+                    Badge,
+                    {
+                        variant: isPublished ? "default" : "outline",
+                        class: "uppercase",
+                    },
+                    () => (isPublished ? "Published" : "Draft")
+                )
+            );
+        },
+    }),
 
     // columnHelper.accessor("role", {
     //     header: () => h("div", { class: "" }, "Role"),

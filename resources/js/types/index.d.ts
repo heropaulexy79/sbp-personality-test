@@ -54,7 +54,7 @@ export interface Course {
     title: string;
     description: string;
     organisation_id: Organisation["id"];
-    is_published: boolean | 0 | 1;
+    is_published: boolean;
 
     created_at: Date;
     deleted_at: Date | null;
@@ -68,7 +68,7 @@ export interface Lesson {
     course_id: Course["id"];
     type: "DEFAULT" | "QUIZ" | (string & {});
 
-    // is_published: boolean | 0 | 1;
+    is_published: boolean;
 
     created_at: Date;
     deleted_at: Date | null;
