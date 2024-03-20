@@ -10,7 +10,7 @@ defineProps<{ course: Pick<Course, "id" | "title"> }>();
 
 <template>
     <div
-        class="flex items-center justify-between rounded-lg p-4 transition-all shadow"
+        class="flex items-center justify-between rounded-lg p-4 transition-all shadow bg-background"
     >
         <div class="flex items-center gap-5">
             <div class="size-32 bg-gray-400 rounded-md"></div>

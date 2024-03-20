@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\LessonController;
@@ -22,6 +23,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function (Request $request) {
 
+    // TODO: filter by which course is completed or null
     $courses = $request->user()->enrolledCourses()->paginate()->withQueryString();
 
     return Inertia::render('Dashboard', ['courses' => $courses]);
@@ -60,8 +62,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/organisation/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create');
     Route::post('/organisation/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store');
 
-    // Course
-    // Route::get("/course/{course}", [CourseController::class, 'show'])->name('course.show');
+    // Classrooom
+    Route::get('/classroom/course/{course}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
+    Route::get('/classroom/course/{course}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
+    Route::get('/classroom/course/{course}/lesson/{lesson}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
 });
 
 Route::middleware('auth')->group(function () {
