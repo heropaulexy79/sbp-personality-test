@@ -22,7 +22,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function (Request $request) {
 
-    $courses = $request->user()->enrolledCourses()->paginate();
+    $courses = $request->user()->enrolledCourses()->paginate()->withQueryString();
 
     return Inertia::render('Dashboard', ['courses' => $courses]);
 })->middleware(['auth', 'verified'])->name('dashboard');
