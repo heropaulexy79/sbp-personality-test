@@ -4,12 +4,20 @@ import { Course, Lesson } from "@/types";
 import { Head } from "@inertiajs/vue3";
 import LessonContent from "./Partials/LessonContent.vue";
 import LessonsSidenav from "./Partials/LessonsSidenav.vue";
+import { computed } from "vue";
+import { WithCompleted } from "./Partials/types";
 
-defineProps<{
+const props = defineProps<{
     course: Course;
-    lessons: Omit<Lesson, "content" | "content_json">[];
-    lesson: Lesson;
+    lessons: WithCompleted<Omit<Lesson, "content" | "content_json">>[];
+    lesson: WithCompleted<Lesson>;
 }>();
+
+const nextLesson = computed(() => {
+    const idx = props.lessons.findIndex((r) => r.id === props.lesson.id);
+
+    return props.lessons[idx + 1] ?? null;
+});
 </script>
 
 <template>
@@ -27,7 +35,11 @@ defineProps<{
                 />
                 <div class="bg-white">
                     <div class="py-12 px-12">
-                        <LessonContent :lesson="lesson" :course="course" />
+                        <LessonContent
+                            :lesson="lesson"
+                            :course="course"
+                            :next-lesson-id="nextLesson?.id"
+                        />
                     </div>
                 </div>
             </div>

@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { Course, Lesson } from "@/types";
+import { WithCompleted } from "./types";
 import { Link } from "@inertiajs/vue3";
 import { BookOpenText, Check, Star } from "lucide-vue-next";
 
 defineProps<{
     course: Course;
-    lessons: Omit<Lesson, "content" | "content_json">[];
+    lessons: WithCompleted<Omit<Lesson, "content" | "content_json">>[];
 }>();
 </script>
 
@@ -31,9 +32,9 @@ defineProps<{
                     >
                         <span
                             class="items-center flex justify-center size-7 group-data-[active='true']:bg-primary group-data-[active='true']:text-primary-foreground rounded-full leading-none data-[completed='true']:bg-primary data-[completed='true']:text-primary-foreground"
-                            :data-completed="false"
+                            :data-completed="lesson.completed"
                         >
-                            <Check v-if="false" class="size-4" />
+                            <Check v-if="lesson.completed" class="size-4" />
                             <template v-else>
                                 <Star
                                     v-if="lesson.type === 'QUIZ'"

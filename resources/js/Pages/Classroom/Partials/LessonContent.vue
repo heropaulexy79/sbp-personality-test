@@ -1,16 +1,45 @@
 <script lang="ts" setup>
+import { Button } from "@/Components/ui/button";
 import { Course, Lesson } from "@/types";
+import { useForm } from "@inertiajs/vue3";
+import { WithCompleted } from "./types";
 
-defineProps<{
+const props = defineProps<{
     course: Course;
-    lesson: Lesson;
+    lesson: WithCompleted<Lesson>;
+    nextLessonId: Lesson["id"] | null;
 }>();
+
+const completionForm = useForm({});
+
+function markAsComplete() {
+    completionForm.patch(
+        route("classroom.lesson.markComplete", {
+            course: props.course.id,
+            lesson: props.lesson.id,
+            next: props.nextLessonId,
+        }),
+        {
+            onSuccess() {},
+            onError() {},
+        }
+    );
+}
 </script>
 
 <template>
     <div>
         <div v-if="lesson.type === 'DEFAULT'" class="prose lg:prose-lg">
-            {{ lesson.content }}
+            <article v-html="lesson.content" />
+
+            <form
+                @submit.prevent="markAsComplete"
+                class="flex items-center justify-center"
+            >
+                <Button type="submit" size="sm" v-if="!lesson.completed">
+                    Mark as complete
+                </Button>
+            </form>
         </div>
         <div v-else-if="lesson.type === 'QUIZ'">
             {{ lesson.content_json }}
