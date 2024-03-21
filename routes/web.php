@@ -63,9 +63,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/organisation/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store');
 
     // Classrooom
-    Route::get('/classroom/course/{course}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
-    Route::get('/classroom/course/{course}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
-    Route::get('/classroom/course/{course}/lesson/{lesson}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
+    Route::middleware(['enrolled'])->group(function () {
+        Route::get('/classroom/course/{course}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
+        Route::get('/classroom/course/{course}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
+        Route::get('/classroom/course/{course}/lesson/{lesson}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
+        Route::patch('/classroom/course/{course}/lesson/{lesson}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
+        Route::patch('/classroom/course/{course}/lesson/{lesson}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
+    });
 });
 
 Route::middleware('auth')->group(function () {

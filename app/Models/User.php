@@ -73,4 +73,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Course::class, 'course_enrollments');
     }
+
+    public function isEnrolledInCourse($courseId)
+    {
+        return $this->enrolledCourses()->where('course_id', $courseId)->exists();
+    }
+
+    public function lessons()
+    {
+        return $this->hasMany(UserLesson::class, 'user_id', 'id');
+    }
 }
