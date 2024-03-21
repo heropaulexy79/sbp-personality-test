@@ -21,8 +21,8 @@ export const courseColumns = [
                             course: props.row.original.id,
                         }),
                     },
-                    () => props.row.getValue("title")
-                )
+                    () => props.row.getValue("title"),
+                ),
             );
         },
     }),
@@ -40,8 +40,8 @@ export const courseColumns = [
                         variant: isPublished ? "default" : "outline",
                         class: "uppercase",
                     },
-                    () => (isPublished ? "Published" : "Draft")
-                )
+                    () => (isPublished ? "Published" : "Draft"),
+                ),
             );
         },
     }),

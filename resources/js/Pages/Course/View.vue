@@ -23,7 +23,7 @@ function enrollInCourse() {
     <AuthenticatedLayout>
         <div class="py-12">
             <div class="container">
-                <h2 class="text-xl lg:text-2xl font-bold mb-5">
+                <h2 class="mb-5 text-xl font-bold lg:text-2xl">
                     {{ course.title }}
                 </h2>
 
@@ -46,7 +46,7 @@ function enrollInCourse() {
                 </form>
 
                 <div class="pt-12">
-                    <h3 class="text-base lg:text-lg font-semibold mb-5">
+                    <h3 class="mb-5 text-base font-semibold lg:text-lg">
                         What you would learn
                     </h3>
 
@@ -56,7 +56,7 @@ function enrollInCourse() {
                             class="flex items-center gap-2"
                         >
                             <div
-                                class="size-10 grid place-content-center border-2 border-border rounded-full"
+                                class="grid size-10 place-content-center rounded-full border-2 border-border"
                             >
                                 {{ index + 1 }}
                             </div>

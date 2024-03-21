@@ -34,7 +34,7 @@ watch(
     (n) => {
         model.value = n;
     },
-    { deep: true }
+    { deep: true },
 );
 </script>
 
@@ -42,10 +42,10 @@ watch(
     <ul class="space-y-6">
         <li
             v-for="(question, index) in questions"
-            class="border-border border-b last:border-transparent pb-6"
+            class="border-b border-border pb-6 last:border-transparent"
         >
             <div>
-                <div class="flex gap-4 justify-between items-center">
+                <div class="flex items-center justify-between gap-4">
                     <Label :for="'q.' + question.id"
                         >Question {{ index + 1 }}:</Label
                     >
@@ -54,7 +54,7 @@ watch(
                         type="button"
                         variant="outline"
                         size="icon"
-                        class="text-xs size-9"
+                        class="size-9 text-xs"
                         @click="deleteQuestion(index)"
                     >
                         <X :size="16" />
@@ -83,11 +83,11 @@ watch(
                 v-model="question.correctOption"
                 v-if="question.type === 'single_choice'"
             >
-                <ul class="grid md:grid-cols-2 gap-4 mt-4">
+                <ul class="mt-4 grid gap-4 md:grid-cols-2">
                     <li v-for="(option, optionIndex) in question.options">
                         <div>
                             <div
-                                class="flex gap-4 justify-between items-center"
+                                class="flex items-center justify-between gap-4"
                             >
                                 <Label
                                     :for="
@@ -99,7 +99,7 @@ watch(
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    class="text-xs size-9"
+                                    class="size-9 text-xs"
                                     @click="deleteOption(index, optionIndex)"
                                 >
                                     <X :size="16" />
@@ -137,7 +137,7 @@ watch(
                             <Button
                                 type="button"
                                 variant="outline"
-                                class="w-full mt-2"
+                                class="mt-2 w-full"
                                 @click="addOption(index)"
                                 >Add option</Button
                             >

@@ -60,7 +60,7 @@ const courseNav = [
                 <CreateOrganisationForm
                     v-if="!$page.props.auth.user.organisation_id"
                 />
-                <div v-else class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div v-else class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <!-- <div
                         class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
                         >
@@ -82,7 +82,7 @@ const courseNav = [
                                 "
                                 :href="item.href"
                                 preserve-scroll
-                                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-primary px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow"
+                                class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-primary ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow"
                             >
                                 {{ item.label }}
                             </Link>
@@ -98,7 +98,7 @@ const courseNav = [
                     <LaravelPagination
                         v-if="courses.total > courses.data.length"
                         :items="courses"
-                        class="py-6 flex justify-center"
+                        class="flex justify-center py-6"
                     />
                 </div>
             </div>

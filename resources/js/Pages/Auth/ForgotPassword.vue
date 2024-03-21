@@ -24,7 +24,7 @@ const submit = () => {
         <Head title="Forgot Password" />
 
         <div class="mb-4 text-center">
-            <h2 class="font-semibold tracking-tight text-2xl mb-2">
+            <h2 class="mb-2 text-2xl font-semibold tracking-tight">
                 Forgot password
             </h2>
             <p class="text-sm text-muted-foreground">
@@ -35,7 +35,7 @@ const submit = () => {
         </div>
         <div
             v-if="status"
-            class="mb-4 font-medium text-sm text-green-600 dark:text-green-400"
+            class="mb-4 text-sm font-medium text-green-600 dark:text-green-400"
         >
             {{ status }}
         </div>

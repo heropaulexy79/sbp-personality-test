@@ -35,7 +35,7 @@ const submit = () => {
         <Head title="Reset Password" />
 
         <div class="mb-4 text-center">
-            <h2 class="font-semibold tracking-tight text-2xl">
+            <h2 class="text-2xl font-semibold tracking-tight">
                 Reset your password
             </h2>
             <p class="text-sm text-muted-foreground">

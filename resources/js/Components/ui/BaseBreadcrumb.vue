@@ -51,7 +51,7 @@ const allButLastTwoItems = computed(() => props.items.slice(1, -2));
 const remainingItems = computed(() =>
     props.items.length < itemsToDisplay
         ? props.items.slice(1)
-        : props.items.slice(-itemsToDisplay + 1)
+        : props.items.slice(-itemsToDisplay + 1),
 );
 </script>
 

@@ -40,8 +40,8 @@ defineProps<{
                         cn(
                             buttonVariants({
                                 variant: 'outline',
-                                class: 'w-10 h-10 p-0',
-                            })
+                                class: 'h-10 w-10 p-0',
+                            }),
                         )
                     "
                 >
@@ -56,8 +56,8 @@ defineProps<{
                         cn(
                             buttonVariants({
                                 variant: 'outline',
-                                class: 'w-10 h-10 p-0',
-                            })
+                                class: 'h-10 w-10 p-0',
+                            }),
                         )
                     "
                 >
@@ -76,8 +76,8 @@ defineProps<{
                                     variant: item.active
                                         ? 'default'
                                         : 'outline',
-                                    class: 'w-10 h-10 p-0',
-                                })
+                                    class: 'h-10 w-10 p-0',
+                                }),
                             )
                         "
                     >
@@ -99,8 +99,8 @@ defineProps<{
                         cn(
                             buttonVariants({
                                 variant: 'outline',
-                                class: 'w-10 h-10 p-0',
-                            })
+                                class: 'h-10 w-10 p-0',
+                            }),
                         )
                     "
                 >
@@ -115,8 +115,8 @@ defineProps<{
                         cn(
                             buttonVariants({
                                 variant: 'outline',
-                                class: 'w-10 h-10 p-0',
-                            })
+                                class: 'h-10 w-10 p-0',
+                            }),
                         )
                     "
                 >

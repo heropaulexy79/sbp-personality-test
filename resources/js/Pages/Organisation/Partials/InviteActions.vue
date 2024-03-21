@@ -26,7 +26,7 @@ function uninviteUser() {
                     description: errorBagToString(errors),
                 });
             },
-        }
+        },
     );
 }
 </script>

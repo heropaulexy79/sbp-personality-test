@@ -22,8 +22,8 @@ export const lessonColumns = [
                             course: props.row.original.course_id,
                         }),
                     },
-                    () => props.row.getValue("title")
-                )
+                    () => props.row.getValue("title"),
+                ),
             );
         },
     }),
@@ -33,7 +33,7 @@ export const lessonColumns = [
             return h(
                 "div",
                 { class: "capitalize" },
-                (props.row.getValue("type") as string)?.toLowerCase()
+                (props.row.getValue("type") as string)?.toLowerCase(),
             );
         },
     }),
@@ -51,8 +51,8 @@ export const lessonColumns = [
                         variant: isPublished ? "default" : "outline",
                         class: "uppercase",
                     },
-                    () => (isPublished ? "Published" : "Draft")
-                )
+                    () => (isPublished ? "Published" : "Draft"),
+                ),
             );
         },
     }),

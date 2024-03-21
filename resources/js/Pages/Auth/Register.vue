@@ -41,7 +41,7 @@ const submit = () => {
         <Head title="Register" />
 
         <div class="mb-4 text-center">
-            <h2 class="font-semibold tracking-tight text-2xl">
+            <h2 class="text-2xl font-semibold tracking-tight">
                 Create account
             </h2>
             <p class="text-sm text-muted-foreground">
@@ -135,7 +135,7 @@ const submit = () => {
                 </Button>
             </div>
 
-            <div class="text-center mt-4">
+            <div class="mt-4 text-center">
                 <Link
                     :href="route('login')"
                     :class="

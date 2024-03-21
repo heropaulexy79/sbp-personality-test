@@ -18,14 +18,14 @@ const props = defineProps<{
     <AuthenticatedLayout>
         <template #header>
             <h2
-                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
+                class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
             ></h2>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div
-                    class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
+                    class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
                 >
                     <UpdateOrganisationForm
                         :organisation="props.organisation"
@@ -34,7 +34,7 @@ const props = defineProps<{
                 </div>
 
                 <div
-                    class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
+                    class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
                 >
                     <!-- class="max-w-xl"  -->
                     <TeamSettings

@@ -41,7 +41,7 @@ function updateRole(value: string) {
                 });
                 form.reset();
             },
-        }
+        },
     );
 }
 </script>

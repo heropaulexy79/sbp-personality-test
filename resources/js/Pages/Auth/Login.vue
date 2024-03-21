@@ -34,13 +34,13 @@ const submit = () => {
         <Head title="Log in" />
 
         <div class="mb-4 text-center">
-            <h2 class="font-semibold tracking-tight text-2xl">Welcome back</h2>
+            <h2 class="text-2xl font-semibold tracking-tight">Welcome back</h2>
             <p class="text-sm text-muted-foreground">
                 Enter your your details below
             </p>
         </div>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
 
@@ -76,7 +76,7 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="flex items-center justify-between mt-4">
+            <div class="mt-4 flex items-center justify-between">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
                     <span class="ms-2 text-sm text-gray-600 dark:text-gray-400"
@@ -94,7 +94,7 @@ const submit = () => {
                     Forgot your password?
                 </Link>
             </div>
-            <div class="flex items-center justify-end mt-4">
+            <div class="mt-4 flex items-center justify-end">
                 <Button
                     class="w-full"
                     :class="{ 'opacity-25': form.processing }"
@@ -112,7 +112,7 @@ const submit = () => {
                             buttonVariants({
                                 variant: 'link',
                                 class: 'px-0 font-bold',
-                            })
+                            }),
                         )
                     "
                 >

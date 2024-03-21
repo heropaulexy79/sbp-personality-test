@@ -50,7 +50,7 @@ watch(
         //         onClick: () => console.log("Undo"),
         //     },
         // });
-    }
+    },
 );
 </script>
 

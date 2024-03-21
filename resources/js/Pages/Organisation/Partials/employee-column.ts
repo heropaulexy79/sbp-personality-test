@@ -24,7 +24,7 @@ export const employeeColumns = [
                     organisation_id: props.row.original.organisation_id!,
                     role: props.row.getValue("role") as User["role"],
                     user_id: props.row.original.id!,
-                })
+                }),
             );
         },
         size: 200,
@@ -74,7 +74,7 @@ export const employeeInviteColumns = [
                 h(InviteActions, {
                     id: row.original.id,
                     organisation_id: row.original.organisation_id!,
-                })
+                }),
             );
         },
     }),

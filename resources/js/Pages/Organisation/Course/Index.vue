@@ -23,8 +23,8 @@ defineProps<{ courses: Course[] }>();
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <header class="bg-white dark:bg-gray-800 shadow">
-            <div class="container py-6 flex items-center justify-between">
+        <header class="bg-white shadow dark:bg-gray-800">
+            <div class="container flex items-center justify-between py-6">
                 <div>
                     <BaseBreadcrumb
                         :items="[
@@ -53,9 +53,8 @@ defineProps<{ courses: Course[] }>();
                         </VisuallyHidden>
                         <CreateCourseForm
                             :organisation_id="
-                                    $page.props.auth.user
-                                    .organisation_id!
-                                    "
+                                $page.props.auth.user.organisation_id!
+                            "
                         />
                     </DialogContent>
                 </Dialog>

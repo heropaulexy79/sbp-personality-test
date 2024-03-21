@@ -24,7 +24,7 @@ defineProps<{
 
 <template>
     <section class="space-y-6">
-        <header class="flex items-start gap-6 justify-between">
+        <header class="flex items-start justify-between gap-6">
             <div>
                 <h2 class="text-lg font-medium">Team Settings</h2>
 
@@ -64,7 +64,7 @@ defineProps<{
         <BaseDataTable :columns="employeeColumns" :data="employees" />
 
         <div class="pt-4">
-            <h3 class="font-medium mb-4">Invitations</h3>
+            <h3 class="mb-4 font-medium">Invitations</h3>
             <BaseDataTable :columns="employeeInviteColumns" :data="invites" />
         </div>
     </section>

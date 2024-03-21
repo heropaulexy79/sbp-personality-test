@@ -19,7 +19,7 @@ defineProps<{ course: Course; lessons: Lesson[] }>();
             <div class="py-4">
                 <div class="container">
                     <div class="space-y-6">
-                        <header class="flex items-start gap-6 justify-between">
+                        <header class="flex items-start justify-between gap-6">
                             <div>
                                 <h2 class="text-lg font-medium">Lessons</h2>
 

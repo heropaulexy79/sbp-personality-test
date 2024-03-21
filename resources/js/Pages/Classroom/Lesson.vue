@@ -26,15 +26,15 @@ const nextLesson = computed(() => {
     <AuthenticatedLayout>
         <div class="container">
             <div
-                class="relative grid md:grid-cols-[225px_1fr] min-h-[calc(100svh-65px)] bg-background"
+                class="relative grid min-h-[calc(100svh-65px)] bg-background md:grid-cols-[225px_1fr]"
             >
                 <LessonsSidenav
-                    class="h-[100svh] border-r fixed md:sticky top-0 self-start overflow-auto bg-background"
+                    class="fixed top-0 h-[100svh] self-start overflow-auto border-r bg-background md:sticky"
                     :course="course"
                     :lessons="lessons"
                 />
                 <div class="bg-white">
-                    <div class="py-12 px-12">
+                    <div class="px-12 py-12">
                         <LessonContent
                             :lesson="lesson"
                             :course="course"

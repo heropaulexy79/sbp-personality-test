@@ -9,8 +9,8 @@ defineProps<{ course: Course }>();
 </script>
 
 <template>
-    <header class="bg-white dark:bg-gray-800 shadow">
-        <div class="container py-6 flex items-center justify-between">
+    <header class="bg-white shadow dark:bg-gray-800">
+        <div class="container flex items-center justify-between py-6">
             <div>
                 <BaseBreadcrumb
                     :items="[

@@ -22,7 +22,7 @@ function markAsComplete() {
         {
             onSuccess() {},
             onError() {},
-        }
+        },
     );
 }
 </script>

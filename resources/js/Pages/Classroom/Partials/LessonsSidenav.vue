@@ -28,10 +28,10 @@ defineProps<{
                                 lesson: lesson.id,
                             })
                         "
-                        class="group w-full px-3 py-1 border-l-[6px] border-l-transparent data-[active='true']:border-l-primary flex gap-2 items-center data-[active='true']:bg-accent data-[active='true']:text-accent-foreground"
+                        class="group flex w-full items-center gap-2 border-l-[6px] border-l-transparent px-3 py-1 data-[active='true']:border-l-primary data-[active='true']:bg-accent data-[active='true']:text-accent-foreground"
                     >
                         <span
-                            class="items-center flex justify-center size-7 group-data-[active='true']:bg-primary group-data-[active='true']:text-primary-foreground rounded-full leading-none data-[completed='true']:bg-primary data-[completed='true']:text-primary-foreground"
+                            class="flex size-7 items-center justify-center rounded-full leading-none data-[completed='true']:bg-primary data-[completed='true']:text-primary-foreground group-data-[active='true']:bg-primary group-data-[active='true']:text-primary-foreground"
                             :data-completed="lesson.completed"
                         >
                             <Check v-if="lesson.completed" class="size-4" />

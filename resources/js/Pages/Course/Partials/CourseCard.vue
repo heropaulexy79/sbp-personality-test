@@ -10,10 +10,10 @@ defineProps<{ course: Pick<Course, "id" | "title"> }>();
 
 <template>
     <div
-        class="flex items-center justify-between rounded-lg p-4 transition-all shadow bg-background"
+        class="flex items-center justify-between rounded-lg bg-background p-4 shadow transition-all"
     >
         <div class="flex items-center gap-5">
-            <div class="size-32 bg-gray-400 rounded-md"></div>
+            <div class="size-32 rounded-md bg-gray-400"></div>
             <Link
                 :href="route('classroom.lesson.index', { course: course.id })"
                 :class="
@@ -22,7 +22,7 @@ defineProps<{ course: Pick<Course, "id" | "title"> }>();
                             variant: 'link',
                             size: 'lg',
                             class: 'px-0',
-                        })
+                        }),
                     )
                 "
             >

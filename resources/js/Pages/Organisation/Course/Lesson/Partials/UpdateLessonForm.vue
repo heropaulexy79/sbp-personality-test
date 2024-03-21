@@ -51,7 +51,7 @@ function submit() {
             onSuccess() {},
             onError(error) {},
             preserveScroll: true,
-        }
+        },
     );
 }
 
@@ -70,11 +70,11 @@ function updateType(value: string) {
 <template>
     <form @submit.prevent="submit">
         <div
-            class="grid md:grid-cols-[1fr_200px] lg:grid-cols-[1fr_250px] gap-6 md:gap-10 relative"
+            class="relative grid gap-6 md:grid-cols-[1fr_200px] md:gap-10 lg:grid-cols-[1fr_250px]"
         >
             <!-- Left -->
             <div
-                class="grid md:grid-cols-2 gap-6 bg-background rounded-md px-4 py-4"
+                class="grid gap-6 rounded-md bg-background px-4 py-4 md:grid-cols-2"
             >
                 <div>
                     <Label for="title">Title</Label>
@@ -129,7 +129,7 @@ function updateType(value: string) {
             </div>
 
             <!-- Right -->
-            <aside class="self-start sticky top-4 rounded-md px-4 space-y-6">
+            <aside class="sticky top-4 space-y-6 self-start rounded-md px-4">
                 <Button
                     type="submit"
                     :class="{ 'opacity-25': form.processing }"
