@@ -93,6 +93,12 @@ const courseNav = [
                         <li v-for="course in courses.data">
                             <CourseCard :course="course" />
                         </li>
+                        <li
+                            v-if="courses.data.length === 0"
+                            class="text-center"
+                        >
+                            No enrolled courses at the moment
+                        </li>
                     </ul>
 
                     <LaravelPagination

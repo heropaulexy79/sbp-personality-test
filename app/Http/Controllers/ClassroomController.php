@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Models\Lesson;
 use App\Models\UserLesson;
 use Illuminate\Http\Request;
@@ -50,12 +51,26 @@ class ClassroomController extends Controller
         }
 
         $lessons = $course->lessons()->published()->get(['title', 'position', 'type', 'id']);
+        $total_completed = 0;
 
         foreach ($lessons as $l) {
             $l->completed = UserLesson::where('user_id', $user->id)
                 ->where('lesson_id', $l->id)
                 ->where('completed', 1)->exists() ?? false;
+
+            if ($l->completed) {
+                $total_completed++;
+            }
         };
+
+        if ($total_completed === count($lessons)) {
+            $enrollment = CourseEnrollment::where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->first();
+
+            $enrollment?->is_completed = true;
+            $enrollment?->save();
+        }
 
         $user_lesson = UserLesson::where('user_id', $user->id)
             ->where('lesson_id', $lesson->id)->first();
@@ -143,7 +158,7 @@ class ClassroomController extends Controller
                 'user_id' => $user->id,
                 'lesson_id' => $lesson->id,
                 'completed' => true,
-                'answers' => json_encode($answers),
+                'answers' => $answers,
                 'score' => $scoreInPercent
             ]],
             uniqueBy: ['user_id', 'lesson_id'],

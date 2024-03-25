@@ -23,8 +23,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function (Request $request) {
 
-    // TODO: filter by which course is completed or null
-    $courses = $request->user()->enrolledCourses()->paginate()->withQueryString();
+    $status = $request->query('status');
+    $courses = $request->user()->enrolledCourses()->where("is_completed", $status === "completed" ? "1" : "0")
+        ->paginate()->withQueryString();
+
 
     return Inertia::render('Dashboard', ['courses' => $courses]);
 })->middleware(['auth', 'verified'])->name('dashboard');
