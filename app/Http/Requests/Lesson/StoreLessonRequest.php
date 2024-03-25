@@ -65,7 +65,7 @@ class StoreLessonRequest extends FormRequest
             //     'min:2',
             //     'max:255',
             // ],
-            // 'quiz.*.correctOption' => [
+            // 'quiz.*.correct_option' => [
             //     Rule::requiredIf(function ($data) {
             //         return $data['type'] === 'multiple_choice';
             //     }),
@@ -75,7 +75,7 @@ class StoreLessonRequest extends FormRequest
             //     Rule::exists('question_options', 'id')
             //         ->where('question_id', Rule::exists('quiz', 'id')), // Ensure correct options exist for the question
             // ],
-            // 'quiz.*.correctOption.*' => [ // Validate individual correct options (multiple choice only)
+            // 'quiz.*.correct_option.*' => [ // Validate individual correct options (multiple choice only)
             //     Rule::requiredIf(function ($data, $key, $row) {
             //         return $row['type'] === 'multiple_choice';
             //     }),
@@ -111,7 +111,7 @@ class StoreLessonRequest extends FormRequest
                 'min:1', // Adjust minimum length as needed
                 'max:255', // Adjust maximum length as needed
             ],
-            'quiz.*.correctOption' => [
+            'quiz.*.correct_option' => [
                 Rule::requiredIf($this->input('type') === Lesson::TYPE_QUIZ),
                 // Rule::requiredIf(function() {
                 //     return $data['type'] === 'multiple_choice';
@@ -121,9 +121,9 @@ class StoreLessonRequest extends FormRequest
                 // }),
                 // Rule::custom(function ($attribute, $value, $validator) {
                 //     $options = request()->input('quiz.' . $validator->getIndex() . '.options');
-                //     // Check if all elements in correctOption exist within options (by text comparison)
-                //     return collect($value)->every(function ($correctOptionText) use ($options) {
-                //         return collect($options)->contains('text', $correctOptionText);
+                //     // Check if all elements in correct_option exist within options (by text comparison)
+                //     return collect($value)->every(function ($correct_optionText) use ($options) {
+                //         return collect($options)->contains('text', $correct_optionText);
                 //     });
                 // }),
             ],
@@ -145,7 +145,7 @@ class StoreLessonRequest extends FormRequest
             'quiz.*.options.*.text.required' => 'Option field is required',
             'quiz.*.options.*.text.min' => 'Option field has a minimum of :min',
             'quiz.*.options.*.text.max' => 'Option field has a maximum of :max',
-            'quiz.*.correctOption.required' => 'Correct option is required',
+            'quiz.*.correct_option.required' => 'Correct option is required',
         ];
     }
 }

@@ -102,7 +102,7 @@ class LessonController extends Controller
         }
 
         // $lesson->content_json = json_decode($lesson->content_json);
-        // $lesson->content_json = Arr::except($lesson->content_json, ['correctOption']);
+        // $lesson->content_json = Arr::except($lesson->content_json, ['correct_option']);
         // $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
 
         return Inertia::render('Organisation/Course/Lesson/Edit', [

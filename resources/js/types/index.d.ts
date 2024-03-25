@@ -81,14 +81,14 @@ type MultipleChoice = {
     text: string;
     type: "multiple_choice";
     options: Array<QuestionOption>;
-    correctOption: string[];
+    correct_option: string[];
 };
 type SingleChoice = {
     id: string;
     text: string;
     type: "single_choice";
     options: Array<QuestionOption>;
-    correctOption?: string;
+    correct_option: string;
 };
 
 type QuestionOption = {

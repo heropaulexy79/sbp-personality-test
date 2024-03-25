@@ -97,6 +97,8 @@ class ClassroomController extends Controller
 
         $score = 0.0;
 
+        dd($request);
+
         // Calculate score
 
         // Todo : Quiz, lesson

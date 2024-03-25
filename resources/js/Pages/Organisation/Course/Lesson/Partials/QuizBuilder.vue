@@ -75,12 +75,12 @@ watch(
                     />
                     <InputError
                         class="mt-2"
-                        :message="errors?.[`quiz.${index}.correctOption`]"
+                        :message="errors?.[`quiz.${index}.correct_option`]"
                     />
                 </div>
             </div>
             <RadioGroup
-                v-model="question.correctOption"
+                v-model="question.correct_option"
                 v-if="question.type === 'single_choice'"
             >
                 <ul class="mt-4 grid gap-4 md:grid-cols-2">

@@ -32,7 +32,7 @@ class Lesson extends Model
         $filtered = [];
 
         foreach ($this->content_json as $quiz) {
-            $filtered[] = Arr::except($quiz, ['correctOption']);
+            $filtered[] = Arr::except($quiz, ['correct_option']);
         }
 
         return $filtered;
