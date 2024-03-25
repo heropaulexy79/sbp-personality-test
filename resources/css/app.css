@@ -76,3 +76,22 @@
         @apply bg-background text-foreground;
     }
 }
+
+.radial-progress {
+    --progress: 10;
+    --radial-color: hsl(var(--primary));
+    /* --text-color: hsl(var(--primary-foreground)); */
+
+    min-height: 30px;
+    min-width: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* color: var(--text-color); */
+
+    background: conic-gradient(
+        var(--radial-color) calc(var(--progress) * 1%),
+        transparent calc(var(--progress) * 1%)
+    );
+}
