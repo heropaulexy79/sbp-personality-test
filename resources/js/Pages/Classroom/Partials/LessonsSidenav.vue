@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { Course, Lesson } from "@/types";
-import { WithCompleted } from "./types";
+import { WithUserLesson } from "./types";
 import { Link } from "@inertiajs/vue3";
 import { BookOpenText, Check, Star } from "lucide-vue-next";
 
 defineProps<{
     course: Course;
-    lessons: WithCompleted<Omit<Lesson, "content" | "content_json">>[];
+    lessons: WithUserLesson<Omit<Lesson, "content" | "content_json">>[];
 }>();
 </script>
 

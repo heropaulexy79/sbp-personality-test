@@ -1,15 +1,27 @@
 <script lang="ts" setup>
 import { Button } from "@/Components/ui/button";
-import { Course, Lesson } from "@/types";
-import { useForm } from "@inertiajs/vue3";
-import { WithCompleted } from "./types";
-import { useQuizAnswerManager } from "./use-quiz-answer-manager";
-import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/Components/ui/dialog";
 import { Label } from "@/Components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
+import { Course, Lesson } from "@/types";
+import { router, useForm } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
+import { toast } from "vue-sonner";
+import { WithUserLesson } from "./types";
+import { useQuizAnswerManager } from "./use-quiz-answer-manager";
+import { computed } from "vue";
+import { cn } from "@/lib/utils";
 
 const props = defineProps<{
     course: Course;
-    lesson: WithCompleted<Lesson>;
+    lesson: WithUserLesson<Lesson>;
+    nextLessonId: Lesson["id"] | null;
 }>();
 
 const {
@@ -25,7 +37,10 @@ const {
 } = useQuizAnswerManager(
     `${props.course.id}:${props.lesson.id}`,
     props.lesson.content_json,
+    props.lesson.answers ?? null,
 );
+
+const successDialog = ref(false);
 
 const completionForm = useForm({
     answers: [],
@@ -49,10 +64,44 @@ function submit() {
                 lesson: props.lesson.id,
             }),
             {
-                onSuccess() {},
-                onError() {},
+                onSuccess(page) {
+                    if (Boolean(page.props.flash.message)) {
+                        successDialog.value = true;
+                    }
+                },
+                onError(error) {
+                    toast.error(JSON.stringify(error));
+                },
             },
         );
+}
+
+const isCompleted = props.lesson.completed;
+
+const correctOption = computed(() => {
+    if (!isCompleted) return null;
+
+    const n = currentQuesion.value;
+
+    const r = n.options.find(
+        // @ts-ignore
+        (r) => r.id === n.correct_option,
+    );
+
+    return r;
+});
+
+function onContinue() {
+    // props.nextLessonId
+    //     ? router.visit(
+    //           route("classroom.show.lesson", {
+    //               lesson: props.nextLessonId,
+    //           }),
+    //       )
+    //     : router.visit(route("dashboard"));
+
+    // successDialog.value = false;
+    router.reload();
 }
 </script>
 
@@ -68,7 +117,7 @@ function submit() {
             }"
         >
             <span
-                class="flex size-9 items-center justify-center rounded-full bg-white"
+                class="flex size-9 items-center justify-center rounded-full bg-background"
             >
                 {{ currentQuestionIdx + 1 }} / {{ lesson.content_json.length }}
             </span>
@@ -87,14 +136,28 @@ function submit() {
                         answerQuestion(currentQuesion.id, v);
                     }
                 "
+                :disabled="isCompleted"
                 v-if="currentQuesion.type === 'single_choice'"
             >
                 <div
                     v-for="option in currentQuesion.options"
                     :key="option.id"
                     class="flex items-center space-x-2"
+                    :class="
+                        cn(
+                            isCompleted && currentAnswer === option.id
+                                ? correctOption?.id === option.id
+                                    ? 'text-green-500'
+                                    : 'text-destructive'
+                                : '',
+                        )
+                    "
                 >
-                    <RadioGroupItem :id="option.id" :value="option.id" />
+                    <RadioGroupItem
+                        :id="option.id"
+                        :value="option.id"
+                        :disabled="isCompleted"
+                    />
                     <Label :for="option.id"> {{ option.text }} </Label>
                     <!-- <RadioGroupItem
         v-bind="forwardedProps"
@@ -111,6 +174,10 @@ function submit() {
     </RadioGroupItem> -->
                 </div>
             </RadioGroup>
+
+            <div v-if="isCompleted" class="my-4">
+                The correct answer is {{ correctOption?.text }}
+            </div>
         </div>
 
         <div class="mt-6 flex items-center gap-4">
@@ -127,14 +194,64 @@ function submit() {
                 size="sm"
                 @click="nextQuestion"
                 :disabled="!hasNextQuesion"
-                v-if="hasNextQuesion"
+                v-if="hasNextQuesion || isCompleted"
             >
                 Next
             </Button>
 
-            <Button size="sm" @click="submit" v-if="!hasNextQuesion">
+            <Button
+                size="sm"
+                @click="submit"
+                v-if="!hasNextQuesion && !isCompleted"
+            >
                 Submit
             </Button>
         </div>
+    </div>
+
+    <div>
+        <Dialog v-model:open="successDialog">
+            <!-- <DialogTrigger as-child>
+      <Button variant="outline">
+        Edit Profile
+      </Button>
+    </DialogTrigger> -->
+            <DialogContent class="sm:max-w-[575px]">
+                <DialogHeader>
+                    <DialogTitle class="text-center">
+                        Congratulations
+                    </DialogTitle>
+                    <!-- <DialogDescription>
+                        Make changes to your profile here. Click save when
+                        you're done.
+                    </DialogDescription> -->
+                </DialogHeader>
+                <div class="text-center">
+                    <div
+                        class="radial-progress mx-auto size-32 rounded-full text-2xl font-bold"
+                        :style="{
+                            '--progress': Number(
+                                $page.props.flash.message?.score,
+                            ),
+                        }"
+                    >
+                        <span
+                            class="flex size-28 items-center justify-center rounded-full bg-background"
+                        >
+                            {{ $page.props.flash.message?.score }} %
+                        </span>
+                    </div>
+
+                    <div class="mt-4">
+                        {{ $page.props.flash.message?.message }}
+                    </div>
+                </div>
+                <DialogFooter
+                    class="mt-4 items-center justify-center sm:justify-center"
+                >
+                    <Button @click="onContinue"> Continue </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
 </template>

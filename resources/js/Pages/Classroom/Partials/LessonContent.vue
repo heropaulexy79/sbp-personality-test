@@ -2,12 +2,12 @@
 import { Button } from "@/Components/ui/button";
 import { Course, Lesson } from "@/types";
 import { useForm } from "@inertiajs/vue3";
-import { WithCompleted } from "./types";
+import { WithUserLesson } from "./types";
 import QuizRenderer from "./QuizRenderer.vue";
 
 const props = defineProps<{
     course: Course;
-    lesson: WithCompleted<Lesson>;
+    lesson: WithUserLesson<Lesson>;
     nextLessonId: Lesson["id"] | null;
 }>();
 
@@ -43,7 +43,11 @@ function markAsComplete() {
             </form>
         </div>
         <div v-else-if="lesson.type === 'QUIZ'">
-            <QuizRenderer :course="course" :lesson="lesson" />
+            <QuizRenderer
+                :course="course"
+                :lesson="lesson"
+                :next-lesson-id="nextLessonId"
+            />
         </div>
     </div>
 </template>

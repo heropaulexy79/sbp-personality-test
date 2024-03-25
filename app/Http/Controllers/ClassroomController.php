@@ -14,7 +14,7 @@ class ClassroomController extends Controller
 
     public function showCourse(Request $request, Course $course)
     {
-        return redirect(route('classroom.lesson.index', ["course" => $course->id]));
+        return redirect(route('classroom.lesson.index', ['course' => $course->id]));
     }
 
     public function showLessons(Request $request, Course $course)
@@ -34,7 +34,7 @@ class ClassroomController extends Controller
 
         $redirectLesson = $lastCompletedLesson->id ?? $course->lessons()->first(); // Redirect to 1st if none completed
 
-        return redirect(route('classroom.lesson.show', ["course" => $course->id, "lesson" => $redirectLesson->id]));
+        return redirect(route('classroom.lesson.show', ['course' => $course->id, 'lesson' => $redirectLesson->id]));
     }
 
 
@@ -42,6 +42,8 @@ class ClassroomController extends Controller
     {
 
         $user = $request->user();
+
+        $temp_content_json = $lesson->content_json;
 
         if ($lesson->type === Lesson::TYPE_QUIZ) {
             $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
@@ -55,9 +57,15 @@ class ClassroomController extends Controller
                 ->where('completed', 1)->exists() ?? false;
         };
 
-        $lesson->completed = UserLesson::where('user_id', $user->id)
-            ->where('lesson_id', $lesson->id)
-            ->where('completed', 1)->exists() ?? false;
+        $user_lesson = UserLesson::where('user_id', $user->id)
+            ->where('lesson_id', $lesson->id)->first();
+
+        $lesson->completed = $user_lesson?->completed === 1 ? true : false;
+        $lesson->answers = $user_lesson?->answers ?? null;
+
+        if ($lesson->completed) {
+            $lesson->content_json = $temp_content_json;
+        }
 
         return Inertia::render('Classroom/Lesson', [
             'course' => $course,
@@ -78,7 +86,7 @@ class ClassroomController extends Controller
         // ->first();
 
         UserLesson::upsert(
-            [["user_id" => $user->id, "lesson_id" => $lesson->id, "completed" => true],],
+            [['user_id' => $user->id, 'lesson_id' => $lesson->id, 'completed' => true],],
             uniqueBy: ['user_id', 'lesson_id'],
             update: ['completed']
         );
@@ -91,27 +99,61 @@ class ClassroomController extends Controller
 
     public function answerQuiz(Request $request, Course $course, Lesson $lesson)
     {
-
         $user = $request->user();
 
+        $request->validate([
+            'answers' => 'required|array|min:0',
+            'answers.*.question_id' => 'required|string',
+            'answers.*.selected_option' => 'nullable|string',
+        ]);
 
         $score = 0.0;
-
-        dd($request);
+        $total = 0.0;
 
         // Calculate score
+        $quiz = $lesson->content_json;
+        $answers = $request->input('answers');
+
+        foreach ($answers as $key => $value) {
+            $v = array_search($value['question_id'],  array_column($quiz, 'id'));
+            if ($v === false) {
+                continue;
+            }
+            $question = $quiz[$v];
+
+            if (!$question) {
+                continue;
+            }
+
+            if ($question['type'] === 'single_choice') {
+                $total++;
+
+                if ($question['correct_option'] === $value['selected_option']) {
+                    $score++;
+                }
+            }
+        }
+
+
+        $scoreInPercent = ($score / $total) * 100;
 
         // Todo : Quiz, lesson
         UserLesson::upsert(
-            [["user_id" => $user->id, "lesson_id" => $lesson->id, "quiz" => true],],
+            [[
+                'user_id' => $user->id,
+                'lesson_id' => $lesson->id,
+                'completed' => true,
+                'answers' => json_encode($answers),
+                'score' => $scoreInPercent
+            ]],
             uniqueBy: ['user_id', 'lesson_id'],
-            update: ['quiz', 'score']
+            update: ['completed', 'score', 'answers']
         );
 
-        return redirect()->back()->with("message", [
-            "status" => "success",
-            "message" => "",
-            "score" => $score
+        return redirect()->back()->with('message', [
+            'status' => 'success',
+            'message' => 'You scored ' . $score . ' out of ' . $total,
+            'score' => $scoreInPercent
         ]);
     }
 }

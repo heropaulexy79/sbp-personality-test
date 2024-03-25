@@ -1,10 +1,6 @@
 import { computed, ref, watch } from "vue";
 import { Question } from "@/types";
-
-type Answer = {
-    quesion_id: string;
-    selected_option: string | string[];
-};
+import { Answer } from "./types";
 
 type Q = Omit<Question, "correct_option">;
 
@@ -23,8 +19,8 @@ export function useQuizAnswerManager(
     const questions = ref<Array<Q>>(initialQuestions);
     const answers = ref(
         initialAnswers
-            ? new Map(initialAnswers.map((obj) => [obj.quesion_id, obj]))
-            : retrieveAnswers() ?? new Map<Answer["quesion_id"], Answer>(),
+            ? new Map(initialAnswers.map((obj) => [obj.question_id, obj]))
+            : retrieveAnswers() ?? new Map<Answer["question_id"], Answer>(),
     );
 
     const nextQuestion = () => {
@@ -35,11 +31,11 @@ export function useQuizAnswerManager(
     };
 
     const answerQuestion = (
-        quesion_id: Answer["quesion_id"],
+        question_id: Answer["question_id"],
         selected_option: Answer["selected_option"],
     ) => {
-        answers.value.set(quesion_id, {
-            quesion_id,
+        answers.value.set(question_id, {
+            question_id,
             selected_option,
         });
     };
@@ -56,7 +52,7 @@ export function useQuizAnswerManager(
 
         const v = localStorage.getItem(ansPersitKey.value);
         const parsed = v
-            ? new Map<Answer["quesion_id"], Answer>(JSON.parse(v))
+            ? new Map<Answer["question_id"], Answer>(JSON.parse(v))
             : null;
 
         return parsed;

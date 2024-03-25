@@ -5,12 +5,12 @@ import { Head } from "@inertiajs/vue3";
 import LessonContent from "./Partials/LessonContent.vue";
 import LessonsSidenav from "./Partials/LessonsSidenav.vue";
 import { computed } from "vue";
-import { WithCompleted } from "./Partials/types";
+import { WithUserLesson } from "./Partials/types";
 
 const props = defineProps<{
     course: Course;
-    lessons: WithCompleted<Omit<Lesson, "content" | "content_json">>[];
-    lesson: WithCompleted<Lesson>;
+    lessons: WithUserLesson<Omit<Lesson, "content" | "content_json">>[];
+    lesson: WithUserLesson<Lesson>;
 }>();
 
 const nextLesson = computed(() => {

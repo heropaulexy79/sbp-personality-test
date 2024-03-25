@@ -25,6 +25,8 @@ export type PageProps<
                 "cta:link": string;
                 "cta:text": string;
             };
+
+            [k: string]: any;
         };
         "global:message"?: {
             status: "success" | "error";

@@ -16,7 +16,11 @@ class UserLesson extends Model
         'lesson_id',
         'completed',
         'score',
-        'answers' => 'json',
+        'answers',
+    ];
+
+    protected $casts = [
+        'answers' => 'json'
     ];
 
     public function user()
