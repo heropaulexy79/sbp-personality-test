@@ -92,16 +92,15 @@ const correctOption = computed(() => {
 });
 
 function onContinue() {
-    // props.nextLessonId
-    //     ? router.visit(
-    //           route("classroom.show.lesson", {
-    //               lesson: props.nextLessonId,
-    //           }),
-    //       )
-    //     : router.visit(route("dashboard"));
+    props.nextLessonId
+        ? router.visit(
+              route("classroom.show.lesson", {
+                  lesson: props.nextLessonId,
+              }),
+          )
+        : router.reload();
 
-    // successDialog.value = false;
-    router.reload();
+    // successDialog.value = false;;
 }
 </script>
 

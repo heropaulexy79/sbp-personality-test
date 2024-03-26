@@ -28,22 +28,42 @@ function enrollInCourse() {
                 </h2>
 
                 <!-- Todo: slugify -->
-                <div v-html="course.description" class="prose lg:prose-xl" />
+                <div class="grid md:grid-cols-[1fr_350px]">
+                    <div v-html="course.description" class="prose" />
 
-                <form class="mt-5" @submit.prevent="enrollInCourse">
-                    <Button
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
+                    <div
+                        class="sticky top-0 mt-5 w-full self-start bg-background px-4 py-4"
                     >
-                        <span>Enroll now</span><ArrowRightIcon :size="16" />
-                    </Button>
-                    <div v-if="enrolled_count > 5">
-                        {{
-                            Intl.NumberFormat(undefined).format(enrolled_count)
-                        }}
-                        already enrolled
+                        <div class="mb-4">
+                            Created on
+                            {{
+                                Intl.DateTimeFormat(undefined, {
+                                    month: "long",
+                                    day: "2-digit",
+                                    year: "numeric",
+                                }).format(new Date(course.created_at))
+                            }}
+                        </div>
+
+                        <form @submit.prevent="enrollInCourse">
+                            <Button
+                                :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing"
+                            >
+                                <span>Enroll now</span
+                                ><ArrowRightIcon :size="16" />
+                            </Button>
+                            <div v-if="enrolled_count > 5">
+                                {{
+                                    Intl.NumberFormat(undefined).format(
+                                        enrolled_count,
+                                    )
+                                }}
+                                already enrolled
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
 
                 <div class="pt-12">
                     <h3 class="mb-5 text-base font-semibold lg:text-lg">
