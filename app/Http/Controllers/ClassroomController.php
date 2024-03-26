@@ -108,6 +108,8 @@ class ClassroomController extends Controller
             update: ['completed']
         );
 
+        // TODO: MOve complete enrollment here?
+
         $next_lesson_id = $request->query('next') ?? $lesson->id;
 
         return redirect(route('classroom.lesson.show', ['course' => $course->id, 'lesson' => $next_lesson_id]));
