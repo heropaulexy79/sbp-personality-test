@@ -15,6 +15,7 @@ import { Question, Lesson } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 import QuizBuilder from "./QuizBuilder.vue";
 import { generateId } from "./utils";
+import RichEditor from "@/Components/RichEditor.vue";
 
 const props = defineProps<{ lesson: Lesson }>();
 
@@ -109,11 +110,10 @@ function updateType(value: string) {
                     <div class="mt-2">
                         <div v-if="form.type === 'DEFAULT'">
                             <Label for="content">Content</Label>
-                            <Textarea
+                            <RichEditor
                                 id="content"
-                                placeholder="Write the main content of your lesson"
                                 v-model="form.content"
-                                class="min-h-96"
+                                class="mt-2"
                             />
                         </div>
 

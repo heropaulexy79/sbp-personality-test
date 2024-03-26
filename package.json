@@ -25,6 +25,10 @@
     },
     "dependencies": {
         "@tanstack/vue-table": "^8.13.2",
+        "@tiptap/extension-placeholder": "^2.2.4",
+        "@tiptap/pm": "^2.2.4",
+        "@tiptap/starter-kit": "^2.2.4",
+        "@tiptap/vue-3": "^2.2.4",
         "@vueuse/core": "^10.9.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.0",

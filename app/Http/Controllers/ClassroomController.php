@@ -162,7 +162,7 @@ class ClassroomController extends Controller
                 'user_id' => $user->id,
                 'lesson_id' => $lesson->id,
                 'completed' => true,
-                'answers' => $answers,
+                'answers' => json_encode($answers),
                 'score' => $scoreInPercent
             ]],
             uniqueBy: ['user_id', 'lesson_id'],

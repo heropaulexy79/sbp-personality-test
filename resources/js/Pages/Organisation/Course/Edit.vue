@@ -18,7 +18,7 @@ defineProps<{ course: Course }>();
                     <div
                         class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
                     >
-                        <UpdateCourseForm :course="course" class="max-w-xl" />
+                        <UpdateCourseForm :course="course" />
                     </div>
                 </div>
             </div>

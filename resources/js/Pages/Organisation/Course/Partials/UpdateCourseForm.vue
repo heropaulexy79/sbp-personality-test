@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from "@/Components/InputError.vue";
+import RichEditor from "@/Components/RichEditor.vue";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
@@ -75,10 +76,10 @@ function submit() {
 
                 <div>
                     <Label for="description">Description</Label>
-                    <Textarea
+                    <RichEditor
+                        v-model="form.description"
                         id="description"
                         placeholder="Enter the description of your course"
-                        v-model="form.description"
                         class="mt-2"
                     />
                     <InputError
