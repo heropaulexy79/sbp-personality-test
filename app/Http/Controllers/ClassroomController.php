@@ -68,8 +68,10 @@ class ClassroomController extends Controller
                 ->where('course_id', $course->id)
                 ->first();
 
-            $enrollment?->is_completed = true;
-            $enrollment?->save();
+            if ($enrollment) {
+                $enrollment->is_completed = true;
+                $enrollment->save();
+            }
         }
 
         $user_lesson = UserLesson::where('user_id', $user->id)
