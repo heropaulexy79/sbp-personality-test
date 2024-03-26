@@ -35,13 +35,17 @@ function enrollInCourse() {
                         class="sticky top-0 mt-5 w-full self-start bg-background px-4 py-4"
                     >
                         <div class="mb-4">
-                            Created on
+                            Last updated on
                             {{
                                 Intl.DateTimeFormat(undefined, {
                                     month: "long",
                                     day: "2-digit",
                                     year: "numeric",
-                                }).format(new Date(course.created_at))
+                                }).format(
+                                    new Date(
+                                        course.updated_at ?? course.created_at,
+                                    ),
+                                )
                             }}
                         </div>
 

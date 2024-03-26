@@ -11,7 +11,7 @@ const page = usePage();
 const props = defineProps<{
     courses: Paginated<Course>;
 }>();
-console.log(props);
+// console.log(props);
 
 const courseNav = [
     {
