@@ -15,7 +15,7 @@ import { Question, Lesson } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 import QuizBuilder from "./QuizBuilder.vue";
 import { generateId } from "./utils";
-import RichEditor from "@/Components/RichEditor.vue";
+import { RichEditor } from "@/Components/RichEditor";
 
 const props = defineProps<{ lesson: Lesson }>();
 

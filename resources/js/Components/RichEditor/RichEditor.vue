@@ -1,8 +1,10 @@
 <script lang="ts" setup>
-import { useEditor, EditorContent, Content } from "@tiptap/vue-3";
+import { useEditor, EditorContent, type Content } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import { watch } from "vue";
+import { EditorCommandMenu } from "./slash-menu/command";
+import { editorSuggestions } from "./slash-menu/editor-suggestions";
 
 const props = withDefaults(
     defineProps<{
@@ -21,8 +23,15 @@ const editor = useEditor({
     extensions: [
         StarterKit,
         Placeholder.configure({
-            placeholder: props.placeholder ?? "Write something …",
+            placeholder:
+                props.placeholder ??
+                "Write something or press / for commands...",
             emptyEditorClass: "is-editor-empty",
+        }),
+        // BubbleMenu.con,
+        EditorCommandMenu.configure({
+            // @ts-ignore
+            suggestion: editorSuggestions,
         }),
     ],
     content: modelValue.value,

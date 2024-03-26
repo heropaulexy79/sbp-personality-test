@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import InputError from "@/Components/InputError.vue";
-import RichEditor from "@/Components/RichEditor.vue";
+import { RichEditor } from "@/Components/RichEditor";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
