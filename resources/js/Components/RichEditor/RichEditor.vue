@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { useEditor, EditorContent, type Content } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
 import { Placeholder } from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
+import { EditorContent, useEditor, type Content } from "@tiptap/vue-3";
 import { watch } from "vue";
 import { EditorCommandMenu } from "./slash-menu/command";
 import { editorSuggestions } from "./slash-menu/editor-suggestions";
@@ -32,6 +33,9 @@ const editor = useEditor({
         EditorCommandMenu.configure({
             // @ts-ignore
             suggestion: editorSuggestions,
+        }),
+        Link.configure({
+            protocols: ["https", "mailto", "tel"],
         }),
     ],
     content: modelValue.value,

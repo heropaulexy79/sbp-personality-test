@@ -26,6 +26,7 @@
     "dependencies": {
         "@tanstack/vue-table": "^8.13.2",
         "@tiptap/extension-bubble-menu": "^2.2.4",
+        "@tiptap/extension-link": "^2.2.4",
         "@tiptap/extension-placeholder": "^2.2.4",
         "@tiptap/pm": "^2.2.4",
         "@tiptap/starter-kit": "^2.2.4",
