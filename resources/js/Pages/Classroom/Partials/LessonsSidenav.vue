@@ -18,14 +18,14 @@ defineProps<{
                     <Link
                         :href="
                             route('classroom.lesson.show', {
-                                course: course.id,
-                                lesson: lesson.id,
+                                course: course.slug,
+                                lesson: lesson.slug,
                             })
                         "
                         :data-active="
                             route().current('classroom.lesson.show', {
-                                course: course.id,
-                                lesson: lesson.id,
+                                course: course.slug,
+                                lesson: lesson.slug,
                             })
                         "
                         class="group flex w-full items-center gap-2 border-l-[6px] border-l-transparent px-3 py-1 data-[active='true']:border-l-primary data-[active='true']:bg-accent data-[active='true']:text-accent-foreground"

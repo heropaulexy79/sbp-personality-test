@@ -8,7 +8,7 @@ import QuizRenderer from "./QuizRenderer.vue";
 const props = defineProps<{
     course: Course;
     lesson: WithUserLesson<Lesson>;
-    nextLessonId: Lesson["id"] | null;
+    nextLessonId: Lesson["slug"] | null;
 }>();
 
 const completionForm = useForm({});

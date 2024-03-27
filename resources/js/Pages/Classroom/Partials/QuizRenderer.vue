@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 const props = defineProps<{
     course: Course;
     lesson: WithUserLesson<Lesson>;
-    nextLessonId: Lesson["id"] | null;
+    nextLessonId: Lesson["slug"] | null;
 }>();
 
 const {
@@ -60,8 +60,8 @@ function submit() {
         })
         .patch(
             route("classroom.lesson.answerQuiz", {
-                course: props.course.id,
-                lesson: props.lesson.id,
+                course: props.course.slug,
+                lesson: props.lesson.slug,
             }),
             {
                 onSuccess(page) {
@@ -94,8 +94,9 @@ const correctOption = computed(() => {
 function onContinue() {
     props.nextLessonId
         ? router.visit(
-              route("classroom.show.lesson", {
+              route("classroom.lesson.show", {
                   lesson: props.nextLessonId,
+                  course: props.course.slug,
               }),
           )
         : router.reload();

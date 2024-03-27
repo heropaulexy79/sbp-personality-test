@@ -15,7 +15,7 @@ class ClassroomController extends Controller
 
     public function showCourse(Request $request, Course $course)
     {
-        return redirect(route('classroom.lesson.index', ['course' => $course->id]));
+        return redirect(route('classroom.lesson.index', ['course' => $course->slug]));
     }
 
     public function showLessons(Request $request, Course $course)
@@ -35,7 +35,7 @@ class ClassroomController extends Controller
 
         $redirectLesson = $lastCompletedLesson->id ?? $course->lessons()->first(); // Redirect to 1st if none completed
 
-        return redirect(route('classroom.lesson.show', ['course' => $course->id, 'lesson' => $redirectLesson->id]));
+        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $redirectLesson->slug]));
     }
 
 
@@ -50,7 +50,7 @@ class ClassroomController extends Controller
             $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
         }
 
-        $lessons = $course->lessons()->published()->get(['title', 'position', 'type', 'id']);
+        $lessons = $course->lessons()->published()->get(['title', 'position', 'type', 'id', 'slug']);
         $total_completed = 0;
 
         foreach ($lessons as $l) {
@@ -110,9 +110,9 @@ class ClassroomController extends Controller
 
         // TODO: MOve complete enrollment here?
 
-        $next_lesson_id = $request->query('next') ?? $lesson->id;
+        $next_lesson_id = $request->query('next') ?? $lesson->slug;
 
-        return redirect(route('classroom.lesson.show', ['course' => $course->id, 'lesson' => $next_lesson_id]));
+        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $next_lesson_id]));
     }
 
 

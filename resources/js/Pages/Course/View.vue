@@ -8,12 +8,12 @@ import { ArrowRightIcon } from "lucide-vue-next";
 const props = defineProps<{
     course: Course;
     enrolled_count: number;
-    lessons: Pick<Lesson, "title" | "id" | "type">[];
+    lessons: Pick<Lesson, "title" | "slug" | "id" | "type">[];
 }>();
 const form = useForm({});
 
 function enrollInCourse() {
-    form.post(route("course.enroll", { course: props.course.id }));
+    form.post(route("course.enroll", { course: props.course.slug }));
 }
 </script>
 

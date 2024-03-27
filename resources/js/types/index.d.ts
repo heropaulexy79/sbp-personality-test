@@ -54,6 +54,7 @@ export interface OrganisationInvite {
 export interface Course {
     id: number;
     title: string;
+    slug: string;
     description: string;
     organisation_id: Organisation["id"];
     is_published: boolean;
@@ -66,6 +67,7 @@ export interface Course {
 export interface Lesson {
     id: number;
     title: string;
+    slug: string;
     content: string;
     content_json: Question[];
     course_id: Course["id"];

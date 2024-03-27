@@ -38,7 +38,7 @@ const nextLesson = computed(() => {
                         <LessonContent
                             :lesson="lesson"
                             :course="course"
-                            :next-lesson-id="nextLesson?.id ?? null"
+                            :next-lesson-id="nextLesson?.slug ?? null"
                         />
                     </div>
                 </div>

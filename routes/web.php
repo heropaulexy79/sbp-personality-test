@@ -53,8 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Course - public?
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index');
-    Route::get('/course/{course}', [PublicCourseController::class, 'show'])->name('public.course.show');
-    Route::post('/course/{course}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
+    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show');
+    Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
 
     // Lesson - public?
     Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
@@ -66,11 +66,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Classrooom
     Route::middleware(['enrolled'])->group(function () {
-        Route::get('/classroom/course/{course}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
-        Route::get('/classroom/course/{course}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
-        Route::get('/classroom/course/{course}/lesson/{lesson}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
-        Route::patch('/classroom/course/{course}/lesson/{lesson}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
-        Route::patch('/classroom/course/{course}/lesson/{lesson}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
+        Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'show:slug'])->name('classroom.course.show');
+        Route::get('/classroom/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
+        Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
     });
 });
 
