@@ -31,6 +31,11 @@ import GlobalLayout from "@/Layouts/GlobalLayout.vue";
                 class="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex"
             >
                 <div class="absolute inset-0 bg-primary" />
+                <img
+                    class="absolute inset-0 h-full w-full object-cover"
+                    src="/images/symbal.jpeg"
+                    alt=""
+                />
                 <div
                     class="relative z-20 flex items-center text-lg font-medium"
                 >

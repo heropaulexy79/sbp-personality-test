@@ -64,7 +64,10 @@ const showingNavigationDropdown = ref(false);
                                                 //         .organisation_id,
                                             })
                                         "
-                                        :active="route().current('course.*')"
+                                        :active="
+                                            route().current('course.*') ||
+                                            route().current('lesson.*')
+                                        "
                                     >
                                         Courses
                                     </NavLink>
