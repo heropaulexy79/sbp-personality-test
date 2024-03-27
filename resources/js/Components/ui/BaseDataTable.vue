@@ -14,6 +14,7 @@ import {
 const props = defineProps<{
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    meta?: Record<string, any>;
 }>();
 
 const table = useVueTable({
@@ -28,6 +29,9 @@ const table = useVueTable({
         size: Number.MAX_SAFE_INTEGER,
         maxSize: Number.MAX_SAFE_INTEGER,
         minSize: 50,
+    },
+    meta: {
+        ...(props.meta ?? {}),
     },
 });
 </script>

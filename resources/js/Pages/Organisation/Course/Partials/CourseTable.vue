@@ -11,6 +11,12 @@ defineProps<{
 <template>
     <section>
         <!--  -->
-        <BaseDataTable :columns="courseColumns" :data="courses" />
+        <BaseDataTable
+            :columns="courseColumns"
+            :data="courses"
+            :meta="{
+                user: $page.props.auth.user,
+            }"
+        />
     </section>
 </template>

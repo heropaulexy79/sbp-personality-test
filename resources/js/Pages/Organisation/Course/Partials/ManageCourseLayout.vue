@@ -23,7 +23,20 @@ defineProps<{ course: Course }>();
                 />
             </div>
 
-            <div>
+            <div class="inline-flex items-center justify-center gap-4">
+                <Link
+                    :href="
+                        route('public.course.show', {
+                            course: course.slug,
+                        })
+                    "
+                    :class="
+                        cn(buttonVariants({ size: 'sm', variant: 'outline' }))
+                    "
+                    v-if="course.is_published"
+                >
+                    View course page
+                </Link>
                 <Link
                     :href="
                         route('course.edit', {

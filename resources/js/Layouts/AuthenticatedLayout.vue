@@ -52,8 +52,8 @@ const showingNavigationDropdown = ref(false);
 
                                     <NavLink
                                         v-if="
-                                            $page.props.auth.user.role ===
-                                                'ADMIN' &&
+                                            // $page.props.auth.user.role ===
+                                            //     'ADMIN' &&
                                             $page.props.auth.user
                                                 .organisation_id
                                         "
@@ -66,7 +66,8 @@ const showingNavigationDropdown = ref(false);
                                         "
                                         :active="
                                             route().current('course.*') ||
-                                            route().current('lesson.*')
+                                            route().current('lesson.*') ||
+                                            route().current('public.course.*')
                                         "
                                     >
                                         Courses

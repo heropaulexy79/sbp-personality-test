@@ -19,12 +19,17 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if (! $organisation || ! $user->isAdminInOrganisation($organisation)) {
+        if (!$organisation || !$user->isMemberOfOrganisation($organisation)) {
             return abort(404);
         }
 
+        // dd($organisation->courses->where('is_published', '1'));
+        // dd($user->role === "ADMIN" ? $organisation->courses : $organisation->course->where('is_published', '1')->get());
+
+        $courses = $user->role === "ADMIN" ? $organisation->courses : $organisation->courses->where('is_published', '1');
+
         return Inertia::render('Organisation/Course/Index', [
-            'courses' => $organisation->courses,
+            'courses' => $courses,
         ]);
     }
 

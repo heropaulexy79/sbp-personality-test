@@ -15,6 +15,7 @@ import { VisuallyHidden } from "radix-vue";
 import { Button } from "@/Components/ui/button";
 import CreateCourseForm from "./Partials/CreateCourseForm.vue";
 import BaseBreadcrumb from "@/Components/ui/BaseBreadcrumb.vue";
+import CourseCard from "./Partials/CourseCard.vue";
 
 defineProps<{ courses: Course[] }>();
 </script>
@@ -35,7 +36,12 @@ defineProps<{ courses: Course[] }>();
                     />
                 </div>
                 <Dialog>
-                    <DialogTrigger>
+                    <DialogTrigger
+                        v-if="
+                            $page.props.auth.user.organisation_id &&
+                            $page.props.auth.user.role === 'ADMIN'
+                        "
+                    >
                         <Button size="sm">Create course</Button>
                     </DialogTrigger>
                     <DialogContent class="max-w-[768px]">
@@ -63,7 +69,28 @@ defineProps<{ courses: Course[] }>();
         <div class="py-12">
             <div class="container">
                 <div class="space-y-6">
-                    <CourseTable :courses="courses" />
+                    <CourseTable
+                        :courses="courses"
+                        v-if="
+                            $page.props.auth.user.organisation_id &&
+                            $page.props.auth.user.role === 'ADMIN'
+                        "
+                    />
+
+                    <ul
+                        class="space-y-4"
+                        v-if="
+                            $page.props.auth.user.organisation_id &&
+                            $page.props.auth.user.role !== 'ADMIN'
+                        "
+                    >
+                        <li v-for="course in courses">
+                            <CourseCard :course="course" />
+                        </li>
+                        <li v-if="courses.length === 0" class="text-center">
+                            No courses at the moment
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
