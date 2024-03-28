@@ -4,8 +4,10 @@ import { Placeholder } from "@tiptap/extension-placeholder";
 import StarterKit from "@tiptap/starter-kit";
 import { EditorContent, useEditor, type Content } from "@tiptap/vue-3";
 import { watch } from "vue";
-import { EditorCommandMenu } from "./slash-menu/command";
-import { editorSuggestions } from "./slash-menu/editor-suggestions";
+import {
+    EditorCommandMenu,
+    editorSuggestions,
+} from "./slash-menu/editor-suggestions";
 
 const props = withDefaults(
     defineProps<{

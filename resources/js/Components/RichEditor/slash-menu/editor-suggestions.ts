@@ -1,5 +1,7 @@
 import { h, type VNode } from "vue";
 import { Editor, Range, VueRenderer } from "@tiptap/vue-3";
+import { Extension } from "@tiptap/core";
+import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
 import tippy from "tippy.js";
 
 import CommandsList from "./CommandsList.vue";
@@ -24,6 +26,30 @@ export interface CommandItemProps {
     description: string;
     icon?: VNode;
 }
+
+export const EditorCommandMenu = Extension.create<{
+    suggestion: Partial<SuggestionOptions>;
+}>({
+    name: "editor-commands",
+    addOptions() {
+        return {
+            suggestion: {
+                char: "/",
+                command: ({ editor, range, props }) => {
+                    props.command({ editor, range });
+                },
+            },
+        };
+    },
+    addProseMirrorPlugins() {
+        return [
+            Suggestion({
+                editor: this.editor,
+                ...this.options.suggestion,
+            }),
+        ];
+    },
+});
 
 export const editorSuggestions = {
     items: ({ query }: { query: string }) => {
@@ -148,6 +174,15 @@ export const editorSuggestions = {
                         .toggleCodeBlock()
                         .run(),
             },
+            // {
+            //     title: "Image",
+            //     description: "Upload",
+            //     searchTerms: ["image", "upload"],
+            //     icon: null,
+            //     command: (p: CommandProps) => {
+            //         console.log(p);
+            //     },
+            // },
         ].filter((item) => {
             if (typeof query === "string" && query.length > 0) {
                 const search = query.toLowerCase();
