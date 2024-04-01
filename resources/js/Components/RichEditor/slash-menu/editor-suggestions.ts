@@ -10,11 +10,13 @@ import {
     Heading1Icon,
     Heading2Icon,
     Heading3Icon,
+    ImagesIcon,
     ListIcon,
     ListOrderedIcon,
     TextIcon,
     TextQuoteIcon,
 } from "lucide-vue-next";
+import { useEditorStore } from "../use-editor-store";
 
 export interface CommandProps {
     editor: Editor;
@@ -174,15 +176,18 @@ export const editorSuggestions = {
                         .toggleCodeBlock()
                         .run(),
             },
-            // {
-            //     title: "Image",
-            //     description: "Upload",
-            //     searchTerms: ["image", "upload"],
-            //     icon: null,
-            //     command: (p: CommandProps) => {
-            //         console.log(p);
-            //     },
-            // },
+            {
+                title: "Image",
+                description: "Upload image from url or device",
+                searchTerms: ["image", "upload"],
+                icon: h(ImagesIcon, { size: 18 }),
+                command: ({ editor, range }: CommandProps) => {
+                    const editorStore = useEditorStore();
+                    editor.chain().focus().deleteRange(range).run();
+
+                    editorStore.updateImageUploadModal(true);
+                },
+            },
         ].filter((item) => {
             if (typeof query === "string" && query.length > 0) {
                 const search = query.toLowerCase();

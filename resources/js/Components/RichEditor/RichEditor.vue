@@ -1,16 +1,31 @@
 <script lang="ts" setup>
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/Components/ui/dialog";
 import Link from "@tiptap/extension-link";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import { EditorContent, useEditor, type Content } from "@tiptap/vue-3";
-import { watch } from "vue";
+import { useAttrs, watch } from "vue";
 import {
     EditorCommandMenu,
     editorSuggestions,
 } from "./slash-menu/editor-suggestions";
+import { useEditorStore } from "./use-editor-store";
+import UploadMediaForm from "./components/UploadMediaForm.vue";
+
+const attrs = useAttrs();
 
 const props = withDefaults(
     defineProps<{
+        id?: string;
+        class?: string;
         disabled?: boolean;
         placeholder?: string;
     }>(),
@@ -39,6 +54,11 @@ const editor = useEditor({
         Link.configure({
             protocols: ["https", "mailto", "tel"],
         }),
+        Image.configure({
+            //   HTMLAttributes: {
+            //     class: 'my-custom-class',
+            //   },
+        }),
     ],
     content: modelValue.value,
     onUpdate: ({ editor, transaction }) => {
@@ -56,6 +76,8 @@ const editor = useEditor({
         },
     },
 });
+
+const editorStore = useEditorStore();
 
 watch(
     modelValue,
@@ -76,10 +98,40 @@ watch(
     },
     { deep: true },
 );
+
+function onUploadImage(urls: string[]) {
+    urls.forEach((r) => {
+        // editor.commands.setImage({ src: 'https://example.com/foobar.png' })
+        editor.value?.commands.setImage({ src: r });
+    });
+    editorStore.updateImageUploadModal(false);
+}
 </script>
 
 <template>
-    <editor-content :editor="editor" />
+    <editor-content v-bind="$attrs" :editor="editor" />
+
+    <div>
+        <Dialog
+            :open="editorStore.isImageUploadModalOpen.value"
+            @update:open="(v) => editorStore.updateImageUploadModal(v)"
+        >
+            <!-- <DialogTrigger> Edit Profile </DialogTrigger> -->
+            <DialogContent
+                class="max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] px-0"
+            >
+                <DialogHeader class="p-6 pb-0">
+                    <DialogTitle>Upload Image</DialogTitle>
+                    <DialogDescription>
+                        Upload image from your computer or from a link
+                    </DialogDescription>
+                </DialogHeader>
+                <div class="overflow-y-auto px-6 py-4">
+                    <UploadMediaForm :onUpload="onUploadImage" />
+                </div>
+            </DialogContent>
+        </Dialog>
+    </div>
 </template>
 
 <style>
