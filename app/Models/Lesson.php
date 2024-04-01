@@ -10,7 +10,7 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'course_id', 'type', 'content', 'content_json', 'is_published'];
+    protected $fillable = ['title', 'course_id', 'slug', 'type', 'content', 'content_json', 'is_published'];
 
     protected $casts = [
         'content_json' => 'json',

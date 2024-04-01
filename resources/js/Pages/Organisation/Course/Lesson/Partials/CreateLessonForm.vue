@@ -16,11 +16,14 @@ import { useForm } from "@inertiajs/vue3";
 import QuizBuilder from "./QuizBuilder.vue";
 import { generateId } from "./utils";
 import { RichEditor } from "@/Components/RichEditor";
+import { slugify } from "@/lib/utils";
+import { WandSparklesIcon } from "lucide-vue-next";
 
 const props = defineProps<{ course: Course }>();
 
 const form = useForm({
     title: "",
+    slug: "",
     content: "",
     quiz: [
         {
@@ -39,7 +42,14 @@ const form = useForm({
 
 function createLesson() {
     // console.log(form.content);
-    form.post(route("lesson.store", { course: props.course.id }), {
+    form.transform((r) => {
+        const slug = r.slug;
+
+        return {
+            ...r,
+            ...(slug.trim().length > 0 ? { slug } : { slug: slugify(r.title) }),
+        };
+    }).post(route("lesson.store", { course: props.course.id }), {
         onSuccess() {},
         onError(error) {
             console.log(error);
@@ -63,12 +73,16 @@ function updateType(value: string) {
         form.content = "";
     }
 }
+
+function generateSlug() {
+    form.slug = slugify(form.title);
+}
 </script>
 
 <template>
     <form @submit.prevent="createLesson">
         <div
-            class="relative grid gap-6 md:grid-cols-[1fr_200px] md:gap-10 lg:grid-cols-[1fr_250px]"
+            class="relative grid gap-6 md:grid-cols-[1fr_250px] md:gap-10 lg:grid-cols-[1fr_350px]"
         >
             <!-- Left -->
             <div
@@ -135,6 +149,24 @@ function updateType(value: string) {
                 </Button>
 
                 <div>
+                    <Label for="slug">Slug</Label>
+                    <div class="mt-2 flex items-center justify-center">
+                        <Input id="slug" v-model="form.slug" />
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            class="flex-shrink-0"
+                            :disabled="!form.title"
+                            @click="generateSlug"
+                        >
+                            <WandSparklesIcon class="size-4" />
+                        </Button>
+                    </div>
+                    <InputError class="mt-2" :message="form.errors.slug" />
+                </div>
+
+                <div>
                     <Label for="type">Status</Label>
                     <Select id="type" v-model:model-value="form.is_published">
                         <SelectTrigger class="mt-2">
@@ -145,6 +177,10 @@ function updateType(value: string) {
                             <SelectItem value="false"> Draft </SelectItem>
                         </SelectContent>
                     </Select>
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.is_published"
+                    />
                 </div>
             </aside>
         </div>

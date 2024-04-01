@@ -64,14 +64,18 @@ class CourseController extends Controller
             return abort(404);
         }
 
+
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'string|max:1500',
+            'slug' => 'required|string|unique:courses,slug'
         ]);
 
         // dd($organisation);
 
         $course = Course::create([
+            'slug' => $request->input('slug'),
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'organisation_id' => $organisation->id,

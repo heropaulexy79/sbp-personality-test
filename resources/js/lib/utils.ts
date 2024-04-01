@@ -35,3 +35,21 @@ export function useObjectURLs() {
 
     return getFileUrl;
 }
+
+export function slugify(input: string, randomLength = 6) {
+    const baseSlug = input
+        .toLowerCase()
+        .replace(/\s+/g, "-") // Replace spaces with -
+        .replace(/[^\w-]+/g, "") // Remove non-word characters
+        .replace(/--+/g, "-") // Replace multiple - with single -
+        .replace(/^-+/, "") // Trim - from start of text
+        .replace(/-+$/, ""); // Trim - from end of text
+
+    // Generate random URL fragment
+    const randomString = Math.random()
+        .toString(36)
+        .substring(2, randomLength + 2);
+
+    // Combine base slug and random fragment
+    return `${baseSlug}-${randomString}`;
+}

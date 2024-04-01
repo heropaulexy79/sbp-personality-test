@@ -16,11 +16,14 @@ import { useForm } from "@inertiajs/vue3";
 import QuizBuilder from "./QuizBuilder.vue";
 import { generateId } from "./utils";
 import { RichEditor } from "@/Components/RichEditor";
+import { slugify } from "@/lib/utils";
+import { WandSparklesIcon } from "lucide-vue-next";
 
 const props = defineProps<{ lesson: Lesson }>();
 
 const form = useForm({
     title: props.lesson.title,
+    slug: props.lesson.slug,
     content: props.lesson.content,
     quiz:
         props.lesson.content_json &&
@@ -65,6 +68,10 @@ function updateType(value: string) {
     } else {
         form.content = "";
     }
+}
+
+function generateSlug() {
+    form.slug = slugify(form.title);
 }
 </script>
 
@@ -138,15 +145,23 @@ function updateType(value: string) {
                     Save
                 </Button>
 
-                <!-- <div>
-                    <Label for="type">Slug</Label>
-                    <Input
-                        id="title"
-                        placeholder="Enter the title of this lesson"
-                        v-model="form.title"
-                        class="mt-2"
-                    />
-                </div> -->
+                <div>
+                    <Label for="slug">Slug</Label>
+                    <div class="mt-2 flex items-center justify-center">
+                        <Input id="slug" v-model="form.slug" />
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            class="flex-shrink-0"
+                            :disabled="!form.title"
+                            @click="generateSlug"
+                        >
+                            <WandSparklesIcon class="size-4" />
+                        </Button>
+                    </div>
+                    <InputError class="mt-2" :message="form.errors.slug" />
+                </div>
 
                 <div>
                     <Label for="type">Status</Label>

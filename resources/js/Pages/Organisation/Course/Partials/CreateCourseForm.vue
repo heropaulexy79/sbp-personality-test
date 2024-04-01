@@ -5,6 +5,7 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Textarea } from "@/Components/ui/textarea";
+import { slugify } from "@/lib/utils";
 import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 
@@ -15,10 +16,16 @@ const props = defineProps<{
 const form = useForm({
     title: "",
     description: "",
+    slug: "",
 });
 
 function createCourse() {
-    form.post(route("course.store"), {
+    form.transform((d) => {
+        return {
+            ...d,
+            slug: slugify(d.title),
+        };
+    }).post(route("course.store"), {
         onSuccess() {},
         onError(error) {
             console.log(error);
@@ -49,6 +56,7 @@ function createCourse() {
                         class="mt-2"
                     />
                     <InputError class="mt-2" :message="form.errors.title" />
+                    <InputError class="mt-2" :message="form.errors.slug" />
                 </div>
 
                 <div>

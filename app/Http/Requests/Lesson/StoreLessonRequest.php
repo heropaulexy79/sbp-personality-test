@@ -34,8 +34,17 @@ class StoreLessonRequest extends FormRequest
     public function rules(): array
     {
 
+        $course = $this->route('course');
+
         $rules = [
             'title' => 'required|string|max:255',
+            'slug' => [
+                'required',
+                'string',
+                // unique:post,slug,except,id
+                Rule::unique('lessons', 'slug')->where('course_id', $course->id),
+                'max:255'
+            ],
             'type' => 'nullable|in:QUIZ,DEFAULT',
             'is_published' => 'boolean',
 
