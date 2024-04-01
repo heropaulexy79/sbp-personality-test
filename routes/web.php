@@ -7,6 +7,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\CourseController as PublicCourseController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,12 @@ Route::get('/dashboard', function (Request $request) {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Uploads
+    Route::post('/upload', [UploadController::class, 'store'])->name('upload');
+    Route::delete('/upload', [UploadController::class, 'destroy'])->name('upload.delete');
+
+
 
     // Organisation
     Route::resource('organisation', OrganisationController::class)->only(['store', 'update']);

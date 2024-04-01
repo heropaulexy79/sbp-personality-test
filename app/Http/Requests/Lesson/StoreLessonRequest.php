@@ -35,6 +35,7 @@ class StoreLessonRequest extends FormRequest
     {
 
         $course = $this->route('course');
+        $lesson = $this->route('lesson');
 
         $rules = [
             'title' => 'required|string|max:255',
@@ -42,7 +43,7 @@ class StoreLessonRequest extends FormRequest
                 'required',
                 'string',
                 // unique:post,slug,except,id
-                Rule::unique('lessons', 'slug')->where('course_id', $course->id),
+                !$lesson ? Rule::unique('lessons', 'slug')->where('course_id', $course->id) : "max:255",
                 'max:255'
             ],
             'type' => 'nullable|in:QUIZ,DEFAULT',

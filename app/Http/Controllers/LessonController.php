@@ -98,7 +98,9 @@ class LessonController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $lesson->course_id) {
+        // dd($request->user()->cannot('view', $user->organisation),)
+
+        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $lesson->course->organisation_id) {
             return abort(404);
         }
 
