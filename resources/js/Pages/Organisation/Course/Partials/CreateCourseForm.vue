@@ -70,7 +70,7 @@ function createCourse() {
                                 </Button> -->
 
                                 <div
-                                    class="size-20 rounded-md bg-gray-400 bg-cover"
+                                    class="mt-2 size-20 rounded-md bg-gray-400 bg-cover"
                                     :style="{
                                         backgroundImage: form.banner_image
                                             ? `url(${form.banner_image})`

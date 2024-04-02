@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import InputError from "@/Components/InputError.vue";
 import { RichEditor } from "@/Components/RichEditor";
+import UploadMediaForm from "@/Components/UploadMediaForm.vue";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/Components/ui/popover";
 import {
     Select,
     SelectContent,
@@ -14,14 +20,17 @@ import {
 import { Textarea } from "@/Components/ui/textarea";
 import { Course } from "@/types";
 import { useForm } from "@inertiajs/vue3";
+import { ref } from "vue";
 
 const props = defineProps<{
     course: Course;
 }>();
+const isBannerPopupOpen = ref(false);
 
 const form = useForm({
     title: props.course.title ?? "",
     description: props.course.description ?? "",
+    banner_image: props.course.banner_image ?? "",
     is_published: props.course.is_published + "" ?? "false",
 });
 
@@ -46,6 +55,39 @@ function submit() {
 
         <form @submit.prevent="submit" class="mt-6">
             <div class="space-y-6">
+                <div>
+                    <Label for="banner_image">Banner Image</Label>
+                    <div>
+                        <Popover
+                            :open="isBannerPopupOpen"
+                            @update:open="(v) => (isBannerPopupOpen = v)"
+                        >
+                            <PopoverTrigger>
+                                <div
+                                    class="mt-2 size-20 rounded-md bg-gray-400 bg-cover"
+                                    :style="{
+                                        backgroundImage: form.banner_image
+                                            ? `url(${form.banner_image})`
+                                            : 'unset',
+                                    }"
+                                ></div>
+                            </PopoverTrigger>
+                            <PopoverContent class="w-fit">
+                                <div class="">
+                                    <UploadMediaForm
+                                        :onUpload="
+                                            (d) => {
+                                                form.banner_image = d[0];
+                                                isBannerPopupOpen = false;
+                                            }
+                                        "
+                                    />
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
                 <div>
                     <Label for="title">Title</Label>
                     <Input
