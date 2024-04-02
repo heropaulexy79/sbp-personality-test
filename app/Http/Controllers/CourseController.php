@@ -69,7 +69,8 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'string|max:1500',
-            'slug' => 'required|string|unique:courses,slug'
+            'slug' => 'required|string|unique:courses,slug',
+            'banner_image' => 'string|nullable|max:255',
         ]);
 
         // dd($organisation);
@@ -79,6 +80,7 @@ class CourseController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'organisation_id' => $organisation->id,
+            'banner_image' => $request->input('banner_image'),
         ]);
 
         // Redirect to course lesson management
@@ -143,11 +145,13 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'string|max:1500',
+            'banner_image' => 'string|nullable|max:255',
         ]);
 
         $course->title = $request->title;
         $course->description = $request->description;
         $course->is_published = $request->is_published === 'true' ? true : false;
+        $course->banner_image = $request->banner_image ?? $course->banner_image;
 
         $course->save();
 

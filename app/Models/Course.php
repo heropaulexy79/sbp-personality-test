@@ -16,6 +16,7 @@ class Course extends Model
         'slug',
         'organisation_id',
         'is_published',
+        'banner_image',
     ];
 
     protected $casts = [

@@ -58,6 +58,7 @@ export interface Course {
     description: string;
     organisation_id: Organisation["id"];
     is_published: boolean;
+    banner_image: string | null;
 
     created_at: Date;
     deleted_at: Date | null;
