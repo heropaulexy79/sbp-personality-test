@@ -5,18 +5,28 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Textarea } from "@/Components/ui/textarea";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/Components/ui/popover";
 import { slugify } from "@/lib/utils";
 import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
+import UploadMediaForm from "@/Components/UploadMediaForm.vue";
+import { ref } from "vue";
 
 const props = defineProps<{
     organisation_id: Organisation["id"];
 }>();
 
+const isBannerPopupOpen = ref(false);
+
 const form = useForm({
     title: "",
     description: "",
     slug: "",
+    banner_image: "",
 });
 
 function createCourse() {
@@ -48,11 +58,59 @@ function createCourse() {
         <form @submit.prevent="createCourse">
             <div class="space-y-6">
                 <div>
+                    <Label for="banner_image">Banner Image</Label>
+                    <div>
+                        <Popover
+                            :open="isBannerPopupOpen"
+                            @update:open="(v) => (isBannerPopupOpen = v)"
+                        >
+                            <PopoverTrigger>
+                                <!-- <Button type="button" variant="secondary">
+                                    Banner Image
+                                </Button> -->
+
+                                <div
+                                    class="size-20 rounded-md bg-gray-400 bg-cover"
+                                    :style="{
+                                        backgroundImage: form.banner_image
+                                            ? `url(${form.banner_image})`
+                                            : 'unset',
+                                    }"
+                                ></div>
+                            </PopoverTrigger>
+                            <!-- class="max-h-[90dvh] w-fit grid-rows-[auto_minmax(0,1fr)_auto]" -->
+                            <PopoverContent class="w-fit">
+                                <!-- <div class="mb-6">
+                                    <h3 class="font-medium leading-none">
+                                        Upload Image
+                                    </h3>
+                                    <p class="text-sm text-muted-foreground">
+                                        Upload image from your computer or from
+                                        a link
+                                    </p>
+                                </div> -->
+                                <div class="">
+                                    <UploadMediaForm
+                                        :onUpload="
+                                            (d) => {
+                                                form.banner_image = d[0];
+                                                isBannerPopupOpen = false;
+                                            }
+                                        "
+                                    />
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+                <div>
                     <Label for="title">Title</Label>
                     <Input
                         id="title"
                         placeholder="Enter the title of your course"
                         v-model="form.title"
+                        autofocus
                         class="mt-2"
                     />
                     <InputError class="mt-2" :message="form.errors.title" />

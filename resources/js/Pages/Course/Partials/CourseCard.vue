@@ -16,7 +16,7 @@ defineProps<{
     >
         <div class="flex items-center gap-5">
             <div
-                class="size-32 rounded-md bg-gray-400"
+                class="size-32 rounded-md bg-gray-400 bg-cover"
                 :style="{
                     backgroundImage: course.banner_image
                         ? `url(${course.banner_image})`

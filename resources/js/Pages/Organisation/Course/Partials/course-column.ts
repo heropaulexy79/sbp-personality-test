@@ -16,12 +16,22 @@ export const courseColumns = [
                 h(
                     Link,
                     {
-                        class: "block",
+                        class: "inline-flex gap-4 items-center justify-center",
                         href: route("course.show", {
                             course: props.row.original.id,
                         }),
                     },
-                    () => props.row.getValue("title"),
+                    () => [
+                        h("div", {
+                            style: {
+                                backgroundImage: props.row.original.banner_image
+                                    ? `url(${props.row.original.banner_image})`
+                                    : "",
+                            },
+                            class: "size-12 rounded-md overflow-hidden bg-gray-400 bg-cover",
+                        }),
+                        props.row.getValue("title"),
+                    ],
                 ),
             );
         },
