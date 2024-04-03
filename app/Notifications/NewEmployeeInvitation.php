@@ -38,12 +38,14 @@ class NewEmployeeInvitation extends Notification
         $org_name = $this->invitation->organisation->name;
         $token = $this->invitation->token;
 
+        $app_name = config('app.name');
+
         return (new MailMessage)
             ->subject("Invitation from {$org_name}")
             ->greeting('Hello!')
-            ->line("You have been invited to join {$org_name} on {config('app.name')} ")
+            ->line("You have been invited to join {$org_name} on {$app_name} ")
             ->action('Create your account', url("/signup/?tk={$token}"))
-            ->line("Thank you for using {config('app.name')}!");
+            ->line("Thank you for using {$app_name}!");
     }
 
     /**
