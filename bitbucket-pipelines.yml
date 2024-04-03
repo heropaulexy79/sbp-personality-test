@@ -5,12 +5,12 @@ pipelines:
         image: almalinux:8.9
         script:
           - yum update -y
-          - sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
-          - sudo dnf -y install http://rpms.remirepo.net/enterprise/remi-release-9.rpm -y
-          - sudo dnf module reset php -y
-          - sudo dnf module enable php:remi-8.2 -y
-          - sudo dnf install php -y
-          - sudo dnf install php-{pear,zip,mysqlnd,intl,json}
+          - dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
+          - dnf -y install http://rpms.remirepo.net/enterprise/remi-release-9.rpm -y
+          - dnf module reset php -y
+          - dnf module enable php:remi-8.2 -y
+          - dnf install php -y
+          - dnf install php-{pear,zip,mysqlnd,intl,json}
           - yum install -y git rsync openssh-clients
           - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
           - nvm install 18
@@ -19,7 +19,7 @@ pipelines:
           - php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
           - php composer-setup.php
           - php -r "unlink('composer-setup.php');"
-          - sudo mv composer.phar /usr/local/bin/composer
+          - mv composer.phar /usr/local/bin/composer
           - composer install --no-interaction --prefer-dist --optimize-autoloader
           - npm ci
         caches:
