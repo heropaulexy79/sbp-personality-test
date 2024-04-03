@@ -14,7 +14,7 @@ export function useQuizManager(initialQuestions?: Question[]) {
                 { id: generateId(), text: "" },
                 { id: generateId(), text: "" },
             ],
-        });
+        } as Question);
     };
 
     const deleteQuestion = (index: number) => {
