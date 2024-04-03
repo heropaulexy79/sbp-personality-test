@@ -7,8 +7,9 @@ pipelines:
           - yum update -y
           - yum install -y epel-release
           - yum -y install yum-utils
-          - yum module reset php
-          - yum install php php-{pear,zip,mysqlnd,intl,json} git rsync openssh-clients # Removed redundant line
+          - dnf module reset php
+          - dnf module install php:remi-8.2
+          - yum install -y php-{pear,zip,mysqlnd,intl,json} git rsync openssh-clients # Removed redundant line
           - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
           - nvm install 18
           - cp .env.example .env
