@@ -1,0 +1,51 @@
+pipelines:
+  default:
+    - step:
+        name: Install Dependencies
+        image: 8.9-minimal
+        script:
+          - apt-get update && apt-get install -y \
+            php8.2 \
+            git \
+            rsync \
+            openssh-client \
+            npm
+          - cp .env.example .env
+          - composer install --no-interaction --prefer-dist --optimize-autoloader
+          - npm ci
+        caches:
+          - composer
+          - node
+          - npm
+
+    - step:
+      name: Build app
+      image: 8.9-minimal
+      script:
+        - npm run build
+        # - php artisan key:generate
+        # Run Laravel tests if available
+        # - php artisan test || true
+      caches:
+        - npm
+        - node
+        - vendor
+      artifacts:
+        - public/build # means need to save dist folder and copy to next step
+        - public/build/**
+
+    - step:
+      script:
+        - "echo 'cd /home/imagetim/staging.sbp.imageandtime.com' > sbpscript.sh"
+        - "echo 'git pull' > sbpscript.sh"
+        - "echo 'composer install' > sbpscript.sh"
+        - "echo 'php artisan migrate --force' > sbpscript.sh"
+        - "echo 'rsync -r -e 'ssh -p $SSH_USERNAME' /public/build/ $SSH_USERNAME@$SSH_HOST:/home/imagetim/staging.sbp.imageandtime.com/public/build' > sbpscript.sh"
+        - pipe: atlassian/ssh-run:0.8.0
+          variables:
+            SSH_USER: $SSH_USERNAME
+            SERVER: $SSH_HOST
+            PORT: $SSH_PORT # Optional
+            SSH_KEY: $SSH_KEY
+            MODE: "script"
+            COMMAND: "sbpscript.sh" # path to a script in your repository
