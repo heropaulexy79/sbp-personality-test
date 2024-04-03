@@ -5,7 +5,7 @@ pipelines:
         image: almalinux:8.9
         script:
           - yum update -y
-          - yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+          - yum install -y epel-release
           - yum -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
           - yum -y install yum-utils
           - yum module reset php
