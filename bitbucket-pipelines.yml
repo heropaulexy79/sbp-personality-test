@@ -2,7 +2,7 @@ pipelines:
   default:
     - step:
         name: Install Dependencies
-        image: 8.9-minimal
+        image: almalinux:8.9-minimal
         script:
           - apt-get update && apt-get install -y \
             php8.2 \
@@ -19,7 +19,7 @@ pipelines:
 
     - step:
         name: Build app
-        image: 8.9-minimal
+        image: almalinux:8.9-minimal
         script:
           - npm run build
           # - php artisan key:generate
@@ -32,6 +32,7 @@ pipelines:
           - public/build/**
 
     - step:
+        name: Deploy app
         script:
           - "echo 'cd /home/imagetim/staging.sbp.imageandtime.com' > sbpscript.sh"
           - "echo 'git pull' > sbpscript.sh"
