@@ -5,9 +5,8 @@ pipelines:
     - step:
         name: Install Dependencies
         script:
-          - apt-get update && apt-get install -qy git curl libmcrypt-dev mysql-client
+          - apt-get update && apt-get install -qy git curl libmcrypt-dev
           - yes | pecl install mcrypt-1.0.7
-          - docker-php-ext-install pdo_mysql
           - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
           - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
           - nvm install 18
