@@ -19,22 +19,16 @@ pipelines:
           - composer install --no-interaction --prefer-dist --optimize-autoloader
           - cp .env.example .env
           - npm ci
-        caches:
-          - composer
-          - node
-
-    - step:
-        name: Build app
-        script:
           - npm run build
           # - php artisan key:generate
           # Run Laravel tests if available
           # - php artisan test || true
-        caches:
-          - node
         artifacts:
           - public/build # means need to save dist folder and copy to next step
           - public/build/**
+        caches:
+          - composer
+          - node
 
     - step:
         name: Deploy app
