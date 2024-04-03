@@ -4,14 +4,14 @@ pipelines:
         name: Install Dependencies
         image: almalinux:8.9
         script:
-          - yum update -y
-          - dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
-          - dnf -y install http://rpms.remirepo.net/enterprise/remi-release-9.rpm -y
+          - dnf update -y
+          - dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+          - dnf -y install http://rpms.remirepo.net/enterprise/remi-release-9.rpm
           - dnf module reset php -y
           - dnf module enable php:remi-8.2 -y
           - dnf install php -y
           - dnf install php-{pear,zip,mysqlnd,intl,json}
-          - yum install -y git rsync openssh-clients
+          - dnf install git rsync openssh-clients # Removed redundant line
           - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
           - nvm install 18
           - cp .env.example .env
