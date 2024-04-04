@@ -50,6 +50,7 @@ class OrganisationController extends Controller
         ]);
 
         $user->organisation_id = $organisation->id;
+        $user->role = User::ROLE_ADMIN;
         $user->save();
 
         return redirect()->back()->with('global:message', [
@@ -77,7 +78,7 @@ class OrganisationController extends Controller
     {
         $user = $request->user();
 
-        if (! $user->isAdminInOrganisation($user->organisation)) {
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(404);
         }
 
@@ -96,7 +97,7 @@ class OrganisationController extends Controller
         //
         $user = $request->user();
 
-        if (! $user->isAdminInOrganisation($organisation)) {
+        if (!$user->isAdminInOrganisation($organisation)) {
             return abort(404);
         }
 
@@ -127,7 +128,7 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-        if (! $user->isAdminInOrganisation($user->organisation)) {
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -135,7 +136,7 @@ class OrganisationController extends Controller
             'role' => 'required|in:MEMBER,ADMIN',
         ]);
 
-        if (! $employee || $employee->organisation_id !== $organisation->id) {
+        if (!$employee || $employee->organisation_id !== $organisation->id) {
             return back()->with('global:message', [
                 'status' => 'error',
                 'message' => 'Employee not found!',
@@ -153,7 +154,7 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-        if (! $user->isAdminInOrganisation($user->organisation)) {
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
@@ -180,7 +181,7 @@ class OrganisationController extends Controller
 
         $user = $request->user();
 
-        if (! $user->isAdminInOrganisation($user->organisation)) {
+        if (!$user->isAdminInOrganisation($user->organisation)) {
             return abort(401, "You don't have permission to make this request");
         }
 
