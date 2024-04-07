@@ -3,22 +3,23 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/Components/ui/dialog";
+import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import { Placeholder } from "@tiptap/extension-placeholder";
 import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
 import { EditorContent, useEditor, type Content } from "@tiptap/vue-3";
+import AutoJoiner from "tiptap-extension-auto-joiner";
+import GlobalDragHandle from "tiptap-extension-global-drag-handle";
 import { useAttrs, watch } from "vue";
+import UploadMediaForm from "./components/UploadMediaForm.vue";
 import {
     EditorCommandMenu,
     editorSuggestions,
 } from "./slash-menu/editor-suggestions";
 import { useEditorStore } from "./use-editor-store";
-import UploadMediaForm from "./components/UploadMediaForm.vue";
 
 const attrs = useAttrs();
 
@@ -58,6 +59,18 @@ const editor = useEditor({
             //   HTMLAttributes: {
             //     class: 'my-custom-class',
             //   },
+        }),
+        GlobalDragHandle.configure({
+            dragHandleWidth: 20, // default
+
+            // The scrollTreshold specifies how close the user must drag an element to the edge of the lower/upper screen for automatic
+            // scrolling to take place. For example, scrollTreshold = 100 means that scrolling starts automatically when the user drags an
+            // element to a position that is max. 99px away from the edge of the screen
+            // You can set this to 0 to prevent auto scrolling caused by this extension
+            scrollTreshold: 100, // default
+        }),
+        AutoJoiner.configure({
+            elementsToJoin: ["bulletList", "orderedList"], // default
         }),
     ],
     content: modelValue.value,

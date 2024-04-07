@@ -41,6 +41,8 @@
         "radix-vue": "^1.5.2",
         "tailwind-merge": "^2.2.1",
         "tailwindcss-animate": "^1.0.7",
+        "tiptap-extension-auto-joiner": "^0.1.1",
+        "tiptap-extension-global-drag-handle": "^0.1.6",
         "vue-sonner": "^1.1.2"
     }
 }
