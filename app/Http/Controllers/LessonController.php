@@ -49,6 +49,7 @@ class LessonController extends Controller
         $lesson->title = $request->input('title');
         $lesson->course_id = $course->id;
         $lesson->slug = $request->input('slug');
+        $lesson->is_published = $request->input('is_published', false);
 
         if ($request->input('type', 'DEFAULT')) {
             $lesson->type = $request->type;
