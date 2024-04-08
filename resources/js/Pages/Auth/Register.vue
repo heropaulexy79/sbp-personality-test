@@ -19,13 +19,14 @@ const props = defineProps<{
 
 const form = useForm({
     name: "",
-    email: props?.prefilled?.email ?? "",
+    email:
+        (props?.prefilled?.email?.trim().length ?? 0) > 0
+            ? props.prefilled?.email
+            : page.props.query.email ?? "",
     password: "",
     password_confirmation: "",
     invitation_token: page.props.query["tk"] ?? "",
 });
-
-console.log(props);
 
 const submit = () => {
     form.post(route("register"), {
