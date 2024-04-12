@@ -50,7 +50,7 @@ class ClassroomController extends Controller
             $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
         }
 
-        $lessons = $course->lessons()->published()->get(['title', 'position', 'type', 'id', 'slug']);
+        $lessons = $course->lessons()->published()->orderBy('position')->get(['title', 'position', 'type', 'id', 'slug']);
         $total_completed = 0;
 
         foreach ($lessons as $l) {

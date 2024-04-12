@@ -144,6 +144,37 @@ class LessonController extends Controller
             'message' => 'Changes have been saved!',
         ]);
     }
+    public function updatePosition(Request $request, Course $course, Lesson $lesson)
+    {
+
+
+        $user = $request->user();
+        $organisation = $user->organisation;
+
+        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $course->organisation_id) {
+            return abort(404);
+        }
+
+        $request->validate(['position' => 'numeric']);
+
+        $lesson->position = $request->input('position');
+
+        $lesson->save();
+
+        if ($request->acceptsJson()) {
+            return response()->json([
+                "message" => [
+                    "status" => "success",
+                    "message" => "Order has been updated",
+                ]
+            ]);
+        }
+
+        return redirect()->back()->with('global:message', [
+            'status' => 'success',
+            'message' => 'Changes have been saved!',
+        ]);
+    }
 
     /**
      * Remove the specified resource from storage.

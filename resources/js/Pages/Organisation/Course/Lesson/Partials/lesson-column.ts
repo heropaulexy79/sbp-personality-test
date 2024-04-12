@@ -2,11 +2,23 @@ import { Badge } from "@/Components/ui/badge";
 import { Course, Lesson } from "@/types";
 import { Link } from "@inertiajs/vue3";
 import { createColumnHelper } from "@tanstack/vue-table";
+import { GripVertical } from "lucide-vue-next";
 import { h } from "vue";
 
 const columnHelper = createColumnHelper<Lesson>();
 
 export const lessonColumns = [
+    columnHelper.display({
+        id: "drag_handle",
+        // header: () => h("div", { class: "" }, "Status"),
+        cell(props) {
+            return h(
+                "div",
+                { class: "tb-drag-handle cursor-grab" },
+                h(GripVertical, { class: "size-4" }),
+            );
+        },
+    }),
     columnHelper.accessor("title", {
         header: () => h("div", { class: "" }, "Title"),
         cell(props) {

@@ -7,6 +7,7 @@ import BaseDataTable from "@/Components/ui/BaseDataTable.vue";
 import { lessonColumns } from "./Lesson/Partials/lesson-column";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/Components/ui/button";
+import LessonDataTable from "./Lesson/Partials/LessonDataTable.vue";
 
 defineProps<{ course: Course; lessons: Lesson[] }>();
 </script>
@@ -42,7 +43,7 @@ Update your account's profile information and email address.
                             </div>
                         </header>
 
-                        <BaseDataTable
+                        <LessonDataTable
                             :columns="lessonColumns"
                             :data="lessons"
                         />
