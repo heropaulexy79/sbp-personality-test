@@ -12,7 +12,10 @@ defineProps<{
 
 <template>
     <div>
-        <nav class="px-0 py-6">
+        <div class="px-4 py-6">
+            <h2 class="text-sm font-bold">{{ course.title }}</h2>
+        </div>
+        <nav class="mb-6 px-0 py-0">
             <ul class="space-y-2">
                 <li v-for="lesson in lessons">
                     <Link
@@ -43,7 +46,7 @@ defineProps<{
                                 <BookOpenText v-else class="size-4" />
                             </template>
                         </span>
-                        <span>{{ lesson.title }}</span>
+                        <span class="truncate">{{ lesson.title }}</span>
                     </Link>
                 </li>
             </ul>

@@ -2,7 +2,7 @@
 import { Button } from "@/Components/ui/button";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Course, Lesson } from "@/types";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import { ArrowRightIcon } from "lucide-vue-next";
 
 const props = defineProps<{
@@ -13,7 +13,15 @@ const props = defineProps<{
 const form = useForm({});
 
 function enrollInCourse() {
-    form.post(route("course.enroll", { course: props.course.slug }));
+    form.post(route("course.enroll", { course: props.course.slug }), {
+        onSuccess(E) {
+            router.visit(
+                route("classroom.lesson.index", {
+                    course: props.course.slug,
+                }),
+            );
+        },
+    });
 }
 </script>
 
