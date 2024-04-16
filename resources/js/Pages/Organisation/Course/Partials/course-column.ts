@@ -87,6 +87,7 @@ export const courseColumns = [
                     {
                         variant: isPublished ? "default" : "outline",
                         class: cn(form.processing && "opacity-25"),
+                        size: "sm",
 
                         disabled: !isPublished || form.processing,
                         onClick: () => enrollInCourse(),
