@@ -1,6 +1,8 @@
 import { Badge } from "@/Components/ui/badge";
+import Button from "@/Components/ui/button/Button.vue";
+import { cn } from "@/lib/utils";
 import { Course } from "@/types";
-import { Link } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 import { createColumnHelper } from "@tanstack/vue-table";
 import { h } from "vue";
 
@@ -55,6 +57,78 @@ export const courseColumns = [
             );
         },
     }),
+    columnHelper.display({
+        id: "enroll",
+        header: () => h("div", { class: "" }, ""),
+        cell(props) {
+            const form = useForm({});
+
+            function enrollInCourse() {
+                form.post(
+                    route("course.enroll", { course: props.row.original.slug }),
+                    {
+                        onSuccess(E) {
+                            router.visit(
+                                route("classroom.lesson.index", {
+                                    course: props.row.original.slug,
+                                }),
+                            );
+                        },
+                    },
+                );
+            }
+
+            const isPublished = props.row.original.is_published;
+            return h(
+                "div",
+                { class: "" },
+                h(
+                    Button,
+                    {
+                        variant: isPublished ? "default" : "outline",
+                        class: cn(form.processing && "opacity-25"),
+
+                        disabled: !isPublished || form.processing,
+                        onClick: () => enrollInCourse(),
+                    },
+                    () => "Enroll",
+                ),
+            );
+        },
+    }),
+    // columnHelper.display({
+    //     id: "view",
+    //     header: () => h("div", { class: "" }, "View"),
+    //     cell(props) {
+    //         const isPublished = props.row.original.is_published;
+
+    //         return h(
+    //             "div",
+    //             { class: "" },
+    //             h(
+    //                 "span",
+    //                 {
+    //                     class: cn({
+    //                         variant: isPublished ? "default" : "outline",
+    //                         size: "sm",
+    //                     }),
+    //                     disabled: !isPublished,
+    //                 },
+    //                 h(
+    //                     Link,
+    //                     {
+    //                         as: "a",
+    //                         href: route("public.course.show", {
+    //                             course: props.row.original.slug,
+    //                         }),
+    //                         // @ts-ignore
+    //                     },
+    //                     () => "Preview course",
+    //                 ),
+    //             ),
+    //         );
+    //     },
+    // }),
 
     // columnHelper.accessor("role", {
     //     header: () => h("div", { class: "" }, "Role"),
