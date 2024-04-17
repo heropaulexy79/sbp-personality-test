@@ -64,7 +64,9 @@ function submit() {
                 lesson: props.lesson.slug,
             }),
             {
+                // preserveState: true,
                 onSuccess(page) {
+                    console.log(page.props.flash);
                     if (Boolean(page.props.flash.message)) {
                         successDialog.value = true;
                     }
@@ -92,16 +94,18 @@ const correctOption = computed(() => {
 });
 
 function onContinue() {
-    props.nextLessonId
-        ? router.visit(
-              route("classroom.lesson.show", {
-                  lesson: props.nextLessonId,
-                  course: props.course.slug,
-              }),
-          )
-        : router.reload();
+    if (props.nextLessonId) {
+        router.visit(
+            route("classroom.lesson.show", {
+                lesson: props.nextLessonId,
+                course: props.course.slug,
+            }),
+        );
 
-    // successDialog.value = false;;
+        return;
+    }
+    router.reload();
+    successDialog.value = false;
 }
 </script>
 
