@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Lesson
     Route::get('/organisation/course/{course}/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
     Route::patch('/organisation/course/{course}/lesson/{lesson}', [LessonController::class, 'update'])->name('lesson.update');
+    Route::patch('/organisation/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position');
     Route::get('/organisation/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create');
     Route::post('/organisation/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store');
 

@@ -103,10 +103,17 @@ class CourseController extends Controller
             return abort(404);
         }
 
+        $course->lessons = $course->lessons->makeHidden(['content', 'content_json']);
+        $course->lessons = $course->lessons->sortBy('position');
+
+        // dd(
+
+        // );
+
         return Inertia::render('Organisation/Course/View', [
             'organisation' => $user->organisation,
             'course' => $course->withoutRelations(),
-            'lessons' => $course->lessons->makeHidden(['content', 'content_json']),
+            'lessons' => $course->lessons->values()->all(),
         ]);
     }
 
