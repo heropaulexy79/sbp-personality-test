@@ -26,13 +26,12 @@ class LessonController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
 
-        if ($request->user()->cannot('update', $organisation)) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
         }
 
-        return Inertia::render('Organisation/Course/Lesson/Create', [
+        return Inertia::render('Teacher/Course/Lesson/Create', [
             // 'organisation' => $organisation,
             'course' => $course,
         ]);
@@ -77,13 +76,13 @@ class LessonController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $course->organisation_id) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
         }
 
         // $lesson->content_json = json_decode($lesson->content_json);
 
-        return Inertia::render('Organisation/Course/Lesson/View', [
+        return Inertia::render('Teacher/Course/Lesson/View', [
             // 'organisation' => $user->organisation,
             // 'course' => $course,
             'lesson' => $lesson,
@@ -101,7 +100,7 @@ class LessonController extends Controller
 
         // dd($request->user()->cannot('view', $user->organisation),)
 
-        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $lesson->course->organisation_id) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
         }
 
@@ -109,7 +108,7 @@ class LessonController extends Controller
         // $lesson->content_json = Arr::except($lesson->content_json, ['correct_option']);
         // $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
 
-        return Inertia::render('Organisation/Course/Lesson/Edit', [
+        return Inertia::render('Teacher/Course/Lesson/Edit', [
             // 'organisation' => $user->organisation,
             'course' => $course,
             'lesson' => $lesson,
@@ -151,7 +150,7 @@ class LessonController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $course->organisation_id) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
         }
 

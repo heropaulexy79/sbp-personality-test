@@ -23,8 +23,8 @@ class Organisation extends Model
         return $this->hasMany(OrganisationInvitation::class, 'organisation_id');
     }
 
-    public function courses()
-    {
-        return $this->hasMany(Course::class, 'organisation_id');
-    }
+    // public function courses()
+    // {
+    //     return $this->hasMany(Course::class, 'organisation_id');
+    // }
 }

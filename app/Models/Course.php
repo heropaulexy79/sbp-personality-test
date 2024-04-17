@@ -14,7 +14,7 @@ class Course extends Model
         'title',
         'description',
         'slug',
-        'organisation_id',
+        'teacher_id',
         'is_published',
         'banner_image',
     ];
@@ -34,9 +34,9 @@ class Course extends Model
         return $query->where('is_published', true);
     }
 
-    public function organisation()
+    public function teacher()
     {
-        return $this->belongsTo(Organisation::class);
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 
     public function lessons()

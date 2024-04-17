@@ -17,7 +17,7 @@ class CourseController extends Controller
         //
         $courses = Course::where('is_published', true)->paginate();
 
-        dd($courses);
+        // dd($courses);
 
         return Inertia::render('Course/Index', [
             'courses' => $courses,
@@ -33,7 +33,7 @@ class CourseController extends Controller
         $user = $request->user();
 
         // If it is public allow?
-        if (! $course->is_published || $course->organisation_id !== $user->organisation_id) {
+        if (!$course->is_published) {
             abort(404);
         }
 
