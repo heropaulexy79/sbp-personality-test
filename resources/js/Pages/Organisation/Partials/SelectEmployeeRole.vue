@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    role: props.role,
+    role: props.role!,
 });
 
 function updateRole(value: string) {

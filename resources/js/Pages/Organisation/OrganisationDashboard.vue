@@ -3,8 +3,8 @@ import LaravelPagination from "@/Components/ui/LaravelPagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Course, Paginated } from "@/types";
 import { Head, Link, usePage } from "@inertiajs/vue3";
-import CreateOrganisationForm from "./Organisation/Partials/CreateOrganisationForm.vue";
-import CourseCard from "./Course/Partials/CourseCard.vue";
+import CreateOrganisationForm from "./Partials/CreateOrganisationForm.vue";
+import CourseCard from "../Course/Partials/CourseCard.vue";
 
 const page = usePage();
 
@@ -44,7 +44,7 @@ const courseNav = [
 <template>
     <Head title="Dashboard" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout v-if="$page.props.auth.user.account_type === 'ORG'">
         <div class="py-12">
             <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div

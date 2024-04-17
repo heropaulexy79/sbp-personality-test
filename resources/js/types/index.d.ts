@@ -6,7 +6,8 @@ export interface User {
     email: string;
     email_verified_at: string;
     organisation_id: number | null;
-    role: string;
+    role: string | null;
+    account_type: "ORG" | "TEACHER";
 }
 
 export type PageProps<
@@ -56,7 +57,7 @@ export interface Course {
     title: string;
     slug: string;
     description: string;
-    organisation_id: Organisation["id"];
+    teacher_id: User["id"];
     is_published: boolean;
     banner_image: string | null;
 

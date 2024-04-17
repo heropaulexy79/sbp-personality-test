@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import TeacherLayout from "@/Layouts/TeacherLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { Course } from "@/types";
 import CreateLessonForm from "./Partials/CreateLessonForm.vue";
@@ -11,7 +11,7 @@ defineProps<{ course: Course }>();
 <template>
     <Head :title="course.title + ' Lesson'" />
 
-    <AuthenticatedLayout>
+    <TeacherLayout>
         <header class="bg-white shadow dark:bg-gray-800">
             <div class="container flex items-center justify-between py-6">
                 <div>
@@ -43,5 +43,5 @@ defineProps<{ course: Course }>();
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </TeacherLayout>
 </template>

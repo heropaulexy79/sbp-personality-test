@@ -11,14 +11,9 @@ import {
     PopoverTrigger,
 } from "@/Components/ui/popover";
 import { slugify } from "@/lib/utils";
-import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 import UploadMediaForm from "@/Components/UploadMediaForm.vue";
 import { ref } from "vue";
-
-const props = defineProps<{
-    organisation_id: Organisation["id"];
-}>();
 
 const isBannerPopupOpen = ref(false);
 
