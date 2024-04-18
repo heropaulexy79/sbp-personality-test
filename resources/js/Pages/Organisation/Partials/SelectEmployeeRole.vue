@@ -57,7 +57,7 @@ function updateRole(value: string) {
         </SelectTrigger>
         <SelectContent>
             <SelectItem value="ADMIN"> Administrator </SelectItem>
-            <SelectItem value="MEMBER"> Member </SelectItem>
+            <SelectItem value="MEMBER"> Student </SelectItem>
         </SelectContent>
     </Select>
 </template>

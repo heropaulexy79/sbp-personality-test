@@ -57,7 +57,16 @@ export const employeeInviteColumns = [
     inviteColumnHelper2.accessor("role", {
         header: () => h("div", { class: "" }, "Role"),
         cell(props) {
-            return h("div", { class: "" }, props.row.getValue("role"));
+            const role = {
+                MEMBER: "Student",
+                ADMIN: "Administrator",
+            };
+            return h(
+                "div",
+                { class: "" },
+                role[props.row.getValue("role") as keyof typeof role] ??
+                    role.MEMBER,
+            );
         },
     }),
 

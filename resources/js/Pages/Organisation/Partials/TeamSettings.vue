@@ -36,7 +36,7 @@ defineProps<{
 
             <Dialog>
                 <DialogTrigger>
-                    <Button>Add Member</Button>
+                    <Button>Add Student</Button>
                 </DialogTrigger>
                 <DialogContent>
                     <VisuallyHidden>
