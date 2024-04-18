@@ -1,4 +1,4 @@
-import { Question } from "@/Pages/Organisation/Course/Lesson/Partials/use-quiz-manager";
+// import { Question } from "@/Pages/Organisation/Course/Lesson/Partials/use-quiz-manager";
 
 export interface User {
     id: number;
