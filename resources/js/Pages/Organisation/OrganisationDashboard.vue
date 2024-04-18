@@ -38,7 +38,24 @@ const courseNav = [
         }),
         label: "Completed",
     },
-];
+    page.props.auth.user.role === "ADMIN"
+        ? {
+              active: page.props.query?.["status"] === "all_enrolled",
+
+              href: route("dashboard", {
+                  _query: {
+                      ...page.props.query,
+                      status: "all_enrolled",
+                  },
+              }),
+              label: "All enrolled",
+          }
+        : undefined,
+].filter(Boolean) as {
+    active: boolean;
+    href: string;
+    label: string;
+}[];
 </script>
 
 <template>

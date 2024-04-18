@@ -39,7 +39,10 @@ defineProps<{
             </Link>
         </div>
 
-        <div>
+        <div
+            class="flex flex-col"
+            v-if="$page.props.auth.user.role === 'ADMIN'"
+        >
             <!--  -->
             <Link
                 :href="route('classroom.lesson.index', { course: course.slug })"
@@ -47,6 +50,16 @@ defineProps<{
             >
                 <span>Go to course</span>
                 <ArrowRight :size="16" />
+            </Link>
+            <Link
+                :href="
+                    route('organisation.course.leaderboard', {
+                        course: course.slug,
+                    })
+                "
+                :class="cn(buttonVariants({ size: 'lg', variant: 'link' }))"
+            >
+                <span>View leaderboard</span>
             </Link>
         </div>
     </div>
