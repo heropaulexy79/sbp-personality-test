@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseDataTable from "@/Components/ui/BaseDataTable.vue";
 import { Organisation, OrganisationInvite, User } from "@/types";
-import { ref, defineProps } from "vue";
+import { ref } from "vue";
 import { employeeColumns, employeeInviteColumns } from "./employee-column";
 import InviteToOrganisationForm from "./InviteToOrganisationForm.vue";
 import { Button } from "@/Components/ui/button";
