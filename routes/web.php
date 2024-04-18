@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\ProfileController;
@@ -11,7 +12,6 @@ use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
     // return Inertia::render('Welcome', [
@@ -29,30 +29,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function (Request $request) {
-
-    $user = $request->user();
-
-    if ($user->account_type === "TEACHER") {
-        return Inertia::render(
-            'Teacher/TeacherDashboard',
-            [
-                'courses' => $request->user()->createdCourses()->paginate()
-            ]
-        );
-    }
-
-
-    $status = $request->query('status');
-    $courses = $request->user()->enrolledCourses()->where("is_completed", $status === "completed" ? "1" : "0")
-        ->paginate()->withQueryString();
-
-
-    return Inertia::render(
-        'Organisation/OrganisationDashboard',
-        ['courses' => $courses]
-    );
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -64,10 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Organisation
     Route::resource('organisation', OrganisationController::class)->only(['store', 'update']);
-    Route::get('/settings/organisation', [OrganisationController::class, 'edit'])->name('organisation.edit');
-    Route::post('/organisation/{organisation}/invite', [OrganisationController::class, 'inviteEmployee'])->name('organisation.invite');
-    Route::delete('/organisation/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite');
-    Route::patch('/organisation/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee');
+    Route::get('/settings/org', [OrganisationController::class, 'edit'])->name('organisation.edit');
+    Route::post('/org/{organisation}/invite', [OrganisationController::class, 'inviteEmployee'])->name('organisation.invite');
+    Route::delete('/org/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite');
+    Route::patch('/org/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee');
+    Route::get('/org/course/{course:slug}', [CourseEnrollmentController::class, 'show'])->name('organisation.course.leaderboard');
 
     // Org-course
     // Enroll users
