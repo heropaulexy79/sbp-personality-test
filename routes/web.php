@@ -46,6 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/org/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite');
     Route::patch('/org/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee');
     Route::get('/org/course/{course:slug}', [CourseEnrollmentController::class, 'show'])->name('organisation.course.leaderboard');
+    Route::delete('/org/course/{course:slug}/leaderboard/reset', [CourseEnrollmentController::class, 'destroyAll'])->name('organisation.course.leaderboard.reset.students.progress');
+    Route::delete('/org/course/{course:slug}/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'destroy'])->name('organisation.course.leaderboard.reset.student.progress');
 
     // Org-course
     // Enroll users

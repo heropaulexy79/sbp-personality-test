@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 // use App\Models\CourseEnrollment;
 
 use App\Models\Course;
+use App\Models\CourseEnrollment;
+use App\Models\User;
+use App\Models\UserLesson;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -26,13 +29,17 @@ class CourseEnrollmentController extends Controller
 
         foreach ($enrolledUsers as $eu) {
             $userScores = $eu->lessons()
+                ->with('lesson')
+                ->whereHas('lesson', function ($query) use ($course) {
+                    $query->where('course_id', $course->id);
+                })
                 ->select('user_lessons.score') // Select specific columns
                 ->get();
 
             // dd(array_map(fn ($item) => $item->score, $userScores));
 
             $students[] = [
-                'user' => $eu->only(['id', 'name']),
+                'user' => $eu->only(['id', 'name', 'email']),
                 'score' => $userScores->sum('score'),
                 // 'score' => array_sum(array_map(fn($item)=>$item->score, $userScores)), // Array of lesson scores for the user
                 'scores' => $userScores, // Array of lesson scores for the user
@@ -40,6 +47,7 @@ class CourseEnrollmentController extends Controller
         }
 
         return Inertia::render('Organisation/Course/Leaderboard', [
+            "course" => $course,
             "students" => $students,
         ]);
     }
@@ -69,5 +77,82 @@ class CourseEnrollmentController extends Controller
             //return redirect(route('classrom'))
             // return response()->json(['message' => 'User is already enrolled in this course.'], 422);
         }
+    }
+
+
+    public function destroy(Request $request, Course $course, User $student)
+    {
+
+        $user = $request->user();
+        $org = $user->organisation;
+
+        if (!$user->isAdminInOrganisation($org) || !$student->isMemberOfOrganisation($org)) {
+            return abort(401);
+            // return redirect()->back()->with(['global:message' => [
+            //     'status' => 'error',
+            //     'message' => 'You dont have permission to access this resource!',
+            // ]], 401);
+        }
+
+
+        // Update course progress
+        $enrollment = CourseEnrollment::where('user_id', $student->id)
+            ->where('course_id', $course->id)->update(['is_completed' => 0]);
+
+        // Update lesson progress
+        $student->lessons()->with('lesson')->whereHas('lesson', function ($query) use ($course) {
+            $query->where('course_id', $course->id);
+        })->update(['completed' => 0, 'score' => null, 'answers' => null]);
+
+
+
+        return redirect()->back()->with(['message' => [
+            'status' => 'success',
+            'message' => 'User progress has been reset',
+        ]], 200);
+    }
+
+
+
+
+    public function destroyAll(Request $request, Course $course)
+    {
+
+        $user = $request->user();
+        $org = $user->organisation;
+
+        if (!$user->isAdminInOrganisation($org)) {
+            return abort(401);
+            // return redirect()->back()->with(['global:message' => [
+            //     'status' => 'error',
+            //     'message' => 'You dont have permission to access this resource!',
+            // ]], 401);
+        }
+
+        // validate;
+        $request->validate(['students' => 'array']);
+
+
+        $studentIds = $request->input('students', []);
+
+        $enrollments = CourseEnrollment::where('course_id', $course->id)->whereIn('user_id', $studentIds)->update([
+            'is_completed' => 0
+        ]);
+
+        // Update lesson progress
+        $studentLessons = UserLesson::whereHas('lesson', function ($query) use ($course) {
+            $query->where('course_id', $course->id);
+        })->whereIn('user_id', $studentIds)->update([
+            'score' => null,
+            'answers' => null,
+            'completed' => 0,
+        ]);;
+        // dd($studentLessons);
+
+
+        return redirect()->back()->with(['global:message' => [
+            'status' => 'success',
+            'message' => 'Student progress has been reset',
+        ]], 200);
     }
 }
