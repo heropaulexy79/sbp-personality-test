@@ -36,7 +36,7 @@ function enrollInCourse() {
                 </h2>
 
                 <!-- Todo: slugify -->
-                <div class="grid md:grid-cols-[1fr_350px]">
+                <div class="grid gap-10 lg:grid-cols-[1fr_350px]">
                     <div v-html="course.description" class="prose" />
 
                     <div
