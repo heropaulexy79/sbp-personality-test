@@ -16,8 +16,8 @@ const completionForm = useForm({});
 function markAsComplete() {
     completionForm.patch(
         route("classroom.lesson.markComplete", {
-            course: props.course.id,
-            lesson: props.lesson.id,
+            course: props.course.slug,
+            lesson: props.lesson.slug,
             next: props.nextLessonId,
         }),
         {
@@ -35,7 +35,7 @@ function markAsComplete() {
 
             <form
                 @submit.prevent="markAsComplete"
-                class="flex items-center justify-center"
+                class="mt-10 flex items-center justify-center"
             >
                 <Button type="submit" size="sm" v-if="!lesson.completed">
                     Mark as complete
