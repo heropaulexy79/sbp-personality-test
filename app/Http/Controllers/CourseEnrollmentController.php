@@ -60,7 +60,7 @@ class CourseEnrollmentController extends Controller
         $user = $request->user();
 
         // TODO: if course is public
-        if (!$course->is_published || ($course->organisation_id !== $user->organisation_id)) {
+        if (!$course->is_published) {
             abort(401);
         }
 
@@ -77,6 +77,39 @@ class CourseEnrollmentController extends Controller
             //return redirect(route('classrom'))
             // return response()->json(['message' => 'User is already enrolled in this course.'], 422);
         }
+    }
+
+    public function storeAll(Request $request, Course $course)
+    {
+        $user = $request->user();
+        $org = $user->organisation;
+
+        // TODO: if course is public
+        if (!$course->is_published || !$user->isAdminInOrganisation($org)) {
+            abort(401);
+        }
+
+        $request->validate(['students' => 'array']);
+
+
+        $studentIds = $request->input('students', []);
+
+        // $course->enrolledUsers()->createMany()
+
+        $studentArr = array();
+
+        foreach ($studentIds as $key => $ids) {
+            $studentArr[] = ['user_id' => $ids, 'course_id' => $course->id];
+        }
+
+        // dd($studentArr);
+
+        CourseEnrollment::upsert($studentArr, uniqueBy: ['user_id', 'course_id'], update: []);
+
+        return redirect()->back()->with(['message' => [
+            'status' => 'success',
+            'message' => 'Students have been enrolled',
+        ]], 200);
     }
 
 
@@ -103,7 +136,6 @@ class CourseEnrollmentController extends Controller
         $student->lessons()->with('lesson')->whereHas('lesson', function ($query) use ($course) {
             $query->where('course_id', $course->id);
         })->update(['completed' => 0, 'score' => null, 'answers' => null]);
-
 
 
         return redirect()->back()->with(['message' => [

@@ -45,9 +45,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/org/{organisation}/invite', [OrganisationController::class, 'inviteEmployee'])->name('organisation.invite');
     Route::delete('/org/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite');
     Route::patch('/org/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee');
+    Route::get('/org/employee/', [OrganisationController::class, 'getAllEmployees'])->name('organisation.employees');
     Route::get('/org/course/{course:slug}', [CourseEnrollmentController::class, 'show'])->name('organisation.course.leaderboard');
     Route::delete('/org/course/{course:slug}/leaderboard/reset', [CourseEnrollmentController::class, 'destroyAll'])->name('organisation.course.leaderboard.reset.students.progress');
     Route::delete('/org/course/{course:slug}/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'destroy'])->name('organisation.course.leaderboard.reset.student.progress');
+    Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll');
 
     // Org-course
     // Enroll users
@@ -66,7 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Course - public?
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index');
     Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show');
-    Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
+    // Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
 
     // Lesson - public?
     Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
