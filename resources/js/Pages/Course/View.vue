@@ -4,25 +4,37 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Course, Lesson } from "@/types";
 import { Head, router, useForm } from "@inertiajs/vue3";
 import { ArrowRightIcon } from "lucide-vue-next";
+import EnrollTeamInCourseForm from "../Organisation/Course/EnrollTeamInCourseForm.vue";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/Components/ui/dialog";
+import { VisuallyHidden } from "radix-vue";
+import { ref } from "vue";
 
 const props = defineProps<{
     course: Course;
     enrolled_count: number;
     lessons: Pick<Lesson, "title" | "slug" | "id" | "type">[];
 }>();
-const form = useForm({});
+const enrollModal = ref(false);
+// const form = useForm({});
 
-function enrollInCourse() {
-    form.post(route("course.enroll", { course: props.course.slug }), {
-        onSuccess(E) {
-            router.visit(
-                route("classroom.lesson.index", {
-                    course: props.course.slug,
-                }),
-            );
-        },
-    });
-}
+// function enrollInCourse() {
+//     form.post(route("course.enroll", { course: props.course.slug }), {
+//         onSuccess(E) {
+//             router.visit(
+//                 route("classroom.lesson.index", {
+//                     course: props.course.slug,
+//                 }),
+//             );
+//         },
+//     });
+// }
 </script>
 
 <template>
@@ -57,7 +69,53 @@ function enrollInCourse() {
                             }}
                         </div>
 
-                        <form @submit.prevent="enrollInCourse">
+                        <div>
+                            <Dialog
+                                :open="enrollModal"
+                                @update:open="
+                                    (v) => {
+                                        enrollModal = v;
+                                    }
+                                "
+                            >
+                                <DialogTrigger as-child>
+                                    <Button>
+                                        <span>Enroll now</span>
+                                        <ArrowRightIcon :size="16" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent class="max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            Enroll students in course
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            Enroll students into
+                                            {{ course.title }}
+                                        </DialogDescription>
+                                    </DialogHeader>
+
+                                    <EnrollTeamInCourseForm
+                                        :course="course"
+                                        :on-success="
+                                            () => {
+                                                enrollModal = false;
+                                            }
+                                        "
+                                    />
+                                </DialogContent>
+                            </Dialog>
+
+                            <div v-if="enrolled_count > 5">
+                                {{
+                                    Intl.NumberFormat(undefined).format(
+                                        enrolled_count,
+                                    )
+                                }}
+                                already enrolled
+                            </div>
+                        </div>
+                        <!-- <form @submit.prevent="enrollInCourse">
                             <Button
                                 :class="{ 'opacity-25': form.processing }"
                                 :disabled="form.processing"
@@ -73,7 +131,7 @@ function enrollInCourse() {
                                 }}
                                 already enrolled
                             </div>
-                        </form>
+                        </form> -->
                     </div>
                 </div>
 
