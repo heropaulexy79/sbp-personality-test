@@ -16,11 +16,10 @@ return new class extends Migration
             $table->string('auth_code')->nullable(false);
             $table->string('country');
             $table->string('bank')->nullable(true);
-            $table->string('first_6');
-            $table->string('last_4');
+            $table->string('first_six');
+            $table->string('last_four');
             $table->string('card_type');
             $table->boolean('reusable');
-            $table->string('counrtry');
             $table->string('exp');
             $table->string('account_name');
             $table->foreignId('organisation_id')->constrained('organisations')->cascadeOnDelete()->cascadeOnUpdate();
