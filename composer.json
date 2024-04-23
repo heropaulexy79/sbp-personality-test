@@ -10,7 +10,8 @@
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "tightenco/ziggy": "^2.0"
+        "tightenco/ziggy": "^2.0",
+        "unicodeveloper/laravel-paystack": "^1.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.0",

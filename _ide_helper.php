@@ -18207,6 +18207,397 @@ namespace Spatie\LaravelIgnition\Facades {
             }
     }
 
+namespace Unicodeveloper\Paystack\Facades {
+            /**
+     * 
+     *
+     */        class Paystack {
+                    /**
+         * Get Base Url from Paystack config file
+         *
+         * @static 
+         */        public static function setBaseUrl()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->setBaseUrl();
+        }
+                    /**
+         * Get secret key from Paystack config file
+         *
+         * @static 
+         */        public static function setKey()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->setKey();
+        }
+                    /**
+         * Initiate a payment request to Paystack
+         * Included the option to pass the payload to this method for situations
+         * when the payload is built on the fly (not passed to the controller from a view)
+         *
+         * @return \Paystack 
+         * @static 
+         */        public static function makePaymentRequest($data = null)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->makePaymentRequest($data);
+        }
+                    /**
+         * Get the authorization url from the callback response
+         *
+         * @return \Paystack 
+         * @static 
+         */        public static function getAuthorizationUrl($data = null)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAuthorizationUrl($data);
+        }
+                    /**
+         * Get the authorization callback response
+         * In situations where Laravel serves as an backend for a detached UI, the api cannot redirect
+         * and might need to take different actions based on the success or not of the transaction
+         *
+         * @return array 
+         * @static 
+         */        public static function getAuthorizationResponse($data)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAuthorizationResponse($data);
+        }
+                    /**
+         * True or false condition whether the transaction is verified
+         *
+         * @return boolean 
+         * @static 
+         */        public static function isTransactionVerificationValid($transaction_id = null)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->isTransactionVerificationValid($transaction_id);
+        }
+                    /**
+         * Get Payment details if the transaction was verified successfully
+         *
+         * @return \Unicodeveloper\Paystack\json 
+         * @throws PaymentVerificationFailedException
+         * @static 
+         */        public static function getPaymentData()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getPaymentData();
+        }
+                    /**
+         * Fluent method to redirect to Paystack Payment Page
+         *
+         * @static 
+         */        public static function redirectNow()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->redirectNow();
+        }
+                    /**
+         * Get Access code from transaction callback respose
+         *
+         * @return string 
+         * @static 
+         */        public static function getAccessCode()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAccessCode();
+        }
+                    /**
+         * Generate a Unique Transaction Reference
+         *
+         * @return string 
+         * @static 
+         */        public static function genTranxRef()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->genTranxRef();
+        }
+                    /**
+         * Get all the customers that have made transactions on your platform
+         *
+         * @return array 
+         * @static 
+         */        public static function getAllCustomers()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAllCustomers();
+        }
+                    /**
+         * Get all the plans that you have on Paystack
+         *
+         * @return array 
+         * @static 
+         */        public static function getAllPlans()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAllPlans();
+        }
+                    /**
+         * Get all the transactions that have happened overtime
+         *
+         * @return array 
+         * @static 
+         */        public static function getAllTransactions()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAllTransactions();
+        }
+                    /**
+         * Create a plan
+         *
+         * @static 
+         */        public static function createPlan()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->createPlan();
+        }
+                    /**
+         * Fetch any plan based on its plan id or code
+         *
+         * @param $plan_code
+         * @return array 
+         * @static 
+         */        public static function fetchPlan($plan_code)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->fetchPlan($plan_code);
+        }
+                    /**
+         * Update any plan's details based on its id or code
+         *
+         * @param $plan_code
+         * @return array 
+         * @static 
+         */        public static function updatePlan($plan_code)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->updatePlan($plan_code);
+        }
+                    /**
+         * Create a customer
+         *
+         * @static 
+         */        public static function createCustomer($data = null)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->createCustomer($data);
+        }
+                    /**
+         * Fetch a customer based on id or code
+         *
+         * @param $customer_id
+         * @return array 
+         * @static 
+         */        public static function fetchCustomer($customer_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->fetchCustomer($customer_id);
+        }
+                    /**
+         * Update a customer's details based on their id or code
+         *
+         * @param $customer_id
+         * @return array 
+         * @static 
+         */        public static function updateCustomer($customer_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->updateCustomer($customer_id);
+        }
+                    /**
+         * Export transactions in .CSV
+         *
+         * @return array 
+         * @static 
+         */        public static function exportTransactions()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->exportTransactions();
+        }
+                    /**
+         * Create a subscription to a plan from a customer.
+         *
+         * @static 
+         */        public static function createSubscription()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->createSubscription();
+        }
+                    /**
+         * Get all the subscriptions made on Paystack.
+         *
+         * @return array 
+         * @static 
+         */        public static function getAllSubscriptions()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAllSubscriptions();
+        }
+                    /**
+         * Get customer subscriptions
+         *
+         * @param integer $customer_id
+         * @return array 
+         * @static 
+         */        public static function getCustomerSubscriptions($customer_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getCustomerSubscriptions($customer_id);
+        }
+                    /**
+         * Get plan subscriptions
+         *
+         * @param integer $plan_id
+         * @return array 
+         * @static 
+         */        public static function getPlanSubscriptions($plan_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getPlanSubscriptions($plan_id);
+        }
+                    /**
+         * Enable a subscription using the subscription code and token
+         *
+         * @return array 
+         * @static 
+         */        public static function enableSubscription()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->enableSubscription();
+        }
+                    /**
+         * Disable a subscription using the subscription code and token
+         *
+         * @return array 
+         * @static 
+         */        public static function disableSubscription()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->disableSubscription();
+        }
+                    /**
+         * Fetch details about a certain subscription
+         *
+         * @param mixed $subscription_id
+         * @return array 
+         * @static 
+         */        public static function fetchSubscription($subscription_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->fetchSubscription($subscription_id);
+        }
+                    /**
+         * Create pages you can share with users using the returned slug
+         *
+         * @static 
+         */        public static function createPage()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->createPage();
+        }
+                    /**
+         * Fetches all the pages the merchant has
+         *
+         * @return array 
+         * @static 
+         */        public static function getAllPages()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getAllPages();
+        }
+                    /**
+         * Fetch details about a certain page using its id or slug
+         *
+         * @param mixed $page_id
+         * @return array 
+         * @static 
+         */        public static function fetchPage($page_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->fetchPage($page_id);
+        }
+                    /**
+         * Update the details about a particular page
+         *
+         * @param $page_id
+         * @return array 
+         * @static 
+         */        public static function updatePage($page_id)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->updatePage($page_id);
+        }
+                    /**
+         * Creates a subaccount to be used for split payments . Required    params are business_name , settlement_bank , account_number ,   percentage_charge
+         *
+         * @return array 
+         * @static 
+         */        public static function createSubAccount()
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->createSubAccount();
+        }
+                    /**
+         * Fetches details of a subaccount
+         *
+         * @param \Unicodeveloper\Paystack\subaccount  code
+         * @return array 
+         * @static 
+         */        public static function fetchSubAccount($subaccount_code)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->fetchSubAccount($subaccount_code);
+        }
+                    /**
+         * Lists all the subaccounts associated with the account
+         *
+         * @param $per_page - Specifies how many records to retrieve per page , $page - SPecifies exactly what page to retrieve
+         * @return array 
+         * @static 
+         */        public static function listSubAccounts($per_page, $page)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->listSubAccounts($per_page, $page);
+        }
+                    /**
+         * Updates a subaccount to be used for split payments . Required params are business_name , settlement_bank , account_number , percentage_charge
+         *
+         * @param \Unicodeveloper\Paystack\subaccount  code
+         * @return array 
+         * @static 
+         */        public static function updateSubAccount($subaccount_code)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->updateSubAccount($subaccount_code);
+        }
+                    /**
+         * Get a list of all supported banks and their properties
+         *
+         * @param $country - The country from which to obtain the list of supported banks, $per_page - Specifies how many records to retrieve per page ,
+         * $use_cursor - Flag to enable cursor pagination on the endpoint
+         * @return array 
+         * @static 
+         */        public static function getBanks($country, $per_page = 50, $use_cursor = false)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->getBanks($country, $per_page, $use_cursor);
+        }
+                    /**
+         * Confirm an account belongs to the right customer
+         *
+         * @param $account_number - Account Number, $bank_code - You can get the list of bank codes by calling the List Banks endpoint
+         * @return array 
+         * @static 
+         */        public static function confirmAccount($account_number, $bank_code)
+        {
+                        /** @var \Unicodeveloper\Paystack\Paystack $instance */
+                        return $instance->confirmAccount($account_number, $bank_code);
+        }
+            }
+    }
+
 namespace Illuminate\Http {
             /**
      * 
@@ -21839,6 +22230,7 @@ namespace  {
             class View extends \Illuminate\Support\Facades\View {}
             class Vite extends \Illuminate\Support\Facades\Vite {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
+            class Paystack extends \Unicodeveloper\Paystack\Facades\Paystack {}
     }
 
 
