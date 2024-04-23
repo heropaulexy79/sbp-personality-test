@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
@@ -51,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/org/course/{course:slug}/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'destroy'])->name('organisation.course.leaderboard.reset.student.progress');
     Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll');
 
+    Route::get('/settings/billing', [BillingController::class, 'index'])->name('organisation.billing.index');
+
     // Org-course
     // Enroll users
 
@@ -87,6 +90,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
         Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
     });
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/payment/paystack/pay', [App\Http\Controllers\Payments\PaystackController::class, 'redirectToGateway'])->name('paystack.pay');
+    Route::get('/payment/paystack/callback', [App\Http\Controllers\Payments\PaystackController::class, 'handleGatewayCallback'])->name('paystack.pay.gateway');
 });
 
 Route::middleware('auth')->group(function () {

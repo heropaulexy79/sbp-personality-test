@@ -23,6 +23,16 @@ class Organisation extends Model
         return $this->hasMany(OrganisationInvitation::class, 'organisation_id');
     }
 
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class, 'organisation_id');
+    }
+
+    public function billingHistories()
+    {
+        return $this->hasMany(BillingHistory::class, 'organisation_id');
+    }
+
     // public function courses()
     // {
     //     return $this->hasMany(Course::class, 'organisation_id');
