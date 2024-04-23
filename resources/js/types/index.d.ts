@@ -103,7 +103,7 @@ type QuestionOption = {
     text: string;
 };
 
-type Paginated<T> = {
+export type Paginated<T> = {
     current_page: number;
     data: T[];
     first_page_url: string;
@@ -121,4 +121,14 @@ type Paginated<T> = {
     prev_page_url: string | null;
     to: number;
     total: number;
+};
+
+export type PaymentMethod = {
+    last_four: string;
+    card_type: string;
+    exp: string;
+};
+
+export type BillingHistory = {
+    transaction_ref: string;
 };
