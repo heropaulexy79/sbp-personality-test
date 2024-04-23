@@ -159,7 +159,16 @@ const showingNavigationDropdown = ref(false);
                                                         .role === 'ADMIN'
                                                 "
                                             >
-                                                Billing
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'organisation.billing.index',
+                                                        )
+                                                    "
+                                                    class="w-full"
+                                                >
+                                                    Billing
+                                                </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem as-child>
                                                 <Link
@@ -272,7 +281,7 @@ const showingNavigationDropdown = ref(false);
                                     Organisation
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
-                                    :href="route('profile.edit')"
+                                    :href="route('organisation.billing.index')"
                                     v-if="
                                         $page.props.auth.user.role === 'ADMIN'
                                     "
