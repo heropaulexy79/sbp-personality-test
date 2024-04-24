@@ -18,6 +18,7 @@ const props = defineProps<{
     </header>
 
     <div className="mt-6">
+        <!-- @vue-ignore -->
         <BaseDataTable
             :columns="billingHistoryColumns"
             :data="billing_history"

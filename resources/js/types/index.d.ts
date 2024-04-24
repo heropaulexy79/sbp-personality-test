@@ -124,11 +124,37 @@ export type Paginated<T> = {
 };
 
 export type PaymentMethod = {
+    id: number; //bigint unsigned -> number (assuming it represents an ID)
+    country: string;
+
+    bank?: string | null; //varchar(255) NULL -> string | null (optional)
+
+    first_six: string;
     last_four: string;
     card_type: string;
     exp: string;
+
+    reusable: boolean;
+
+    account_name: string;
+    email_address: string;
+
+    organisation_id: number; // bigint unsigned -> number
+
+    created_at?: Date | null;
+    updated_at?: Date | null;
 };
 
 export type BillingHistory = {
+    id: number;
     transaction_ref: string;
+
+    amount: number;
+    description: string;
+    provider: "PAYSTACK";
+
+    organisation_id: number;
+
+    created_at?: Date | null;
+    updated_at?: Date | null;
 };

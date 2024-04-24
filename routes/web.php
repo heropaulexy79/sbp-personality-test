@@ -95,6 +95,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payment/paystack/pay', [App\Http\Controllers\Payments\PaystackController::class, 'redirectToGateway'])->name('paystack.pay');
     Route::get('/payment/paystack/callback', [App\Http\Controllers\Payments\PaystackController::class, 'handleGatewayCallback'])->name('paystack.pay.gateway');
+    Route::get('/payment/paystack/wbhk', [App\Http\Controllers\Payments\PaystackController::class, 'handleWebhook'])->name('paystack.pay.webhook');
 });
 
 Route::middleware('auth')->group(function () {

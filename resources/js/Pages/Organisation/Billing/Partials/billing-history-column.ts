@@ -15,6 +15,40 @@ export const billingHistoryColumns = [
             );
         },
     }),
+    columnHelper.accessor("description", {
+        header: () => h("div", { class: "" }, "Description"),
+        cell(props) {
+            const description = props.getValue();
+            return h("div", { class: "" }, description);
+        },
+    }),
+    columnHelper.accessor("amount", {
+        header: () => h("div", { class: "text-right" }, "Amount"),
+        cell(props) {
+            const amount = props.getValue() ?? 0;
+            return h(
+                "div",
+                { class: "text-right" },
+                Intl.NumberFormat(undefined, {
+                    style: "currency",
+                    currency: "NGN",
+                }).format(amount),
+            );
+        },
+    }),
+    columnHelper.accessor("created_at", {
+        header: () => h("div", { class: "" }, "Date"),
+        cell(props) {
+            const dv = props.getValue();
+            const date = dv ? new Date(dv) : null;
+
+            return h(
+                "div",
+                { class: "" },
+                date ? Intl.DateTimeFormat(undefined, {}).format(date) : "-",
+            );
+        },
+    }),
 
     // TODO: DELETE MEMBERSHIP
     // columnHelper.display({

@@ -36,6 +36,12 @@ class PaystackController extends Controller
     }
 
 
+    public function handleWebhook()
+    {
+        // 
+    }
+
+
     public function verifyPayment()
     {
         // 
