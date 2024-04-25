@@ -31,7 +31,7 @@ export const billingHistoryColumns = [
                 { class: "text-right" },
                 Intl.NumberFormat(undefined, {
                     style: "currency",
-                    currency: "NGN",
+                    currency: props.row.original.currency ?? "NGN",
                 }).format(amount),
             );
         },

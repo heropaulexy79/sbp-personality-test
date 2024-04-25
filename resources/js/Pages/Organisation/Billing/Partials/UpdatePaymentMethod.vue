@@ -15,10 +15,7 @@ const props = defineProps<{
 useScriptTag(
     "https://js.paystack.co/v1/inline.js",
     // on script tag loaded.
-    (el: HTMLScriptElement) => {
-        // do something
-        console.log(el);
-    },
+    (el: HTMLScriptElement) => {},
 );
 
 const payForm = useForm({
@@ -33,8 +30,11 @@ const payForm = useForm({
 
 function addMethod() {
     payForm.post(route("paystack.pay"), {
-        onSuccess() {},
+        onSuccess() {
+            console.log("success");
+        },
         onError(errors) {
+            console.log(errors);
             toast.error("Cancel invite", {
                 description: errorBagToString(errors),
             });
@@ -80,7 +80,9 @@ function addMethod2() {
         </div>
         <div className="grid grid-cols-2 items-center text-sm">
             <div>Expires</div>
-            <div className="text-right">{{ payment_method.exp }}</div>
+            <div className="text-right">
+                {{ payment_method.exp_month }} / {{ payment_method.exp_year }}
+            </div>
         </div>
 
         <form class="mt-2" @submit.prevent="addMethod">
