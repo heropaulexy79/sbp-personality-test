@@ -28,6 +28,8 @@ class PaymentMethodController extends Controller
      */
     public function store($data)
     {
+        PaymentMethod::Where('organisation_id', $data['organisation_id'])->delete();
+
         PaymentMethod::create([
             "auth_code" => $data['auth_code'],
             "first_six" => $data['first_six'],
