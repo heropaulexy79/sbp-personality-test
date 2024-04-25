@@ -129,11 +129,61 @@ class PaystackController extends Controller
 
         $event = json_decode($input);
 
+        $bh = new BillingController();
+        $pm = new PaymentMethodController();
+
 
         // Handle for charge
+        if ($event['event']["charge.success"]) {
+            // 
+            $existingHistory = $bh->show($event['data']['reference']);
+            $existingPaymentMethod = $pm->show(array(
+                "auth_code" => $event['data']['authorization']['authorization_code'],
+                "organisation_id" => $event['data']['metadata']['organisation_id'],
+            ));
+
+            if (!$existingHistory) {
+                $bh->store(array(
+                    "transaction_ref" => $event['data']['reference'],
+                    "currency" => $event['data']['currency'],
+                    "amount" => $event['data']['amount'] / 100, // this is because paystack stores in kobo
+                    "description" => $event['data']['metadata']['description'] ?? "Add payment method",
+                    "provider" => "PAYSTACK",
+                    "organisation_id" => $event['data']['metadata']['organisation_id'],
+                ));
+            }
+
+            if (!$existingPaymentMethod) {
+                $pm->store(
+                    array(
+                        "auth_code" => $event['data']['authorization']['authorization_code'],
+                        "first_six" => $event['data']['authorization']['bin'],
+                        "last_four" => $event['data']['authorization']['last4'],
+                        "exp_month" => $event['data']['authorization']['exp_month'],
+                        "exp_year" => $event['data']['authorization']['exp_year'],
+                        "card_type" => $event['data']['authorization']['card_type'],
+                        "bank" => $event['data']['authorization']['bank'],
+                        "country" => $event['data']['authorization']['country_code'],
+                        "reusable" => $event['data']['authorization']['reusable'],
+                        "account_name" => $event['data']['authorization']['account_name'],
+                        "organisation_id" => $event['data']['metadata']['organisation_id'],
+                        "email_address" => $event['data']['customer']['email'],
+                    )
+                );
+            }
+        }
 
 
         // Handle for refund
+        if ($event['event']["refund.processed"]) {
+            $existingHistory = $bh->show($event['data']['reference']);
+
+            if ($existingHistory) {
+                $existingHistory->description = "{$existingHistory->description} (Refunded)";
+                $existingHistory->save();
+            }
+        }
+
 
 
 

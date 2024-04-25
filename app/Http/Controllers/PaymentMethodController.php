@@ -49,9 +49,11 @@ class PaymentMethodController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PaymentMethod $paymentMethod)
+    public function show($data)
     {
         //
+        return PaymentMethod::Where('organisation_id', $data['organisation_id'])
+            ->Where('auth_code', $data['auth_code']);
     }
 
     /**
