@@ -9,7 +9,13 @@ class BillingHistory extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        "transaction_ref",
+        "amount",
+        "description",
+        "provider",
+        "organisation_id"
+    ];
 
     public function organisation()
     {

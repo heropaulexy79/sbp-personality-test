@@ -25,9 +25,22 @@ class BillingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store($data)
     {
         //
+        BillingHistory::create(array(
+            "transaction_ref" => $data['transaction_ref'],
+            "amount" => $data['amount'],
+            "description" => $data['description'],
+            "provider" => $data['provider'] ?? "PAYSTACK",
+            "organisation_id" => $data['organisation_id'],
+        ));
+    }
+
+    public function show(String $transaction_ref)
+    {
+        //
+        return BillingHistory::find($transaction_ref);
     }
 
 

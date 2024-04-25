@@ -9,7 +9,20 @@ class PaymentMethod extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        "auth_code",
+        "first_six",
+        "last_four",
+        "exp_month",
+        "exp_year",
+        "card_type",
+        "bank",
+        "country",
+        "reusable",
+        "account_name",
+        "organisation_id",
+        "email_address",
+    ];
 
 
     public function organisation()

@@ -26,9 +26,22 @@ class PaymentMethodController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store($data)
     {
-        //
+        PaymentMethod::create([
+            "auth_code" => $data['auth_code'],
+            "first_six" => $data['first_six'],
+            "last_four" => $data['last_four'],
+            "exp_month" => $data['exp_month'],
+            "exp_year" => $data['exp_year'],
+            "card_type" => $data['card_type'],
+            "bank" => $data['bank'],
+            "country" => $data['country'],
+            "reusable" => $data['reusable'] ?? true,
+            "account_name" => $data['account_name'],
+            "organisation_id" => $data['organisation_id'],
+            "email_address" => $data['email_address'],
+        ]);
     }
 
     /**
