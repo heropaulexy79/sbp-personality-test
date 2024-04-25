@@ -16,6 +16,7 @@ const payForm = useForm({
     amount: 100 * 100,
     currency: "NGN",
     channels: ["card"],
+    // callback_url: `${window.location.origin ?? "https://int-sbp.test"}/payments/paystack/callback`,
     metadata: {
         type: "ADD-PAYMENT-METHOD",
         organisation_id: page.props.auth.user.organisation_id,
