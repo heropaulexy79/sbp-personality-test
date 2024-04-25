@@ -3,7 +3,6 @@ import { Button } from "@/Components/ui/button";
 import { errorBagToString } from "@/lib/errors";
 import { PaymentMethod } from "@/types";
 import { useForm, usePage } from "@inertiajs/vue3";
-import { useScriptTag } from "@vueuse/core";
 import { toast } from "vue-sonner";
 
 const page = usePage();
@@ -12,16 +11,11 @@ const props = defineProps<{
     payment_method: PaymentMethod | null;
 }>();
 
-useScriptTag(
-    "https://js.paystack.co/v1/inline.js",
-    // on script tag loaded.
-    (el: HTMLScriptElement) => {},
-);
-
 const payForm = useForm({
     email: page.props.auth.user.email,
     amount: 100 * 100,
     currency: "NGN",
+    channels: ["card"],
     metadata: {
         type: "ADD-PAYMENT-METHOD",
         organisation_id: page.props.auth.user.organisation_id,
@@ -35,30 +29,11 @@ function addMethod() {
         },
         onError(errors) {
             console.log(errors);
-            toast.error("Cancel invite", {
+            toast.error("Add payment method", {
                 description: errorBagToString(errors),
             });
         },
     });
-}
-function addMethod2() {
-    let handler = window.PaystackPop.setup({
-        key: "pk_test_xxxxxxxxxx", // Replace with your public key
-        email: page.props.auth.user.email,
-        amount: 100 * 100,
-        // ref: "" + Math.floor(Math.random() * 1000000000 + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
-        // // label: "Optional string that replaces customer email"
-        onClose: function () {
-            console.log("Window closed.");
-        },
-        callback: function (response: any) {
-            console.log(response);
-            let message = "Payment complete! Reference: " + response.reference;
-            alert(message);
-        },
-    });
-
-    handler.openIframe();
 }
 </script>
 
