@@ -61,13 +61,25 @@ function addMethod() {
         </div>
 
         <form class="mt-2" @submit.prevent="addMethod">
-            <Button class="mt-3">Update payment method</Button>
+            <Button
+                class="mt-3"
+                :class="{ 'opacity-25': payForm.processing }"
+                :disabled="payForm.processing"
+            >
+                Update payment method
+            </Button>
         </form>
     </div>
     <form v-else class="mt-2" @submit.prevent="addMethod">
         <div class="text-sm text-muted-foreground">
             No payment methods! Setup one bellow
         </div>
-        <Button class="mt-3">Add payment method</Button>
+        <Button
+            class="mt-3"
+            :class="{ 'opacity-25': payForm.processing }"
+            :disabled="payForm.processing"
+        >
+            Add payment method
+        </Button>
     </form>
 </template>
