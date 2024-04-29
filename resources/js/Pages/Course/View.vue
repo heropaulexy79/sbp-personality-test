@@ -69,7 +69,12 @@ const enrollModal = ref(false);
                             }}
                         </div>
 
-                        <div>
+                        <div
+                            v-if="
+                                $page.props.auth.user.role === 'ADMIN' &&
+                                $page.props.auth.user.account_type === 'ORG'
+                            "
+                        >
                             <Dialog
                                 :open="enrollModal"
                                 @update:open="
