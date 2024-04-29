@@ -144,7 +144,7 @@ class OrganisationController extends Controller
         }
 
         $request->validate([
-            'role' => 'required|in:MEMBER,ADMIN',
+            'role' => 'required|in:STUDENT,ADMIN',
         ]);
 
         if (!$employee || $employee->organisation_id !== $organisation->id) {
@@ -171,14 +171,14 @@ class OrganisationController extends Controller
 
         $request->validate([
             'email' => 'required|email|unique:users,email',
-            'role' => 'nullable|in:MEMBER,ADMIN',
+            'role' => 'nullable|in:STUDENT,ADMIN',
         ]);
 
         $invitation = OrganisationInvitation::create([
             'email' => $request->input('email'),
             'organisation_id' => $organisation->id,
             'token' => OrganisationInvitation::generateUniqueToken(),
-            'role' => $request->input('role', 'MEMBER'),
+            'role' => $request->input('role', 'STUDENT'),
         ]);
 
         // Send Notification
