@@ -142,6 +142,8 @@ class PaystackController extends Controller
                 "organisation_id" => $event['data']['metadata']['organisation_id'],
             ));
 
+            $type = $event['data']['metadata']['type'];
+
             if (!$existingHistory) {
                 $bh->store(array(
                     "transaction_ref" => $event['data']['reference'],
@@ -153,7 +155,7 @@ class PaystackController extends Controller
                 ));
             }
 
-            if (!$existingPaymentMethod) {
+            if (!$existingPaymentMethod && ($type === "ADD_PAYMENT_METHOD" || $type === "ADD-PAYMENT-METHOD")) {
                 $pm->store(
                     array(
                         "auth_code" => $event['data']['authorization']['authorization_code'],
@@ -170,6 +172,11 @@ class PaystackController extends Controller
                         "email_address" => $event['data']['customer']['email'],
                     )
                 );
+            }
+
+            if ($type === 'SUBSCRIPTION') {
+                // What to do?
+                // TODO: add billed for month field?
             }
         }
 
