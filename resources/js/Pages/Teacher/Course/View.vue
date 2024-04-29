@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import TeacherLayout from "@/Layouts/TeacherLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { Course, Lesson } from "@/types";
 import ManageCourseLayout from "./Partials/ManageCourseLayout.vue";
@@ -15,7 +15,7 @@ defineProps<{ course: Course; lessons: Lesson[] }>();
 <template>
     <Head :title="course.title" />
 
-    <AuthenticatedLayout>
+    <TeacherLayout>
         <ManageCourseLayout :course="course">
             <div class="py-4">
                 <div class="container">
@@ -51,5 +51,5 @@ Update your account's profile information and email address.
                 </div>
             </div>
         </ManageCourseLayout>
-    </AuthenticatedLayout>
+    </TeacherLayout>
 </template>

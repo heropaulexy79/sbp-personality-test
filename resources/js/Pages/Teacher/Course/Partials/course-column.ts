@@ -57,46 +57,46 @@ export const courseColumns = [
             );
         },
     }),
-    columnHelper.display({
-        id: "enroll",
-        header: () => h("div", { class: "" }, ""),
-        cell(props) {
-            const form = useForm({});
+    // columnHelper.display({
+    //     id: "enroll",
+    //     header: () => h("div", { class: "" }, ""),
+    //     cell(props) {
+    //         const form = useForm({});
 
-            function enrollInCourse() {
-                form.post(
-                    route("course.enroll", { course: props.row.original.slug }),
-                    {
-                        onSuccess(E) {
-                            router.visit(
-                                route("classroom.lesson.index", {
-                                    course: props.row.original.slug,
-                                }),
-                            );
-                        },
-                    },
-                );
-            }
+    //         function enrollInCourse() {
+    //             form.post(
+    //                 route("course.enroll", { course: props.row.original.slug }),
+    //                 {
+    //                     onSuccess(E) {
+    //                         router.visit(
+    //                             route("classroom.lesson.index", {
+    //                                 course: props.row.original.slug,
+    //                             }),
+    //                         );
+    //                     },
+    //                 },
+    //             );
+    //         }
 
-            const isPublished = props.row.original.is_published;
-            return h(
-                "div",
-                { class: "" },
-                h(
-                    Button,
-                    {
-                        variant: isPublished ? "default" : "outline",
-                        class: cn(form.processing && "opacity-25"),
-                        size: "sm",
+    //         const isPublished = props.row.original.is_published;
+    //         return h(
+    //             "div",
+    //             { class: "" },
+    //             h(
+    //                 Button,
+    //                 {
+    //                     variant: isPublished ? "default" : "outline",
+    //                     class: cn(form.processing && "opacity-25"),
+    //                     size: "sm",
 
-                        disabled: !isPublished || form.processing,
-                        onClick: () => enrollInCourse(),
-                    },
-                    () => "Enroll",
-                ),
-            );
-        },
-    }),
+    //                     disabled: !isPublished || form.processing,
+    //                     onClick: () => enrollInCourse(),
+    //                 },
+    //                 () => "Enroll",
+    //             ),
+    //         );
+    //     },
+    // }),
     // columnHelper.display({
     //     id: "view",
     //     header: () => h("div", { class: "" }, "View"),

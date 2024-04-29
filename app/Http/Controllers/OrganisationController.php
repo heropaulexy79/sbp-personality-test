@@ -71,6 +71,17 @@ class OrganisationController extends Controller
         //
     }
 
+    public function getAllEmployees(Request $request)
+    {
+        //
+        $user = $request->user();
+
+
+        return response([
+            "students" => $user->organisation->employees->select(['id', 'name', 'email']),
+        ]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

@@ -27,6 +27,11 @@ class Lesson extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function user_lesson()
+    {
+        return $this->hasMany(UserLesson::class);
+    }
+
     public function quizWithoutCorrectAnswer()
     {
         $filtered = [];

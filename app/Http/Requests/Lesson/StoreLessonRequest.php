@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Lesson;
 
+use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -14,9 +15,10 @@ class StoreLessonRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-        $organisation = $user->organisation;
 
-        return $user->can('update', $organisation);
+        $course = $this->route('course');
+
+        return $user->account_type === 'TEACHER' && $user->id === $course->teacher_id;
     }
 
     public function prepareForValidation()

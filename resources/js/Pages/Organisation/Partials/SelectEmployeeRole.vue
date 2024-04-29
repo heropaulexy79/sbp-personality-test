@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    role: props.role,
+    role: props.role!,
 });
 
 function updateRole(value: string) {
@@ -57,7 +57,7 @@ function updateRole(value: string) {
         </SelectTrigger>
         <SelectContent>
             <SelectItem value="ADMIN"> Administrator </SelectItem>
-            <SelectItem value="MEMBER"> Member </SelectItem>
+            <SelectItem value="MEMBER"> Student </SelectItem>
         </SelectContent>
     </Select>
 </template>

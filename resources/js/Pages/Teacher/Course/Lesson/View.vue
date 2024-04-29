@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import TeacherLayout from "@/Layouts/TeacherLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { Lesson } from "@/types";
 
@@ -9,5 +9,5 @@ defineProps<{ lesson: Lesson }>();
 <template>
     <Head :title="lesson.title" />
 
-    <AuthenticatedLayout> </AuthenticatedLayout>
+    <TeacherLayout> </TeacherLayout>
 </template>

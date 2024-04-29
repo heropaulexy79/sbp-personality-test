@@ -1,4 +1,4 @@
-import { Question } from "@/Pages/Organisation/Course/Lesson/Partials/use-quiz-manager";
+// import { Question } from "@/Pages/Organisation/Course/Lesson/Partials/use-quiz-manager";
 
 export interface User {
     id: number;
@@ -6,7 +6,8 @@ export interface User {
     email: string;
     email_verified_at: string;
     organisation_id: number | null;
-    role: string;
+    role: string | null;
+    account_type: "ORG" | "TEACHER";
 }
 
 export type PageProps<
@@ -56,7 +57,7 @@ export interface Course {
     title: string;
     slug: string;
     description: string;
-    organisation_id: Organisation["id"];
+    teacher_id: User["id"];
     is_published: boolean;
     banner_image: string | null;
 
@@ -102,7 +103,7 @@ type QuestionOption = {
     text: string;
 };
 
-type Paginated<T> = {
+export type Paginated<T> = {
     current_page: number;
     data: T[];
     first_page_url: string;
@@ -120,4 +121,42 @@ type Paginated<T> = {
     prev_page_url: string | null;
     to: number;
     total: number;
+};
+
+export type PaymentMethod = {
+    id: number;
+    country: string;
+
+    bank?: string | null;
+
+    first_six: string;
+    last_four: string;
+    card_type: string;
+    exp_month: string;
+    exp_year: string;
+
+    reusable: boolean;
+
+    account_name: string;
+    email_address: string;
+
+    organisation_id: number;
+
+    created_at?: Date | null;
+    updated_at?: Date | null;
+};
+
+export type BillingHistory = {
+    id: number;
+    transaction_ref: string;
+
+    currency: string;
+    amount: number;
+    description: string;
+    provider: "PAYSTACK";
+
+    organisation_id: number;
+
+    created_at?: Date | null;
+    updated_at?: Date | null;
 };

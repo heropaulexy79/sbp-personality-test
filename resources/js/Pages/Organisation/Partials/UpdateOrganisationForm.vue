@@ -5,7 +5,6 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
-import { ref, defineProps } from "vue";
 
 const props = defineProps<{
     organisation: Organisation;

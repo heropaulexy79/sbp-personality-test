@@ -7,17 +7,32 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+use function Laravel\Prompts\search;
+use function PHPUnit\Framework\isEmpty;
+
 class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $courses = Course::where('is_published', true)->paginate();
+        $search = strip_tags($request->query('search') ?? '');
 
-        dd($courses);
+        //
+        if (empty($search)) {
+            $courses = Course::where('is_published', true)
+                ->paginate();
+        } else {
+            $courses = Course::where('is_published', true)
+                ->where(function ($query) use ($search) {
+                    $query->where('title', 'like', "%$search%")
+                        ->orWhere('description', 'like', "%$search%");
+                })
+                ->paginate();
+        }
+
+        // dd($search, empty($search), $courses);
 
         return Inertia::render('Course/Index', [
             'courses' => $courses,
@@ -33,7 +48,7 @@ class CourseController extends Controller
         $user = $request->user();
 
         // If it is public allow?
-        if (! $course->is_published || $course->organisation_id !== $user->organisation_id) {
+        if (!$course->is_published) {
             abort(404);
         }
 

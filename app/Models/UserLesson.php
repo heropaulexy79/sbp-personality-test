@@ -11,6 +11,9 @@ class UserLesson extends Model
 
     public $timestamps = false; // Disable timestamps for pivot table
 
+    // This breaks something // just leave as default
+    // protected $primaryKey = ['user_id', 'lesson_id'];
+
     protected $fillable = [
         'user_id',
         'lesson_id',

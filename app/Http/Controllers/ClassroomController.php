@@ -50,18 +50,35 @@ class ClassroomController extends Controller
             $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
         }
 
-        $lessons = $course->lessons()->published()->orderBy('position')->get(['title', 'position', 'type', 'id', 'slug']);
+        $lessons = $course->lessons()->published()->orderBy('position')
+            ->with(['user_lesson' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }])
+            ->get(['title', 'position', 'type', 'id', 'slug',]);
         $total_completed = 0;
 
+        // foreach ($lessons as $l) {
+        //     $l->completed = UserLesson::where('user_id', $user->id)
+        //         ->where('lesson_id', $l->id)
+        //         ->where('completed', 1)->exists() ?? false;
+
+        //     if ($l->completed) {
+        //         $total_completed++;
+        //     }
+        // };
         foreach ($lessons as $l) {
-            $l->completed = UserLesson::where('user_id', $user->id)
-                ->where('lesson_id', $l->id)
-                ->where('completed', 1)->exists() ?? false;
+            $l->completed = $l->user_lesson->first()?->completed === 1;
+
 
             if ($l->completed) {
                 $total_completed++;
             }
         };
+
+
+
+
+        // dd($lessons);
 
         if ($total_completed === count($lessons)) {
             $enrollment = CourseEnrollment::where('user_id', $user->id)
@@ -74,15 +91,19 @@ class ClassroomController extends Controller
             }
         }
 
-        $user_lesson = UserLesson::where('user_id', $user->id)
-            ->where('lesson_id', $lesson->id)->first();
+        $user_lesson = $lessons->filter(function ($item) use ($lesson) {
+            return $item['id'] === $lesson->id;  // Strict comparison with ===
+        })->first()->user_lesson->first();
 
-        $lesson->completed = $user_lesson?->completed === 1 ? true : false;
+
+        $lesson->completed = $user_lesson?->completed === 1;
         $lesson->answers = $user_lesson?->answers ?? null;
 
         if ($lesson->completed) {
             $lesson->content_json = $temp_content_json;
         }
+
+        $lessons->makeHidden('user_lesson');
 
         return Inertia::render('Classroom/Lesson', [
             'course' => $course,

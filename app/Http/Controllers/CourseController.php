@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\Organisation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,21 +15,15 @@ class CourseController extends Controller
     {
 
         // TODO: Make a public route ?
-        $user = $request->user();
-        $organisation = $user->organisation;
+        // $user = $request->user();
 
-        if (!$organisation || !$user->isMemberOfOrganisation($organisation)) {
-            return abort(404);
-        }
+        // $courses = $user->createdCourses();
 
-        // dd($organisation->courses->where('is_published', '1'));
-        // dd($user->role === "ADMIN" ? $organisation->courses : $organisation->course->where('is_published', '1')->get());
+        // return Inertia::render('Teacher/Course/Index', [
+        //     'courses' => $courses,
+        // ]);
 
-        $courses = $user->role === "ADMIN" ? $organisation->courses : $organisation->courses->where('is_published', '1');
-
-        return Inertia::render('Organisation/Course/Index', [
-            'courses' => $courses,
-        ]);
+        return to_route('dashboard');
     }
 
     /**
@@ -40,15 +33,12 @@ class CourseController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
 
-        if ($request->user()->cannot('create', Organisation::class)) {
+        if ($user->account_type !== 'TEACHER') {
             return abort(404);
         }
 
-        return Inertia::render('Organisation/Course/Create', [
-            'organisation' => $organisation,
-        ]);
+        return Inertia::render('Teacher/Course/Create', []);
     }
 
     /**
@@ -58,9 +48,8 @@ class CourseController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
 
-        if ($request->user()->cannot('update', $organisation)) {
+        if ($user->account_type !== 'TEACHER') {
             return abort(404);
         }
 
@@ -79,14 +68,13 @@ class CourseController extends Controller
             'slug' => $request->input('slug'),
             'title' => $request->input('title'),
             'description' => $request->input('description'),
-            'organisation_id' => $organisation->id,
+            'teacher_id' => $user->id,
             'banner_image' => $request->input('banner_image'),
         ]);
 
         // Redirect to course lesson management
         return redirect(route('course.show', [
             'course' => $course->id,
-            // 'organisation' => $organisation->id
         ]));
     }
 
@@ -97,21 +85,17 @@ class CourseController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
 
-        if ($request->user()->cannot('view', $user->organisation) || $organisation->id !== $course->organisation_id) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
         }
 
         $course->lessons = $course->lessons->makeHidden(['content', 'content_json']);
         $course->lessons = $course->lessons->sortBy('position');
 
-        // dd(
 
-        // );
 
-        return Inertia::render('Organisation/Course/View', [
-            'organisation' => $user->organisation,
+        return Inertia::render('Teacher/Course/View', [
             'course' => $course->withoutRelations(),
             'lessons' => $course->lessons->values()->all(),
         ]);
@@ -126,12 +110,11 @@ class CourseController extends Controller
 
         $user = $request->user();
 
-        if ($request->user()->cannot('update', $user->organisation)) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
         }
 
-        return Inertia::render('Organisation/Course/Edit', [
-            'organisation' => $user->organisation,
+        return Inertia::render('Teacher/Course/Edit', [
             'course' => $course,
         ]);
     }
@@ -145,7 +128,7 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation;
 
-        if ($request->user()->cannot('update', $organisation)) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(401);
         }
 
@@ -172,9 +155,8 @@ class CourseController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
 
-        if ($request->user()->cannot('delete', $organisation)) {
+        if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(401);
         }
 
