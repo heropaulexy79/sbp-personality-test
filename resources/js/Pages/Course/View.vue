@@ -89,7 +89,10 @@ const enrollModal = ref(false);
                                         <ArrowRightIcon :size="16" />
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent class="max-w-md">
+                                <DialogContent
+                                    class="max-w-md"
+                                    @escape-key-down="(e) => e.preventDefault()"
+                                >
                                     <DialogHeader>
                                         <DialogTitle>
                                             Enroll students in course
