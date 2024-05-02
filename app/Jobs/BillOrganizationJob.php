@@ -94,11 +94,11 @@ class BillOrganizationJob implements ShouldQueue
             if ($statusCode >= 200 && $statusCode < 300) {
                 // Successful authorization (no response body, but 2xx status code)
                 // return response()->json(['message' => 'Authorization successful'], $statusCode);
-                return true;
+                return;
             } else {
                 // Handle error response
                 // return response()->json(json_decode($responseBody), $statusCode);
-                return false;
+                return;
             }
         } catch (Throwable $e) {
             // Handle exceptions during the request
@@ -108,7 +108,7 @@ class BillOrganizationJob implements ShouldQueue
             // ], 500);
 
             // TODO:Alert billing failed;
-            return false;
+            return;
         }
     }
 }
