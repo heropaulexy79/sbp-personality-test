@@ -43,10 +43,9 @@ class Organisation extends Model
             return true;
         }
 
-        // Query the payment model to find the latest successful payment for the user
         $latestPayment = BillingHistory::where('organisation_id', $this->id)
             // ->where('status', 'success')
-            ->where('description', 'LIKE', 'subscription')
+            ->where('description', 'LIKE', '%subscription%')
             ->latest()
             ->first();
 
