@@ -219,7 +219,7 @@ class PaystackController extends Controller
         if ($event['event']["refund.processed"]) {
             $existingHistory = $bh->show($event['data']['reference']);
 
-            if ($existingHistory) {
+            if ($existingHistory && !str_contains($existingHistory->description, 'Refunded')) {
                 $existingHistory->description = "{$existingHistory->description} (Refunded)";
                 $existingHistory->save();
             }
