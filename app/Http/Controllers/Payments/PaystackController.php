@@ -22,6 +22,7 @@ class PaystackController extends Controller
     {
         try {
             // dd(Paystack::getAuthorizationUrl()->url);
+            /** @disregard */
             return Inertia::location(Paystack::getAuthorizationUrl()->url);
         } catch (\Exception $e) {
             return redirect()->back()->with('message', [
@@ -93,10 +94,12 @@ class PaystackController extends Controller
             ));
 
             // Refund
-            $this->initiateRefund(array(
-                "transaction" => $paymentDetails['data']['reference'],
-                "amount" => $paymentDetails['data']['amount'],
-            ));
+            if (!str_contains($existingHistory?->description, 'Refunded')) {
+                $this->initiateRefund(array(
+                    "transaction" => $paymentDetails['data']['reference'],
+                    "amount" => $paymentDetails['data']['amount'],
+                ));
+            }
 
 
             $org = \App\Models\Organisation::with('employees')->where('id', '=', $paymentDetails['data']['metadata']['organisation_id'])->first();
@@ -182,10 +185,12 @@ class PaystackController extends Controller
                     )
                 );
 
-                $this->initiateRefund(array(
-                    "transaction" => $event['data']['reference'],
-                    "amount" => $event['data']['amount'],
-                ));
+                if (!str_contains($existingHistory?->description, 'Refunded')) {
+                    $this->initiateRefund(array(
+                        "transaction" => $event['data']['reference'],
+                        "amount" => $event['data']['amount'],
+                    ));
+                }
 
 
                 $org = \App\Models\Organisation::with('employees')->where('id', '=', $event['data']['metadata']['organisation_id'])->first();
