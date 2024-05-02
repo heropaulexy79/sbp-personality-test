@@ -98,10 +98,11 @@ class PaystackController extends Controller
             ));
 
 
-            $org = \App\Models\Organisation::find($paymentDetails['data']['metadata']['organisation_id']);
+            $org = \App\Models\Organisation::with('employees')->where('id', '=', $paymentDetails['data']['metadata']['organisation_id'])->first();
 
             if (!$org->hasActiveSubscription()) {
                 // charge user
+                \App\Jobs\BillOrganizationJob::dispatch($org);
             }
 
 
@@ -179,11 +180,31 @@ class PaystackController extends Controller
                         "email_address" => $event['data']['customer']['email'],
                     )
                 );
+
+                $this->initiateRefund(array(
+                    "transaction" => $event['data']['reference'],
+                    "amount" => $event['data']['amount'],
+                ));
+
+
+                $org = \App\Models\Organisation::with('employees')->where('id', '=', $event['data']['metadata']['organisation_id'])->first();
+
+                if (!$org->hasActiveSubscription()) {
+                    // charge user
+                    \App\Jobs\BillOrganizationJob::dispatch($org);
+                }
             }
 
             if ($type === 'SUBSCRIPTION') {
                 // What to do?
-                // TODO: add billed for month field?
+                $bh->store(array(
+                    "transaction_ref" => $event['data']['reference'],
+                    "currency" => $event['data']['currency'],
+                    "amount" => $event['data']['amount'] / 100, // this is because paystack stores in kobo
+                    "description" => $event['data']['metadata']['description'] ?? "Subscription",
+                    "provider" => "PAYSTACK",
+                    "organisation_id" => $event['data']['metadata']['organisation_id'],
+                ));
             }
         }
 
@@ -196,6 +217,8 @@ class PaystackController extends Controller
                 $existingHistory->description = "{$existingHistory->description} (Refunded)";
                 $existingHistory->save();
             }
+
+            // Todo : alert refund
         }
 
 
