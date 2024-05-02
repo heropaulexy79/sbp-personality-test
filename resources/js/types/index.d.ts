@@ -17,6 +17,7 @@ export type PageProps<
         user: User;
     };
     query: { [key: string]: string };
+    global: { [key: string]: string | boolean };
     flash: {
         [key: string]: any;
         message?: {

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\EnsureEnrolledInCourse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,7 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         //
         $middleware->alias([
-            'enrolled' => EnsureEnrolledInCourse::class
+            'enrolled' => \App\Http\Middleware\EnsureEnrolledInCourse::class,
+            'subscribed' => \App\Http\Middleware\EnsureOrganisationHasActiveSubscription::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

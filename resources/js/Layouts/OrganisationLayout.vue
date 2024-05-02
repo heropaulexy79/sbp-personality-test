@@ -3,7 +3,7 @@ import { ref } from "vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import {
     DropdownMenu,
@@ -15,8 +15,16 @@ import {
 } from "@/Components/ui/dropdown-menu";
 import { Button } from "@/Components/ui/button";
 import GlobalLayout from "./GlobalLayout.vue";
+import AddPaymentMethodPrompt from "@/Pages/Organisation/Billing/Partials/AddPaymentMethodPrompt.vue";
+import BillingBlocker from "@/Pages/Organisation/Billing/Partials/BillingBlocker.vue";
+
+const page = usePage();
 
 const showingNavigationDropdown = ref(false);
+const billingAlert = ref(
+    !page.props.global.hasActiveSubscription &&
+        !route().current("organisation.billing.index"),
+);
 </script>
 
 <template>
@@ -312,6 +320,23 @@ const showingNavigationDropdown = ref(false);
 
                 <!-- Page Content -->
                 <main>
+                    <AddPaymentMethodPrompt
+                        v-if="
+                            $page.props.auth.user.role === 'ADMIN' &&
+                            $page.props.auth.user.organisation_id !== null &&
+                            !$page.props.global.has_payment_method
+                        "
+                    />
+
+                    <BillingBlocker
+                        v-if="!$page.props.auth.user.organisation_id !== null"
+                        v-model:open="billingAlert"
+                        :canUpdateMethod="
+                            $page.props.auth.user.role === 'ADMIN' &&
+                            $page.props.auth.user.organisation_id !== null
+                        "
+                    />
+
                     <slot />
                 </main>
             </div>

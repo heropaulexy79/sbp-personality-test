@@ -29,10 +29,26 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        $org = $user->organisation;
+
+        $has_payment_method =  true;
+        $hasActiveSubscription = true;
+
+        if ($org && $user->account_type === 'ORG') {
+            $has_payment_method = $org->paymentMethods->count() > 0;
+            $hasActiveSubscription = $org->hasActiveSubscription();
+        }
+
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user()?->makeHidden(['organisation']),
+                'user' => $user?->makeHidden(['organisation']),
+            ],
+            'global' => [
+                'has_payment_method' => $has_payment_method,
+                'hasActiveSubscription' => $hasActiveSubscription,
             ],
             'query' => $request->query(),
             'flash' => [

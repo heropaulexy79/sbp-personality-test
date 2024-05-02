@@ -18,7 +18,7 @@ const payForm = useForm({
     channels: ["card"],
     // callback_url: `${window.location.origin ?? "https://int-sbp.test"}/payments/paystack/callback`,
     metadata: {
-        type: "ADD-PAYMENT-METHOD",
+        type: "ADD_PAYMENT_METHOD",
         organisation_id: page.props.auth.user.organisation_id,
     },
 });

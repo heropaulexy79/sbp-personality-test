@@ -98,6 +98,13 @@ class PaystackController extends Controller
             ));
 
 
+            $org = \App\Models\Organisation::find($paymentDetails['data']['metadata']['organisation_id']);
+
+            if (!$org->hasActiveSubscription()) {
+                // charge user
+            }
+
+
             return redirect(route(
                 'organisation.billing.index'
             ))->with('global:message', [

@@ -33,6 +33,31 @@ class Organisation extends Model
         return $this->hasMany(BillingHistory::class, 'organisation_id');
     }
 
+
+    public function hasActiveSubscription()
+    {
+        // $isFirstMonth = $this->created_at->gt(now()->subDays(30));
+        $isNewUser = $this->created_at->startOfMonth()->gte(now()->startOfMonth());
+
+        if (config('app.env') === 'local' || $isNewUser) {
+            return true;
+        }
+
+        // Query the payment model to find the latest successful payment for the user
+        $latestPayment = BillingHistory::where('organisation_id', $this->id)
+            // ->where('status', 'success')
+            ->where('description', 'LIKE', 'subscription')
+            ->latest()
+            ->first();
+
+        if ($latestPayment) {
+            // Check if the payment is within the subscription period (e.g., last 30 days)
+            return $latestPayment->created_at->gte(now()->subDays(30));
+        }
+
+        return false;
+    }
+
     // public function courses()
     // {
     //     return $this->hasMany(Course::class, 'organisation_id');
