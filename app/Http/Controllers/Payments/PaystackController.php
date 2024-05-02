@@ -21,7 +21,7 @@ class PaystackController extends Controller
     public function redirectToGateway(Request $request)
     {
         try {
-                // dd(Paystack::getAuthorizationUrl()->url);
+            // dd(Paystack::getAuthorizationUrl()->url);
             return Inertia::location(Paystack::getAuthorizationUrl()->url);
         } catch (\Exception $e) {
             return redirect()->back()->with('message', [
