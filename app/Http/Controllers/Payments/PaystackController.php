@@ -259,8 +259,18 @@ class PaystackController extends Controller
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody()->getContents();
+            $bh = new BillingController();
 
             if ($statusCode >= 200 && $statusCode < 300) {
+                $event = json_decode($responseBody);
+
+                $existingHistory = $bh->show($event['data']['reference']);
+
+                if ($existingHistory) {
+                    $existingHistory->description = "{$existingHistory->description} (Refunded)";
+                    $existingHistory->save();
+                }
+
                 // Successful refund initiation
                 return response()->json(json_decode($responseBody), $statusCode);
             } else {
