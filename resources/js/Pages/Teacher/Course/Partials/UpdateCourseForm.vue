@@ -31,7 +31,9 @@ const form = useForm({
     title: props.course.title ?? "",
     description: props.course.description ?? "",
     banner_image: props.course.banner_image ?? "",
-    is_published: props.course.is_published + "" ?? "false",
+    is_published: props.course.is_published
+        ? props.course.is_published + ""
+        : "false",
 });
 
 function submit() {

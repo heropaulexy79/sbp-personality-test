@@ -42,7 +42,9 @@ const form = useForm({
                   },
               ],
     type: props.lesson.type ?? "DEFAULT",
-    is_published: props.lesson.is_published + "" ?? "false",
+    is_published: props.lesson.is_published
+        ? props.lesson.is_published + ""
+        : "false",
 });
 
 function submit() {
