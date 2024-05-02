@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command(BillOrganisationsMonthly::class)->monthly()
-    ->environments(['staging', 'production'])
+    ->environments(['production'])
     ->runInBackground();
 
 

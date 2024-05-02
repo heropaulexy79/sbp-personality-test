@@ -39,7 +39,7 @@ class Organisation extends Model
         // $isFirstMonth = $this->created_at->gt(now()->subDays(30));
         $isNewUser = $this->created_at->startOfMonth()->gte(now()->startOfMonth());
 
-        if (config('app.env') === 'local' || $isNewUser) {
+        if (config('app.env') === 'local' || config('app.env') === 'staging' || $isNewUser) {
             return true;
         }
 
