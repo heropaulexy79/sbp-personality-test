@@ -2,12 +2,15 @@
 
 namespace App\Jobs;
 
+use App;
+use App\Models\BillingHistory;
 use App\Models\Organisation;
 use DateInterval;
 use DateTime;
 use GuzzleHttp\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -92,6 +95,17 @@ class BillOrganizationJob implements ShouldQueue
 
             // You don't typically get a response body for charge authorization
             if ($statusCode >= 200 && $statusCode < 300) {
+                $bh = new \App\Http\Controllers\BillingController();
+                $event = json_decode($responseBody);
+                $bh->store(array(
+                    "transaction_ref" => $event['data']['reference'],
+                    "currency" => $event['data']['currency'],
+                    "amount" => $event['data']['amount'] / 100, // this is because paystack stores in kobo
+                    "description" => $event['data']['metadata']['description'] ?? "Subscription",
+                    "provider" => "PAYSTACK",
+                    "organisation_id" => $event['data']['metadata']['organisation_id'],
+                ));
+
                 // Successful authorization (no response body, but 2xx status code)
                 // return response()->json(['message' => 'Authorization successful'], $statusCode);
                 return;
