@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentMethodController;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 use Paystack;
 use Throwable;
 
@@ -21,7 +22,7 @@ class PaystackController extends Controller
     {
         try {
 
-            return Paystack::getAuthorizationUrl()->redirectNow();
+            return Inertia::location(Paystack::getAuthorizationUrl());
         } catch (\Exception $e) {
             return redirect()->back()->with('message', [
                 'status' => 'error',
