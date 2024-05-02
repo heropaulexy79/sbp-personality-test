@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class BillOrganizationJob implements ShouldQueue
@@ -72,6 +73,8 @@ class BillOrganizationJob implements ShouldQueue
             'Content-Type' => 'application/json',
         ];
 
+        // Log::info($paymentMethod);
+
         $data = [
             'authorization_code' => $paymentMethod->auth_code,
             'email' => $paymentMethod->email_address, // Get customer email from request
@@ -106,10 +109,16 @@ class BillOrganizationJob implements ShouldQueue
                     "organisation_id" => $event['data']['metadata']['organisation_id'],
                 ));
 
+                // Log::info($event);
+
                 // Successful authorization (no response body, but 2xx status code)
                 // return response()->json(['message' => 'Authorization successful'], $statusCode);
                 return;
             } else {
+                Log::error([
+                    'data' => json_decode($responseBody),
+                    'status' => $statusCode
+                ]);
                 // Handle error response
                 // return response()->json(json_decode($responseBody), $statusCode);
                 return;
@@ -120,6 +129,12 @@ class BillOrganizationJob implements ShouldQueue
             //     'message' => 'An error occurred during the authorization request.',
             //     'exception' => $e->getMessage(),
             // ], 500);
+
+            Log::error([
+                'message' => 'An error occurred during the authorization request.',
+                'exception' => $e->getMessage(),
+                'status' => 500,
+            ]);
 
             // TODO:Alert billing failed;
             return;
