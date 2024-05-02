@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('payment_methods', function (Blueprint $table) {
             //
-            $table->string('exp_month');
-            $table->string('exp_year');
-            $table->string('account_name')->nullable()->change();
+            if (Schema::hasColumn('payment_methods', 'exp')) {
+                $table->dropColumn('exp');
+            }
         });
     }
 
@@ -26,10 +26,7 @@ return new class extends Migration
     {
         Schema::table('payment_methods', function (Blueprint $table) {
             //
-            $table->dropColumn('exp_month');
-            $table->dropColumn('exp_year');
-            // $table->dropColumn('exp');
-            $table->string('account_name')->nullable(false);
+            $table->string('exp')->nullable();
         });
     }
 };
