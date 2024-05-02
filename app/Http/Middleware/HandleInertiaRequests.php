@@ -30,7 +30,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
-        $org = $user->organisation;
+        $org = $user?->organisation;
 
         $has_payment_method =  true;
         $hasActiveSubscription = true;
