@@ -12,3 +12,8 @@ Artisan::command('inspire', function () {
 Schedule::command(BillOrganisationsMonthly::class)->monthly()
     // ->environments(['staging', 'production'])
     ->runInBackground();
+
+
+Schedule::command('queue:work --stop-when-empty')
+    ->everyMinute()
+    ->withoutOverlapping();
