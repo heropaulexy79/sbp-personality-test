@@ -40,7 +40,7 @@ class Organisation extends Model
         $isNewUser = $this->created_at->startOfMonth()->gte(now()->startOfMonth());
 
         // config('app.env') === 'staging'
-        if (config('app.env') === 'local'  || $isNewUser) {
+        if (config('app.env') === 'local'  || $isNewUser ||  config('app.env') === 'staging') {
             return true;
         }
 
