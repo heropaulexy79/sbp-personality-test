@@ -29,7 +29,7 @@
             <div class="container grid grid-cols-2 items-center gap-2 border-b border-black/5 py-4 lg:grid-cols-2">
                 <div>
                     <a href="/">
-                        <img src="{{ asset('images/logo.png') }}" alt="logo" />
+                        <img src="{{ asset('images/logo.png') }}" alt="logo" class="max-h-12" />
                     </a>
                 </div>
 
