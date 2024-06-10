@@ -47,7 +47,6 @@ const enrollModal = ref(false);
                     {{ course.title }}
                 </h2>
 
-                <!-- Todo: slugify -->
                 <div class="grid gap-10 lg:grid-cols-[1fr_350px]">
                     <div v-html="course.description" class="prose" />
 

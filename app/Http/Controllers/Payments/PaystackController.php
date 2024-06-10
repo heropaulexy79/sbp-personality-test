@@ -54,7 +54,6 @@ class PaystackController extends Controller
             $existingHistory = $bh->show($paymentDetails['data']['reference']);
 
             if ($existingHistory) {
-                // TODO redirect 
                 return redirect(route(
                     'organisation.billing.index'
                 ))->with('global:message', [
@@ -223,8 +222,6 @@ class PaystackController extends Controller
                 $existingHistory->description = "{$existingHistory->description} (Refunded)";
                 $existingHistory->save();
             }
-
-            // Todo : alert refund
         }
 
 

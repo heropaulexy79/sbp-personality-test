@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App;
+use App\Events\SubscriptionBillingFailed;
 use App\Models\BillingHistory;
 use App\Models\Organisation;
 use DateInterval;
@@ -130,13 +131,13 @@ class BillOrganizationJob implements ShouldQueue
             //     'exception' => $e->getMessage(),
             // ], 500);
 
+            event(new SubscriptionBillingFailed($this->org));
+
             Log::error([
                 'message' => 'An error occurred during the authorization request.',
                 'exception' => $e->getMessage(),
                 'status' => 500,
             ]);
-
-            // TODO:Alert billing failed;
             return;
         }
     }
