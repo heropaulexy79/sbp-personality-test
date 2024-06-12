@@ -15,7 +15,7 @@ class Organisation extends Model
 
     public function employees()
     {
-        return $this->hasMany(User::class, 'organisation_id');
+        return $this->hasMany(OrganisationUser::class, 'organisation_id');
     }
 
     public function invites()

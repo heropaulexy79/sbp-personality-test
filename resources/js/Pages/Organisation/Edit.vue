@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import UpdateOrganisationForm from "@/Pages/Organisation/Partials/UpdateOrganisationForm.vue";
-import { Organisation, OrganisationInvite, User } from "@/types";
+import {
+    Organisation,
+    OrganisationInvite,
+    OrganisationUser,
+    User,
+} from "@/types";
 import { Head } from "@inertiajs/vue3";
 import TeamSettings from "./Partials/TeamSettings.vue";
 
 const props = defineProps<{
     organisation: Organisation;
-    employees: User[];
+    employees: OrganisationUser[];
     invites: OrganisationInvite[];
 }>();
 </script>

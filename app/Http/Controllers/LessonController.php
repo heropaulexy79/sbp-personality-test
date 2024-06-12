@@ -74,7 +74,7 @@ class LessonController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
+        $organisation = $user->organisationNew->organisation;
 
         if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);
@@ -96,7 +96,7 @@ class LessonController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
+        $organisation = $user->organisationNew->organisation;
 
         // dd($request->user()->cannot('view', $user->organisation),)
 
@@ -148,7 +148,7 @@ class LessonController extends Controller
 
 
         $user = $request->user();
-        $organisation = $user->organisation;
+        $organisation = $user->organisationNew->organisation;
 
         if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(404);

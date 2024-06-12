@@ -46,6 +46,14 @@ export interface Organisation {
     name: string;
 }
 
+export interface OrganisationUser {
+    id: number;
+    user_id: User["id"];
+    organisation_id: Organisation["id"];
+    user: Pick<User, "id" | "name" | "email">;
+    role: "ADMIN" | "STUDENT";
+}
+
 export interface OrganisationInvite {
     id: number;
     email: string;

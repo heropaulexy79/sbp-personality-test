@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import BaseDataTable from "@/Components/ui/BaseDataTable.vue";
-import { Organisation, OrganisationInvite, User } from "@/types";
+import {
+    Organisation,
+    OrganisationInvite,
+    OrganisationUser,
+    User,
+} from "@/types";
 import { ref } from "vue";
 import { employeeColumns, employeeInviteColumns } from "./employee-column";
 import InviteToOrganisationForm from "./InviteToOrganisationForm.vue";
@@ -17,7 +22,7 @@ import { VisuallyHidden } from "radix-vue";
 
 defineProps<{
     organisation: Organisation;
-    employees: User[];
+    employees: OrganisationUser[];
     invites: OrganisationInvite[];
 }>();
 </script>

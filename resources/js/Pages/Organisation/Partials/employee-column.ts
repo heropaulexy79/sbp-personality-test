@@ -1,16 +1,16 @@
-import { OrganisationInvite, User } from "@/types";
+import { OrganisationInvite, OrganisationUser, User } from "@/types";
 import { createColumnHelper } from "@tanstack/vue-table";
 import { h } from "vue";
 import SelectTeamRole from "./SelectEmployeeRole.vue";
 import InviteActions from "./InviteActions.vue";
 
-const columnHelper = createColumnHelper<User>();
+const columnHelper = createColumnHelper<OrganisationUser>();
 
 export const employeeColumns = [
-    columnHelper.accessor("name", {
+    columnHelper.accessor("user.name", {
         header: () => h("div", { class: "" }, "Name"),
         cell(props) {
-            return h("div", { class: "" }, props.row.getValue("name"));
+            return h("div", { class: "" }, props.getValue());
         },
     }),
 

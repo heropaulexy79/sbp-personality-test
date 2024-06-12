@@ -16,7 +16,7 @@ class EnsureOrganisationHasActiveSubscription
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        $org = $user->organisation;
+        $org = $user?->organisationNew->organisation;
 
         if ($org && $user->account_type === 'ORG' && !$org->hasActiveSubscription()) {
             abort('401', "You don't have an active subscription");

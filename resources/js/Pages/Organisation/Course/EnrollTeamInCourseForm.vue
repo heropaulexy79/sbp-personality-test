@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Course, User } from "@/types";
+import { Course, OrganisationUser, User } from "@/types";
 import axios from "axios";
 import { computed, onMounted, ref } from "vue";
 import {
@@ -25,7 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Button } from "@/Components/ui/button";
 import { useForm } from "@inertiajs/vue3";
 
-type Student = Pick<User, "id" | "name" | "email">;
+type Student = OrganisationUser;
 
 const props = defineProps<{
     course: Course;
@@ -58,7 +58,7 @@ const form = useForm({
 // });
 
 const filteredStudents = computed(() =>
-    students.value?.filter((i) => !modelValue.value.includes(i.id + "")),
+    students.value?.filter((i) => !modelValue.value.includes(i.user_id + "")),
 );
 
 async function fetchStudents() {
@@ -109,16 +109,16 @@ onMounted(async () => {
                         <span class="py-1 pl-2 leading-none">
                             <Avatar class="size-6 border">
                                 <AvatarImage
-                                    :src="`https://unavatar.io/${item.email}?ttl=1d`"
+                                    :src="`https://unavatar.io/${item.user.email}?ttl=1d`"
                                     class="leading-none"
                                 />
                                 <AvatarFallback>{{
-                                    item.name[0]
+                                    item.user.name[0]
                                 }}</AvatarFallback>
                             </Avatar>
                         </span>
                         <span class="rounded bg-transparent px-2 py-1 text-sm">
-                            {{ item.name }}
+                            {{ item.user.name }}
                         </span>
                         <TagsInputItemDelete />
                     </TagsInputItem>
@@ -154,14 +154,16 @@ onMounted(async () => {
                                 <CommandItem
                                     v-for="student in filteredStudents"
                                     :key="student.id"
-                                    :value="student.name"
+                                    :value="student.user.name"
                                     @select.prevent="
                                         (ev) => {
                                             // if (typeof ev.detail.value === 'string') {
                                             //     searchTerm = '';
                                             //     modelValue.value.push(ev.detail.value);
                                             // }
-                                            modelValue.push(student.id + '');
+                                            modelValue.push(
+                                                student.user_id + '',
+                                            );
 
                                             if (filteredStudents.length === 0) {
                                                 open = false;
@@ -172,13 +174,13 @@ onMounted(async () => {
                                 >
                                     <Avatar class="size-6 border">
                                         <AvatarImage
-                                            :src="`https://unavatar.io/${student.email}?ttl=1d`"
+                                            :src="`https://unavatar.io/${student.user.email}?ttl=1d`"
                                         />
                                         <AvatarFallback>{{
-                                            student.name[0]
+                                            student.user.name[0]
                                         }}</AvatarFallback>
                                     </Avatar>
-                                    <span>{{ student.name }}</span>
+                                    <span>{{ student.user.name }}</span>
                                 </CommandItem>
                             </CommandGroup>
                         </CommandList>

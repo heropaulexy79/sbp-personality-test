@@ -126,7 +126,7 @@ class CourseController extends Controller
     {
         //
         $user = $request->user();
-        $organisation = $user->organisation;
+        $organisation = $user->organisationNew->organisation;
 
         if ($user->account_type !== 'TEACHER' || $user->id !== $course->teacher_id) {
             return abort(401);

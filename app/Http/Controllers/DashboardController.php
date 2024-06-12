@@ -30,7 +30,7 @@ class DashboardController extends Controller
         switch ($status) {
             case 'all_enrolled':
                 $courses = Course::whereHas('enrolledUsers', function ($query) use ($user) {
-                    $query->where('organisation_id', $user->organisation_id);
+                    $query->where('organisation_id', $user->organisationNew->organisation_id);
                 })->paginate()->withQueryString();
                 break;
 

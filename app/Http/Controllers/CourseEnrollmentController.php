@@ -19,7 +19,7 @@ class CourseEnrollmentController extends Controller
     {
         $user = $request->user();
 
-        $enrolledUsers  = $course->enrolledUsers()->where('organisation_id', $user->organisation_id)->get();
+        $enrolledUsers  = $course->enrolledUsers()->where('organisation_id', $user->organisationNew->organisation_id)->get();
 
         if (!$enrolledUsers || count($enrolledUsers) < 1) {
             abort(404);
@@ -82,7 +82,7 @@ class CourseEnrollmentController extends Controller
     public function storeAll(Request $request, Course $course)
     {
         $user = $request->user();
-        $org = $user->organisation;
+        $org = $user->organisationNew->organisation;
 
         // TODO: if course is public
         if (!$course->is_published || !$user->isAdminInOrganisation($org)) {
@@ -117,7 +117,7 @@ class CourseEnrollmentController extends Controller
     {
 
         $user = $request->user();
-        $org = $user->organisation;
+        $org = $user->organisationNew->organisation;
 
         if (!$user->isAdminInOrganisation($org) || !$student->isMemberOfOrganisation($org)) {
             return abort(401);
@@ -151,7 +151,7 @@ class CourseEnrollmentController extends Controller
     {
 
         $user = $request->user();
-        $org = $user->organisation;
+        $org = $user->organisationNew->organisation;
 
         if (!$user->isAdminInOrganisation($org)) {
             return abort(401);

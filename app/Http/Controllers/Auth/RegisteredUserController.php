@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Organisation;
 use App\Models\OrganisationInvitation;
+use App\Models\OrganisationUser;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -46,7 +48,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'invitation_token' => 'nullable|string',
         ]);
@@ -62,7 +64,7 @@ class RegisteredUserController extends Controller
 
             $invitation = OrganisationInvitation::where('token', $request->invitation_token)->first();
 
-            if (! $invitation) {
+            if (!$invitation) {
                 // abort invitation expired
             }
 
@@ -70,8 +72,16 @@ class RegisteredUserController extends Controller
                 event(new Verified($user));
             }
 
-            $user->organisation_id = $invitation->organisation_id;
-            $user->role = $invitation->role ?? 'MEMBER';
+            // $org = Organisation::find($invitation->organisation_id);
+
+            // $user->organisation_id = $invitation->organisation_id;
+            // $user->role = $invitation->role ?? 'STUDENT';
+
+            OrganisationUser::create([
+                "user_id" => $user->id,
+                "organisation_id" => $invitation->organisation_id,
+                "role" => $invitation->role ?? 'STUDENT'
+            ]);
 
             $user->save();
 

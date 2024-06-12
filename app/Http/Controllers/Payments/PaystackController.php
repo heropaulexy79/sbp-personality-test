@@ -101,7 +101,7 @@ class PaystackController extends Controller
             }
 
 
-            $org = \App\Models\Organisation::with('employees')->where('id', '=', $paymentDetails['data']['metadata']['organisation_id'])->first();
+            $org = \App\Models\Organisation::where('id', '=', $paymentDetails['data']['metadata']['organisation_id'])->first();
 
             if (!$org->hasActiveSubscription()) {
                 // charge user
@@ -192,7 +192,7 @@ class PaystackController extends Controller
                 }
 
 
-                $org = \App\Models\Organisation::with('employees')->where('id', '=', $event['data']['metadata']['organisation_id'])->first();
+                $org = \App\Models\Organisation::where('id', '=', $event['data']['metadata']['organisation_id'])->first();
 
                 if (!$org->hasActiveSubscription()) {
                     // charge user

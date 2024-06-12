@@ -43,7 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Organisation
     Route::resource('organisation', OrganisationController::class)->only(['store', 'update']);
     Route::get('/settings/org', [OrganisationController::class, 'edit'])->name('organisation.edit');
-    Route::post('/org/{organisation}/invite', [OrganisationController::class, 'inviteEmployee'])->name('organisation.invite')->middleware(['subscribed']);
+    Route::post('/org/{organisation}/invite', [OrganisationController::class, 'inviteEmployees'])->name('organisation.invite')->middleware(['subscribed']);
     Route::delete('/org/{organisation}/invite/{invitation}', [OrganisationController::class, 'uninviteEmployee'])->name('organisation.uninvite')->middleware(['subscribed']);
     Route::patch('/org/{organisation}/employee/{employee}', [OrganisationController::class, 'updateEmployee'])->name('organisation.updateEmployee')->middleware(['subscribed']);
     Route::get('/org/employee/', [OrganisationController::class, 'getAllEmployees'])->name('organisation.employees')->middleware(['subscribed']);

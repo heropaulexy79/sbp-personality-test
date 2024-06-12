@@ -56,15 +56,20 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isMemberOfOrganisation(Organisation $organisation)
     {
-        return $this->organisation->is($organisation); // belong to relationsip
+        return $this->organisationNew->organisation->is($organisation); // belong to relationsip
     }
 
     public function isAdminInOrganisation(Organisation $organisation)
     {
-        return $this->isMemberOfOrganisation($organisation) && $this->role === self::ROLE_ADMIN;
+        return $this->isMemberOfOrganisation($organisation) && $this->organisationNew->role === self::ROLE_ADMIN;
     }
 
-    public function organisation()
+    public function organisationNew()
+    {
+        return $this->hasOne(OrganisationUser::class);
+    }
+
+    public function organisationOld()
     {
         return $this->belongsTo(Organisation::class);
     }

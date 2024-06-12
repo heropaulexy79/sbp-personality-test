@@ -14,7 +14,7 @@ class BillingController extends Controller
     public function index(Request $request)
     {
         //
-        $org = $request->user()->organisation;
+        $org = $request->user()->organisationNew->organisation;
 
         return Inertia::render('Organisation/Billing/Index', [
             "payment_method" => $org->paymentMethods->first(),

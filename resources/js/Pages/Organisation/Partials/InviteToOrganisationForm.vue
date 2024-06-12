@@ -3,6 +3,13 @@ import InputError from "@/Components/InputError.vue";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
+import {
+    TagsInput,
+    TagsInputInput,
+    TagsInputItem,
+    TagsInputItemDelete,
+    TagsInputItemText,
+} from "@/Components/ui/tags-input";
 import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
@@ -12,11 +19,15 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    email: "",
+    invites: [] as string[],
 });
 
 const inviteToOrganisation = () => {
-    form.post(route("organisation.invite", { id: props.organisation.id }), {
+    form.transform((d) => {
+        return {
+            invites: d.invites.map((e) => ({ email: e })),
+        };
+    }).post(route("organisation.invite", { id: props.organisation.id }), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
@@ -44,16 +55,33 @@ const inviteToOrganisation = () => {
         <form @submit.prevent="inviteToOrganisation">
             <div class="space-y-6">
                 <div>
-                    <Label for="email">Email</Label>
-                    <Input
+                    <Label for="email">Emails</Label>
+                    <!-- <Input
                         id="email"
                         type="email"
                         placeholder="Enter the email address"
                         v-model="form.email"
                         class="mt-2"
                         required
-                    />
-                    <InputError class="mt-2" :message="form.errors.email" />
+                    /> -->
+                    <TagsInput v-model="form.invites">
+                        <TagsInputItem
+                            v-for="item in form.invites"
+                            :key="item"
+                            :value="item"
+                        >
+                            <TagsInputItemText />
+                            <TagsInputItemDelete />
+                        </TagsInputItem>
+
+                        <TagsInputInput
+                            id="email"
+                            type="email"
+                            placeholder="Enter the email addresses"
+                            class="mt-2"
+                        />
+                    </TagsInput>
+                    <InputError class="mt-2" :message="form.errors.invites" />
                 </div>
 
                 <div>
