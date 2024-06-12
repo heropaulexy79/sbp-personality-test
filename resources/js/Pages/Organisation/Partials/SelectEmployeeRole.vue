@@ -9,14 +9,14 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import { errorBagToString } from "@/lib/errors";
-import { Organisation, User } from "@/types";
+import { Organisation, OrganisationUser, User } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 import { toast } from "vue-sonner";
 
 const props = defineProps<{
     organisation_id: Organisation["id"];
     user_id: User["id"];
-    role: User["role"];
+    role: OrganisationUser["role"];
 }>();
 
 const form = useForm({

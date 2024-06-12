@@ -22,7 +22,9 @@ export const employeeColumns = [
                 { class: "" },
                 h(SelectTeamRole, {
                     organisation_id: props.row.original.organisation_id!,
-                    role: props.row.getValue("role") as User["role"],
+                    role: props.row.getValue(
+                        "role",
+                    ) as OrganisationUser["role"],
                     user_id: props.row.original.id!,
                 }),
             );
