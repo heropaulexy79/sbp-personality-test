@@ -19,7 +19,10 @@ class CourseEnrollmentController extends Controller
     {
         $user = $request->user();
 
-        $enrolledUsers  = $course->enrolledUsers()->where('organisation_id', $user->organisationNew->organisation_id)->get();
+
+        $enrolledUsers  = $course->enrolledUsers()->whereHas('organisationNew', function ($query) use ($user) {
+            $query->where('organisation_id', $user->organisationNew->organisation_id);
+        })->get();
 
         if (!$enrolledUsers || count($enrolledUsers) < 1) {
             abort(404);
@@ -113,7 +116,7 @@ class CourseEnrollmentController extends Controller
     }
 
 
-    public function destroy(Request $request, Course $course, User $student)
+    public function reset(Request $request, Course $course, User $student)
     {
 
         $user = $request->user();
@@ -147,7 +150,7 @@ class CourseEnrollmentController extends Controller
 
 
 
-    public function destroyAll(Request $request, Course $course)
+    public function resetAll(Request $request, Course $course)
     {
 
         $user = $request->user();
@@ -185,6 +188,38 @@ class CourseEnrollmentController extends Controller
         return redirect()->back()->with(['global:message' => [
             'status' => 'success',
             'message' => 'Student progress has been reset',
+        ]], 200);
+    }
+
+
+    public function destroy(Request $request, Course $course, User $student)
+    {
+
+        $user = $request->user();
+        $org = $user->organisationNew->organisation;
+
+        if (!$user->isAdminInOrganisation($org) || !$student->isMemberOfOrganisation($org)) {
+            return abort(401);
+            // return redirect()->back()->with(['global:message' => [
+            //     'status' => 'error',
+            //     'message' => 'You dont have permission to access this resource!',
+            // ]], 401);
+        }
+
+
+        // Update course progress
+        $enrollment = CourseEnrollment::where('user_id', $student->id)
+            ->where('course_id', $course->id)->delete();
+
+        // Update lesson progress
+        $student->lessons()->with('lesson')->whereHas('lesson', function ($query) use ($course) {
+            $query->where('course_id', $course->id);
+        })->delete();
+
+
+        return redirect()->back()->with(['message' => [
+            'status' => 'success',
+            'message' => 'User enrollment has been deleted',
         ]], 200);
     }
 }

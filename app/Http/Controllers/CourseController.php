@@ -140,12 +140,15 @@ class CourseController extends Controller
 
         $course->title = $request->title;
         $course->description = $request->description;
+        if ($request->is_published === 'true' && $course->lessons->count() < 1) {
+            return redirect(400)->back()->with('message', ['status' => 'error', 'message' => 'Course cannot be published without any lessons']);
+        }
         $course->is_published = $request->is_published === 'true' ? true : false;
         $course->banner_image = $request->banner_image ?? $course->banner_image;
 
         $course->save();
 
-        return redirect()->back()->with('message', ['status' => 'error', 'message' => 'Changes saved!']);
+        return redirect()->back()->with('message', ['status' => 'success', 'message' => 'Changes saved!']);
     }
 
     /**
