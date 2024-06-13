@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import InputError from "@/Components/InputError.vue";
 import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import {
     TagsInput,
@@ -12,7 +11,6 @@ import {
 } from "@/Components/ui/tags-input";
 import { Organisation } from "@/types";
 import { useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
 
 const props = defineProps<{
     organisation: Organisation;
@@ -64,7 +62,11 @@ const inviteToOrganisation = () => {
                         class="mt-2"
                         required
                     /> -->
-                    <TagsInput v-model="form.invites">
+                    <TagsInput
+                        v-model="form.invites"
+                        class="mt-2 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+                        add-on-paste
+                    >
                         <TagsInputItem
                             v-for="item in form.invites"
                             :key="item"
@@ -77,11 +79,21 @@ const inviteToOrganisation = () => {
                         <TagsInputInput
                             id="email"
                             type="email"
-                            placeholder="Enter the email addresses"
-                            class="mt-2"
+                            placeholder="Enter the email addresses... press enter after each email"
+                            class="border-none focus:ring-0"
                         />
                     </TagsInput>
                     <InputError class="mt-2" :message="form.errors.invites" />
+                </div>
+
+                <div>
+                    <div v-for="(_, k) of form.invites">
+                        <!-- @vue-ignore -->
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors?.[`invites.${k}.email`]"
+                        />
+                    </div>
                 </div>
 
                 <div>
