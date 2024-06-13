@@ -108,7 +108,13 @@ const courseNav = [
 
                     <ul class="space-y-4">
                         <li v-for="course in courses.data">
-                            <CourseCard :course="course" />
+                            <CourseCard
+                                :course="course"
+                                :can-view-lesson="
+                                    $page.props.query['status'] !==
+                                    'all_enrolled'
+                                "
+                            />
                         </li>
                         <li
                             v-if="courses.data.length === 0"

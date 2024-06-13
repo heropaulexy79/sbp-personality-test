@@ -39,7 +39,7 @@ const modelValue = ref<string[]>([]);
 const open = ref(false);
 const searchTerm = ref("");
 const seletedStudents = computed(() =>
-    students.value?.filter((i) => modelValue.value.includes(i.id + "")),
+    students.value?.filter((i) => modelValue.value.includes(i.user_id + "")),
 );
 
 const wrapperRef = ref<HTMLElement>();
@@ -157,7 +157,7 @@ onMounted(async () => {
                                     :value="student.user.name"
                                     @select.prevent="
                                         (ev) => {
-                                            // if (typeof ev.detail.value === 'string') {
+                                            // if (typeof ev.detail.value === 'string' ) {
                                             //     searchTerm = '';
                                             //     modelValue.value.push(ev.detail.value);
                                             // }
