@@ -5,9 +5,15 @@ import { Course } from "@/types";
 import { Link } from "@inertiajs/vue3";
 import { ArrowRight } from "lucide-vue-next";
 
-defineProps<{
-    course: Pick<Course, "id" | "title" | "slug" | "banner_image">;
-}>();
+withDefaults(
+    defineProps<{
+        course: Pick<Course, "id" | "title" | "slug" | "banner_image">;
+        canViewLesson: boolean;
+    }>(),
+    {
+        canViewLesson: true,
+    },
+);
 </script>
 
 <template>
@@ -24,7 +30,13 @@ defineProps<{
                 }"
             ></div>
             <Link
-                :href="route('classroom.lesson.index', { course: course.slug })"
+                :href="
+                    canViewLesson
+                        ? route('classroom.lesson.index', {
+                              course: course.slug,
+                          })
+                        : route('public.course.show', { course: course.slug })
+                "
                 :class="
                     cn(
                         buttonVariants({
@@ -45,7 +57,13 @@ defineProps<{
         >
             <!--  -->
             <Link
-                :href="route('classroom.lesson.index', { course: course.slug })"
+                :href="
+                    canViewLesson
+                        ? route('classroom.lesson.index', {
+                              course: course.slug,
+                          })
+                        : route('public.course.show', { course: course.slug })
+                "
                 :class="cn(buttonVariants({ size: 'lg' }))"
             >
                 <span>Go to course</span>
