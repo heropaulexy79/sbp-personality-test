@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
         if ($user) {
             $user->organisation_id = $user?->organisationNew?->organisation_id;
             $user->role = $user?->organisationNew?->role;
+            $user->organisation_name = $org?->name;
         }
 
         return [
