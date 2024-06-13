@@ -36,7 +36,7 @@ class OrganisationController extends Controller
         $user = $request->user();
         // $user->organisation_id = $user->organisationNew
 
-        if ($user->organisationNew->organisation_id) {
+        if ($user->organisationNew?->organisation_id) {
             return redirect()->back(400)->with('global:message', [
                 'status' => 'error',
                 'message' => 'Account is already a member of an organisation.',
@@ -140,105 +140,6 @@ class OrganisationController extends Controller
         //
     }
 
-    public function updateEmployee(Request $request, Organisation $organisation, User $employee)
-    {
-
-        $user = $request->user();
-
-        if (!$user->isAdminInOrganisation($user->organisationNew->organisation)) {
-            return abort(401, "You don't have permission to make this request");
-        }
-
-        $request->validate([
-            'role' => 'required|in:STUDENT,ADMIN',
-        ]);
-
-        if (!$employee || $employee->organisation_id !== $organisation->id) {
-            return back()->with('global:message', [
-                'status' => 'error',
-                'message' => 'Employee not found!',
-            ]);
-        }
-
-        $employee->role = $request->role;
-        $employee->save();
-
-        return back();
-    }
-
-    public function inviteEmployees(Request $request, Organisation $organisation)
-    {
-
-        $user = $request->user();
-
-        if (!$user->isAdminInOrganisation($user->organisationNew->organisation)) {
-            return abort(401, "You don't have permission to make this request");
-        }
-
-        $request->validate([
-            // 'email' => '',
-            'invites' => 'required|array|min:1',
-            'invites.*.email' => 'required|email|unique:users,email'
-        ]);
-
-
-        $invites = [];
-
-
-
-        foreach ($request->input("invites") as $key => $value) {
-
-            $invites[] = [
-                'email' => $value["email"],
-                'organisation_id' => $organisation->id,
-                'token' => OrganisationInvitation::generateUniqueToken(),
-                'role' => $request->input('role', 'STUDENT'),
-            ];
-        }
-
-
-
-        OrganisationInvitation::insert($invites);
-
-        $invitesEmails = array_column($invites, 'email');
-        $invitations = OrganisationInvitation::whereIn('email', $invitesEmails)->get();
-
-        // dd($invitations);
-
-        // foreach ($invitations as $invitation) {
-        //     // Send Notification
-        //     event(new EmployeeInvited($invitation));
-        // }
-
-
-        return back()->with('success', 'Employee invitations sent successfully!');
-    }
-    public function inviteEmployee(Request $request, Organisation $organisation)
-    {
-
-        $user = $request->user();
-
-        if (!$user->isAdminInOrganisation($user->organisationNew->organisation)) {
-            return abort(401, "You don't have permission to make this request");
-        }
-
-        $request->validate([
-            'email' => 'required|email|unique:users,email',
-            'role' => 'nullable|in:STUDENT,ADMIN',
-        ]);
-
-        $invitation = OrganisationInvitation::create([
-            'email' => $request->input('email'),
-            'organisation_id' => $organisation->id,
-            'token' => OrganisationInvitation::generateUniqueToken(),
-            'role' => $request->input('role', 'STUDENT'),
-        ]);
-
-        // Send Notification
-        event(new EmployeeInvited($invitation));
-
-        return back()->with('success', 'Employee invitation sent successfully!');
-    }
 
     public function uninviteEmployee(Request $request, Organisation $organisation, OrganisationInvitation $invitation)
     {
