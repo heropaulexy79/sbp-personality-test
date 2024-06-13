@@ -31,8 +31,10 @@ const props = defineProps<{
 const page = usePage();
 
 const resetCourseProgressAlert = ref(false);
+const unenrollCourseProgressAlert = ref(false);
 
 const resetCourseForm = useForm({});
+const unenrollCourseForm = useForm({});
 
 function resetCourseProgress() {
     resetCourseForm.delete(
@@ -41,6 +43,18 @@ function resetCourseProgress() {
             course: page.props?.course?.slug as string,
             student: props.student.user.id,
         }),
+    );
+}
+function unenrollCourseProgress() {
+    unenrollCourseForm.delete(
+        route("organisation.course.student.destroy", {
+            // @ts-ignore
+            course: page.props?.course?.slug as string,
+            student: props.student.user.id,
+        }),
+        {
+            preserveScroll: true,
+        },
     );
 }
 </script>
@@ -63,6 +77,9 @@ function resetCourseProgress() {
             <DropdownMenuSeparator />
             <DropdownMenuItem @select="resetCourseProgressAlert = true">
                 Reset course progress
+            </DropdownMenuItem>
+            <DropdownMenuItem @select="unenrollCourseProgressAlert = true">
+                Unenroll
             </DropdownMenuItem>
             <!-- <DropdownMenuItem 
                                             >
@@ -87,6 +104,26 @@ function resetCourseProgress() {
                 <AlertDialogAction @click="resetCourseProgress"
                     >Continue</AlertDialogAction
                 >
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog v-model:open="unenrollCourseProgressAlert">
+        <!-- <AlertDialogTrigger>Open</AlertDialogTrigger> -->
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This action cannot be undone. This will unenroll
+                    {{ student.user.name }}
+                    and reset user's progress in this course
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction @click="unenrollCourseProgress">
+                    Continue
+                </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>

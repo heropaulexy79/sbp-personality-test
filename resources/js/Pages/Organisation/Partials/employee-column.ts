@@ -3,6 +3,7 @@ import { createColumnHelper } from "@tanstack/vue-table";
 import { h } from "vue";
 import SelectTeamRole from "./SelectEmployeeRole.vue";
 import InviteActions from "./InviteActions.vue";
+import EmployeeActions from "./EmployeeActions.vue";
 
 const columnHelper = createColumnHelper<OrganisationUser>();
 
@@ -25,25 +26,29 @@ export const employeeColumns = [
                     role: props.row.getValue(
                         "role",
                     ) as OrganisationUser["role"],
-                    user_id: props.row.original.id!,
+                    user_id: props.row.original.user_id,
                 }),
             );
         },
         size: 200,
     }),
 
-    // TODO: DELETE MEMBERSHIP
-    // columnHelper.display({
-    //     id: 'actions',
-    //     enableHiding: false,
-    //     cell: ({ row }) => {
-    //       const payment = row.original
+    columnHelper.display({
+        id: "actions",
+        size: 100,
+        // enableHiding: false,
+        cell: ({ row }) => {
+            const payment = row.original;
 
-    //       return h('div', { class: 'relative' }, h(DropdownAction, {
-    //         payment,
-    //       }))
-    //     },
-    //   }),
+            return h(
+                "div",
+                { class: "" },
+                h(EmployeeActions, {
+                    employee: row.original,
+                }),
+            );
+        },
+    }),
 ];
 
 const inviteColumnHelper2 = createColumnHelper<OrganisationInvite>();
