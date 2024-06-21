@@ -25,6 +25,7 @@ import {
 } from "@/Components/ui/dialog";
 import { VisuallyHidden } from "radix-vue";
 import CreateCourseForm from "@/Pages/Teacher/Course/Partials/CreateCourseForm.vue";
+import { getPublicProfileImage } from "@/lib/utils";
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -107,7 +108,12 @@ const showingNavigationDropdown = ref(false);
                                                     class="border border-primary"
                                                 >
                                                     <AvatarImage
-                                                        :src="`https://unavatar.io/${$page.props.auth.user.email}?ttl=1d`"
+                                                        :src="
+                                                            getPublicProfileImage(
+                                                                $page.props.auth
+                                                                    .user.email,
+                                                            )
+                                                        "
                                                         :alt="
                                                             $page.props.auth
                                                                 .user.name

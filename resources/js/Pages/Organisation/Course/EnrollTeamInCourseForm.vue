@@ -24,6 +24,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Button } from "@/Components/ui/button";
 import { useForm } from "@inertiajs/vue3";
+import { getPublicProfileImage } from "@/lib/utils";
 
 type Student = OrganisationUser;
 
@@ -109,7 +110,9 @@ onMounted(async () => {
                         <span class="py-1 pl-2 leading-none">
                             <Avatar class="size-6 border">
                                 <AvatarImage
-                                    :src="`https://unavatar.io/${item.user.email}?ttl=1d`"
+                                    :src="
+                                        getPublicProfileImage(item.user.email)
+                                    "
                                     class="leading-none"
                                 />
                                 <AvatarFallback>{{
@@ -174,7 +177,11 @@ onMounted(async () => {
                                 >
                                     <Avatar class="size-6 border">
                                         <AvatarImage
-                                            :src="`https://unavatar.io/${student.user.email}?ttl=1d`"
+                                            :src="
+                                                getPublicProfileImage(
+                                                    student.user.email,
+                                                )
+                                            "
                                         />
                                         <AvatarFallback>{{
                                             student.user.name[0]

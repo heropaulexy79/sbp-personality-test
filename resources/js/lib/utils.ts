@@ -53,3 +53,24 @@ export function slugify(input: string, randomLength = 6) {
     // Combine base slug and random fragment
     return `${baseSlug}-${randomString}`;
 }
+
+export function getPublicProfileImage(email: string) {
+    return ` https://unavatar.io/gravatar/${email}?ttl=1d&fallback=https://avatar.vercel.sh/37t?size=400`;
+}
+
+export async function getPublicProfileImageOld(email: string) {
+    if (!email) return "";
+
+    const emailHash = await digest(email, "md5");
+
+    return `https://www.gravatar.com/avatar/${emailHash}`;
+}
+
+async function digest(message: string, algo = "SHA-1") {
+    return Array.from(
+        new Uint8Array(
+            await crypto.subtle.digest(algo, new TextEncoder().encode(message)),
+        ),
+        (byte) => byte.toString(16).padStart(2, "0"),
+    ).join("");
+}

@@ -17,6 +17,7 @@ import { Button } from "@/Components/ui/button";
 import GlobalLayout from "./GlobalLayout.vue";
 import AddPaymentMethodPrompt from "@/Pages/Organisation/Billing/Partials/AddPaymentMethodPrompt.vue";
 import BillingBlocker from "@/Pages/Organisation/Billing/Partials/BillingBlocker.vue";
+import { getPublicProfileImage } from "@/lib/utils";
 
 const page = usePage();
 
@@ -94,7 +95,12 @@ const billingAlert = ref(
                                                     class="border border-primary"
                                                 >
                                                     <AvatarImage
-                                                        :src="`https://unavatar.io/${$page.props.auth.user.email}?ttl=1d`"
+                                                        :src="
+                                                            getPublicProfileImage(
+                                                                $page.props.auth
+                                                                    .user.email,
+                                                            )
+                                                        "
                                                         :alt="
                                                             $page.props.auth
                                                                 .user.name
