@@ -104,9 +104,7 @@ const showingNavigationDropdown = ref(false);
                                                 variant="ghost"
                                                 class="-mr-4 hover:bg-transparent"
                                             >
-                                                <Avatar
-                                                    class="border border-primary"
-                                                >
+                                                <Avatar>
                                                     <AvatarImage
                                                         :src="
                                                             getPublicProfileImage(

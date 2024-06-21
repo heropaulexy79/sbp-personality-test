@@ -175,7 +175,7 @@ onMounted(async () => {
                                     "
                                     class="flex items-center gap-2"
                                 >
-                                    <Avatar class="size-6 border">
+                                    <Avatar class="size-6">
                                         <AvatarImage
                                             :src="
                                                 getPublicProfileImage(
