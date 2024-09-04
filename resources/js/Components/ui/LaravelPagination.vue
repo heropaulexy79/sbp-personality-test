@@ -69,7 +69,7 @@ defineProps<{
                 <PaginationListItem :value="Number(item.label)" as-child>
                     <Link
                         preserve-scroll
-                        :href="items.last_page_url"
+                        :href="item.url ?? '#'"
                         :class="
                             cn(
                                 buttonVariants({
