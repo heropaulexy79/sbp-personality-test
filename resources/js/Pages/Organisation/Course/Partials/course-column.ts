@@ -5,6 +5,7 @@ import { Course } from "@/types";
 import { Link, router, useForm } from "@inertiajs/vue3";
 import { createColumnHelper } from "@tanstack/vue-table";
 import { h } from "vue";
+import CourseColumnRowAction from "./CourseColumnRowAction.vue";
 
 const columnHelper = createColumnHelper<Course>();
 
@@ -57,6 +58,15 @@ export const courseColumns = [
             );
         },
     }),
+
+    columnHelper.display({
+        id: "actions",
+        maxSize: 50,
+        cell(props) {
+            return h(CourseColumnRowAction, { course: props.row.original });
+        },
+    }),
+
     // columnHelper.display({
     //     id: "enroll",
     //     header: () => h("div", { class: "" }, ""),

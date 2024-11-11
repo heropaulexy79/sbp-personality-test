@@ -15,10 +15,10 @@ class StoreLessonRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-
+        $organisation = $user->organisation();
         $course = $this->route('course');
 
-        return $user->account_type === 'TEACHER' && $user->id === $course->teacher_id;
+        return $user->can('update', $organisation) && $organisation->id === $course->organisation_id;
     }
 
     public function prepareForValidation()

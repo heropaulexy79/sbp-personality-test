@@ -54,7 +54,7 @@ function resetCourseProgress() {
                                 label: 'Courses',
                             },
                             {
-                                href: route('dashboard'),
+                                href: route('course.show', { course }),
                                 label: course.title,
                             },
                             { label: 'Leaderboard' },
