@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
         if ($user) {
             $user->organisation_id = $user?->organisationNew?->organisation_id;
             $user->role = $user?->organisationNew?->role;
-            $user->organisation_name = $org?->name;
+            // $user->organisation_name = $org?->name;
         }
 
         return [
@@ -59,8 +59,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'query' => $request->query(),
             'flash' => [
-                'global:message' => fn () => $request->session()->get('global:message'),
-                'message' => fn () => $request->session()->get('message'),
+                'global:message' => fn() => $request->session()->get('global:message'),
+                'message' => fn() => $request->session()->get('message'),
             ],
         ];
     }

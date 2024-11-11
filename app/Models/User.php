@@ -68,6 +68,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(OrganisationUser::class);
     }
+    public function organisation()
+    {
+        return $this->organisationNew->organisation;
+    }
 
     public function organisationOld()
     {

@@ -58,8 +58,8 @@ class Organisation extends Model
         return false;
     }
 
-    // public function courses()
-    // {
-    //     return $this->hasMany(Course::class, 'organisation_id');
-    // }
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'organisation_id');
+    }
 }
