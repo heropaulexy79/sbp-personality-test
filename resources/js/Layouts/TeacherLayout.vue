@@ -24,7 +24,7 @@ import {
     DialogTrigger,
 } from "@/Components/ui/dialog";
 import { VisuallyHidden } from "radix-vue";
-import CreateCourseForm from "@/Pages/Teacher/Course/Partials/CreateCourseForm.vue";
+import CreateCourseForm from "@/Pages/Organisation/Course/Partials/CreateCourseForm.vue";
 import { getPublicProfileImage } from "@/lib/utils";
 
 const showingNavigationDropdown = ref(false);

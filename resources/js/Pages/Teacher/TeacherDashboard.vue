@@ -3,7 +3,7 @@ import LaravelPagination from "@/Components/ui/LaravelPagination.vue";
 import TeacherLayout from "@/Layouts/TeacherLayout.vue";
 import { Course, Paginated } from "@/types";
 import { Head, usePage } from "@inertiajs/vue3";
-import CourseTable from "./Course/Partials/CourseTable.vue";
+import CourseTable from "../Organisation/Course/Partials/CourseTable.vue";
 import BaseBreadcrumb from "@/Components/ui/BaseBreadcrumb.vue";
 
 const page = usePage();

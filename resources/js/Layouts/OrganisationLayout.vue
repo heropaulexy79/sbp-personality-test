@@ -67,15 +67,13 @@ const billingAlert = ref(
                                                 .organisation_id
                                         "
                                         :href="
-                                            route('public.course.index', {
+                                            route('course.index', {
                                                 // organisation:
                                                 //     $page.props.auth.user
                                                 //         .organisation_id,
                                             })
                                         "
-                                        :active="
-                                            route().current('public.course.*')
-                                        "
+                                        :active="route().current('course.*')"
                                     >
                                         Courses
                                     </NavLink>
@@ -256,8 +254,8 @@ const billingAlert = ref(
                                 Dashboard
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
-                                :href="route('public.course.index')"
-                                :active="route().current('public.course.*')"
+                                :href="route('course.index')"
+                                :active="route().current('course.*')"
                             >
                                 Courses
                             </ResponsiveNavLink>

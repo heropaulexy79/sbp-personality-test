@@ -19,12 +19,14 @@ import {
 } from "@/Components/ui/select";
 import { Textarea } from "@/Components/ui/textarea";
 import { Course } from "@/types";
-import { useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { useForm, usePage } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
+import { toast } from "vue-sonner";
 
 const props = defineProps<{
     course: Course;
 }>();
+const page = usePage();
 const isBannerPopupOpen = ref(false);
 
 const form = useForm({
@@ -40,8 +42,38 @@ function submit() {
     form.patch(route("course.update", { course: props.course.id }), {
         onSuccess() {},
         onError(error) {},
+        preserveScroll: true,
     });
 }
+
+watch(
+    () => page.props.flash["message"],
+    (flash) => {
+        if (!flash) return;
+
+        const message = flash.message;
+        const action = flash.action;
+        const type = flash.status;
+
+        const toastOptions: any = {
+            ...(action && {}),
+        };
+
+        switch (type) {
+            case "success":
+                toast.success(message, { ...toastOptions });
+                break;
+
+            case "error":
+                toast.error(message, { ...toastOptions });
+                break;
+
+            default:
+                toast(message, { ...toastOptions });
+                break;
+        }
+    },
+);
 </script>
 
 <template>
