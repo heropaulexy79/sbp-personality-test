@@ -21,17 +21,12 @@ class EnsureEnrolledInCourse
 
         $course = $request->route('course');
 
-        // dd($course);
 
-        if ($course && !$user->isEnrolledInCourse($course->id)) {
-
+        if (!$course || !$course->is_published  || (!$user->isEnrolledInCourse($course->id) && $user->cannot('update', $course->organisation))) {
 
             // if ($course->is_public) {
             //     return redirect(route('public.course.show', ["course" => $course->id]));
             // }
-
-
-
             return abort(404);
             // return abort(403, 'Unauthorized Access: Not Enrolled in Course'); // Abort with 403 (Forbidden)
         }
