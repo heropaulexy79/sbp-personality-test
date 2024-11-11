@@ -61,18 +61,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings/billing', [BillingController::class, 'index'])->name('organisation.billing.index');
 
     // Org-course
-    // Enroll users
+    Route::get('/org/course', [CourseController::class, 'index'])->name('course.index');
+    // Route::get("/org/{organisation}/course", [CourseController::class, 'index'])->name('course.index');
+    Route::get('/org/course/{course}', [CourseController::class, 'show'])->name('course.show');
+    Route::get('/org/course/{course}/edit', [CourseController::class, 'edit'])->name('course.edit');
+    Route::get('/org/course/create', [CourseController::class, 'create'])->name('course.create');
 
-    // Teacher-Course
-    Route::get('/teacher/course', [CourseController::class, 'index'])->name('course.index');
-    // Route::get("/teacher/{organisation}/course", [CourseController::class, 'index'])->name('course.index');
-    Route::get('/teacher/course/{course}', [CourseController::class, 'show'])->name('course.show');
-    Route::get('/teacher/course/{course}/edit', [CourseController::class, 'edit'])->name('course.edit');
-    Route::get('/teacher/course/create', [CourseController::class, 'create'])->name('course.create');
-
-    Route::post('/teacher/course', [CourseController::class, 'store'])->name('course.store');
-    Route::patch('/teacher/course/{course}', [CourseController::class, 'update'])->name('course.update');
-    Route::delete('/teacher/course/{course}', [CourseController::class, 'destroy'])->name('course.destroy');
+    Route::post('/org/course', [CourseController::class, 'store'])->name('course.store');
+    Route::patch('/org/course/{course}', [CourseController::class, 'update'])->name('course.update');
+    Route::delete('/org/course/{course}', [CourseController::class, 'destroy'])->name('course.destroy');
 
     // Course - public?
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index');
@@ -82,11 +79,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Lesson - public?
     Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
     // Lesson
-    Route::get('/teacher/course/{course}/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
-    Route::patch('/teacher/course/{course}/lesson/{lesson}', [LessonController::class, 'update'])->name('lesson.update');
-    Route::patch('/teacher/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position');
-    Route::get('/teacher/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create');
-    Route::post('/teacher/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store');
+    Route::get('/org/course/{course}/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
+    Route::patch('/org/course/{course}/lesson/{lesson}', [LessonController::class, 'update'])->name('lesson.update');
+    Route::patch('/org/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position');
+    Route::get('/org/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create');
+    Route::post('/org/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store');
 
     // Classrooom
     Route::middleware(['enrolled', 'subscribed'])->group(function () {
