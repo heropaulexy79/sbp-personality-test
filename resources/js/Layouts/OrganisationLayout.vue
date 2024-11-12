@@ -73,7 +73,11 @@ const billingAlert = ref(
                                                 //         .organisation_id,
                                             })
                                         "
-                                        :active="route().current('course.*')"
+                                        :active="
+                                            route().current('course.*') ||
+                                            route().current('lesson.*') ||
+                                            route().current('public.course.*')
+                                        "
                                     >
                                         Courses
                                     </NavLink>

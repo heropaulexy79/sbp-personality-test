@@ -24,7 +24,7 @@ defineProps<{ course: Course }>();
             </div>
 
             <div class="inline-flex items-center justify-center gap-4">
-                <Link
+                <!-- <Link
                     :href="
                         route('public.course.show', {
                             course: course.slug,
@@ -36,7 +36,7 @@ defineProps<{ course: Course }>();
                     v-if="course.is_published"
                 >
                     View course page
-                </Link>
+                </Link> -->
                 <Link
                     :href="
                         route('course.edit', {

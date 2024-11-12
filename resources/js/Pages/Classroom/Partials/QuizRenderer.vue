@@ -107,8 +107,8 @@ function onContinue() {
 
         return;
     }
-    router.reload();
     successDialog.value = false;
+    router.reload();
 }
 
 const score = computed(() => {

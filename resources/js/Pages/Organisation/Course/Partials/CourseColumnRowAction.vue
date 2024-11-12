@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { Button } from "@/Components/ui/button";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/Components/ui/dialog";
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -9,14 +16,16 @@ import {
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { Course } from "@/types";
-import { router, usePage } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { EllipsisIcon } from "lucide-vue-next";
+import { ref } from "vue";
+import EnrollTeamInCourseForm from "../EnrollTeamInCourseForm.vue";
+import { toast } from "vue-sonner";
 
 const props = defineProps<{
     course: Course;
 }>();
-
-const page = usePage();
+const enrollModal = ref(false);
 </script>
 
 <template>
@@ -36,6 +45,16 @@ const page = usePage();
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
+                v-if="course.is_published"
+                @select="
+                    () => {
+                        enrollModal = true;
+                    }
+                "
+            >
+                Enroll students
+            </DropdownMenuItem>
+            <DropdownMenuItem
                 @select="
                     () =>
                         router.visit(
@@ -54,4 +73,36 @@ const page = usePage();
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
+
+    <Dialog
+        :open="enrollModal"
+        @update:open="
+            (v) => {
+                enrollModal = v;
+            }
+        "
+    >
+        <DialogContent
+            class="max-w-lg"
+            @escape-key-down="(e) => e.preventDefault()"
+        >
+            <DialogHeader>
+                <DialogTitle> Enroll students in course </DialogTitle>
+                <DialogDescription>
+                    Enroll students into
+                    {{ course.title }}
+                </DialogDescription>
+            </DialogHeader>
+
+            <EnrollTeamInCourseForm
+                :course="course"
+                :on-success="
+                    () => {
+                        enrollModal = false;
+                        toast.success('Students enrolled');
+                    }
+                "
+            />
+        </DialogContent>
+    </Dialog>
 </template>

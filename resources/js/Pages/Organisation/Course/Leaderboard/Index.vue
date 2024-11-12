@@ -18,6 +18,15 @@ import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 import { Student, leaderboardColumns } from "./Partials/leaderboard-column";
 import { Button } from "@/Components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/Components/ui/dialog";
+import EnrollTeamInCourseForm from "../EnrollTeamInCourseForm.vue";
 
 const props = defineProps<{
     students: Student[];
@@ -25,6 +34,7 @@ const props = defineProps<{
 }>();
 
 const resetCourseProgressAlert = ref(false);
+const enrollModal = ref(false);
 
 const resetCourseForm = useForm({
     students: props.students.map((r) => r.user.id),
@@ -70,8 +80,47 @@ function resetCourseProgress() {
                         <h2 class="text-2xl font-semibold tracking-tight">
                             Leaderboard
                         </h2>
-                        <div>
-                            <Button @click="resetCourseProgressAlert = true">
+                        <div class="flex items-center justify-between gap-4">
+                            <Dialog
+                                :open="enrollModal"
+                                @update:open="
+                                    (v) => {
+                                        enrollModal = v;
+                                    }
+                                "
+                            >
+                                <DialogTrigger as-child>
+                                    <Button size="sm"> Enroll students </Button>
+                                </DialogTrigger>
+                                <DialogContent
+                                    class="max-w-lg"
+                                    @escape-key-down="(e) => e.preventDefault()"
+                                >
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            Enroll students in course
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            Enroll students into
+                                            {{ course.title }}
+                                        </DialogDescription>
+                                    </DialogHeader>
+
+                                    <EnrollTeamInCourseForm
+                                        :course="course"
+                                        :on-success="
+                                            () => {
+                                                enrollModal = false;
+                                            }
+                                        "
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                @click="resetCourseProgressAlert = true"
+                            >
                                 Reset all progress
                             </Button>
                         </div>

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { createColumnHelper } from "@tanstack/vue-table";
+import { ColumnDef, createColumnHelper } from "@tanstack/vue-table";
 import { h } from "vue";
 import LeaderboardStudentName from "./LeaderboardStudentName.vue";
 import LeaderboardStudentAction from "./LeaderboardStudentAction.vue";
@@ -65,4 +65,4 @@ export const leaderboardColumns = [
             return h(LeaderboardStudentAction, { student: props.row.original });
         },
     }),
-];
+] as any;
