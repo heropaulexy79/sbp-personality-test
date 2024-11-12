@@ -31,8 +31,8 @@ class OrganisationPolicy
      */
     public function create(User $user): bool
     {
-        //
-        return $user->role === $user::ROLE_ADMIN;
+        // can only create an organisation if not a member of one
+        return $user->organisation_id === null;
     }
 
     /**

@@ -19,7 +19,12 @@ class CourseController extends Controller
         $user = $request->user();
         $organisation = $user->organisation();
 
+        if (!$user->isAdminInOrganisation($organisation)) {
+            return abort(404);
+        }
+
         $courses = $organisation->courses;
+        // $courses = $user->isAdminInOrganisation($organisation) ? $organisation->courses : $organisation->courses->where('is_published', '1');
 
         return Inertia::render('Organisation/Course/Index', [
             'courses' => $courses,
