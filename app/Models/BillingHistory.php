@@ -15,6 +15,8 @@ class BillingHistory extends Model
         "description",
         "provider",
         "organisation_id"
+        // 
+        // next_bill_date
     ];
 
     public function organisation()
