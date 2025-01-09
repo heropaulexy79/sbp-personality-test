@@ -75,6 +75,7 @@ const courseNav = [
 
             <div class="container">
                 <CreateOrganisationForm
+                    class="mx-auto max-w-screen-sm"
                     v-if="!$page.props.auth.user.organisation_id"
                 />
                 <div v-else class="mx-auto max-w-7xl sm:px-6 lg:px-8">
