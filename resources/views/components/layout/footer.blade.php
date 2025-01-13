@@ -48,9 +48,9 @@
 
                 <ul class="mt-3 grid space-y-3 text-sm">
                     <li><a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
-                            href="#">Terms</a></li>
+                            href={{ route('website.terms') }}>Terms</a></li>
                     <li><a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
-                            href="#">Privacy</a></li>
+                            href={{ route('website.privacy') }}>Privacy</a></li>
                 </ul>
 
             </div>

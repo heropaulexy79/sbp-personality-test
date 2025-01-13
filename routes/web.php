@@ -30,6 +30,12 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+Route::get('/terms-and-conditions', function () {
+    return view('terms-conditions', []);
+})->name('website.terms');
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy', []);
+})->name('website.privacy');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
