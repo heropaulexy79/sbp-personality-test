@@ -1,63 +1,92 @@
-<div class="overflow-hidden bg-white py-24 sm:py-32">
+<div class="overflow-clip bg-white py-24 sm:py-32">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div
             class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
             <div class="lg:pr-8 lg:pt-4">
                 <div class="lg:max-w-lg">
-                    <h2 class="text-base/7 font-semibold text-primary">Deploy faster</h2>
-                    <p class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">A better
-                        workflow</p>
-                    <p class="mt-6 text-lg/8 text-gray-600">Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                        Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</p>
-                    <dl class="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">
+                    <h2 class="text-base/7 font-semibold text-primary">Benefits of {{ config('app.name', 'Laravel') }}
+                    </h2>
+                    <p class="mt-2 text-pretty text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                        Transform your business and the society with {{ config('app.name', 'Laravel') }}.</p>
+                    <p class="mt-6 text-lg/8 text-muted-foreground">
+                        In today's fast-paced world, culture and values are key to driving business growth and building
+                        a better society. {{ config('app.name', 'Laravel') }} helps organisations build a strong culture
+                        and essential values,
+                        empowering them to thrive and contribute to a more values-driven world.
+                    </p>
+                    <dl class="mt-10 max-w-xl space-y-8 text-base/7 text-muted-foreground lg:max-w-none">
                         <div class="relative pl-9">
-                            <dt class="inline font-semibold text-gray-900">
-                                <svg class="absolute left-1 top-1 size-5 text-primary" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true" data-slot="icon">
-                                    <path fill-rule="evenodd"
-                                        d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
-                                        clip-rule="evenodd" />
+                            <dt class="inline font-semibold text-foreground">
+
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="absolute left-1 top-1 size-5 text-primary" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <circle cx="12" cy="12" r="6" />
+                                    <circle cx="12" cy="12" r="2" />
                                 </svg>
-                                Push to deploy.
+                                Enhanced business performance.
                             </dt>
-                            <dd class="inline">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit
-                                perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.</dd>
+                            <dd class="inline">A strong culture drives innovation and productivity.
+                                {{ config('app.name', 'Laravel') }} helps
+                                businesses achieve this by fostering an environment where employees feel valued,
+                                engaged, and aligned with organisational goals.
+                                <br />
+                                Companies with thriving cultures see up to 20% higher revenue growth.
+                            </dd>
                         </div>
                         <div class="relative pl-9">
-                            <dt class="inline font-semibold text-gray-900">
-                                <svg class="absolute left-1 top-1 size-5 text-primary" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true" data-slot="icon">
-                                    <path fill-rule="evenodd"
-                                        d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                SSL certificates.
-                            </dt>
-                            <dd class="inline">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem
-                                cupidatat commodo.</dd>
-                        </div>
-                        <div class="relative pl-9">
-                            <dt class="inline font-semibold text-gray-900">
-                                <svg class="absolute left-1 top-1 size-5 text-primary" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true" data-slot="icon">
+                            <dt class="inline font-semibold text-foreground">
+
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="absolute left-1 top-1 size-5 text-primary" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-earth">
+                                    <path d="M21.54 15H17a2 2 0 0 0-2 2v4.54" />
                                     <path
-                                        d="M4.632 3.533A2 2 0 0 1 6.577 2h6.846a2 2 0 0 1 1.945 1.533l1.976 8.234A3.489 3.489 0 0 0 16 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234Z" />
-                                    <path fill-rule="evenodd"
-                                        d="M4 13a2 2 0 1 0 0 4h12a2 2 0 1 0 0-4H4Zm11.24 2a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V15Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75h-.01Z"
-                                        clip-rule="evenodd" />
+                                        d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17" />
+                                    <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05" />
+                                    <circle cx="12" cy="12" r="10" />
                                 </svg>
-                                Database backups.
+                                Sustainable societal impact.
                             </dt>
-                            <dd class="inline">Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna
-                                sit morbi lobortis.</dd>
+                            <dd class="inline">Instilling values in young minds lays the foundation for ethical,
+                                forward-thinking leaders. {{ config('app.name', 'Laravel') }} promotes
+                                character-building, ensuring a generation
+                                that values responsibility, collaboration and impact.</dd>
+                        </div>
+                        <div class="relative pl-9">
+                            <dt class="inline font-semibold text-foreground">
+                                <svg class="absolute left-1 top-1 size-5 text-primary"
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-chart-no-axes-combined">
+                                    <path d="M12 16v5" />
+                                    <path d="M16 14v7" />
+                                    <path d="M20 10v11" />
+                                    <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" />
+                                    <path d="M4 18v3" />
+                                    <path d="M8 14v7" />
+                                </svg>
+
+                                Future-proofing growth.
+                            </dt>
+                            <dd class="inline">Whether it's adapting to changing markets or nurturing the next
+                                generation, {{ config('app.name', 'Laravel') }} ensures readiness for the challenges
+                                ahead. Businesses that
+                                prioritise culture and values are more agile and resilient, ensuring long-term success,
+                                ensuring future-ready organisations and communities equipped to thrive in an evolving
+                                world.</dd>
                         </div>
                     </dl>
                 </div>
             </div>
-            <img src="https://tailwindui.com/plus/img/component-images/dark-project-app-screenshot.png"
-                alt="Product screenshot"
-                class="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
-                width="2432" height="1442">
+            <div class="sticky top-10 self-start">
+                <img src="/images/screenshot-course-page.webp" alt="Product screenshot"
+                    class="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
+                    width="2432" height="1442">
+            </div>
         </div>
     </div>
 </div>

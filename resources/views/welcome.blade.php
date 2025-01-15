@@ -22,32 +22,35 @@
 <body class="font-sans antialiased">
 
     <img id="background" class="pointer-events-none absolute inset-0 h-screen w-full bg-right object-cover"
-        src="/images/home-bg.jpeg" />
+        src="/images/home-bg.webp" />
 
     <div class="relative min-h-screen">
         <x-layout.header />
         <main class="mt-6">
 
             <section>
-                <div class="max-w-2xl px-8 py-14">
-                    <h1 class="text-4xl font-bold md:text-5xl lg:text-6xl">From onboarding to mastery. Teach it all,
-                        seamlessly.
-                    </h1>
-                    <p class="mt-2 text-lg">Lorem ipsum dolor sit amet consectetur. Orci purus sed nibh eget accumsan
-                        est eu viverra. Morbi habitant malesuada fermentum lacinia felis curabitur venenatis.
-                    </p>
-                    <div class="mt-5 inline-flex gap-4">
-                        <a href="{{ route('register') }}"
-                            class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                            Get Started
-                        </a>
+                <div class="container">
+                    <div class="max-w-2xl px-8 py-20 pb-32">
+                        <h1 class="text-balance text-4xl font-bold md:text-5xl lg:text-6xl">From onboarding to mastery.
+                        </h1>
+                        <p class="mt-2 text-lg"> The right values aren't just learnt; they're built.
+                            <br />
+                            Culture is the key to progress and productivity, whether in the classroom,
+                            boardroom or society.
+                        </p>
+                        <div class="mt-5 inline-flex gap-4">
+                            <a href="{{ route('register') }}"
+                                class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+                                Get Started
+                            </a>
 
-                        <a href="{{ route('login') }}"
-                            class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-primary bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                            Log in
-                        </a>
+                            <a href="{{ route('login') }}"
+                                class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-primary bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
+                                Log in
+                            </a>
+                        </div>
+
                     </div>
-
                 </div>
             </section>
 

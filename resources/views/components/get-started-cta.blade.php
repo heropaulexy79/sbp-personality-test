@@ -3,8 +3,7 @@
         <h2 class="text-4xl font-bold">Get started with {{ config('app.name', 'Laravel') }}
             today
         </h2>
-        <p class="mt-2 text-lg">Lorem ipsum dolor sit amet consectetur. Odio sed varius
-            consectetur id vel placerat pulvinar tempor.</p>
+        <p class="mt-2 text-lg">Where culture sustains thriving businesses, and great values shape future leaders.</p>
         <form action="/signup"
             class="mx-auto mt-4 flex max-w-md gap-2 rounded-md bg-background px-3 py-2 ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
             <div class="flex-1">
