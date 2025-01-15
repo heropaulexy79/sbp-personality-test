@@ -109,5 +109,10 @@ module.exports = {
             },
         },
     },
-    plugins: [require("@tailwindcss/typography"), forms, animate],
+    plugins: [
+        require("@tailwindcss/container-queries"),
+        require("@tailwindcss/typography"),
+        forms,
+        animate,
+    ],
 };
