@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureOrganisationHasActiveSubscription
+class EnsureOrganisationHasSubscription
 {
     /**
      * Handle an incoming request.
@@ -18,9 +18,17 @@ class EnsureOrganisationHasActiveSubscription
         $user = $request->user();
         $org = $user?->organisationNew?->organisation;
 
-        if ($org && $user->account_type === 'ORG' && !$org->hasActiveSubscription()) {
-            abort('401', "You don't have an active subscription");
+        if (!$org) {
+            return $next($request);
         }
+
+
+        $sub = $org->activeSubscription();
+
+        if (!$sub) {
+            return redirect('/settings/subscription');
+        }
+
 
         return $next($request);
     }

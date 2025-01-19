@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Payments;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\SubscriptionController;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Log;
 use Paystack;
 use Throwable;
 
@@ -47,24 +49,12 @@ class PaystackController extends Controller
         if (
             ($paymentDetails['data']['metadata']['type'] === 'ADD-PAYMENT-METHOD' ||
                 $paymentDetails['data']['metadata']['type'] === 'ADD_PAYMENT_METHOD') &&
-
             $paymentDetails['data']['status'] === 'success'
         ) {
-            $bh = new BillingController();
-            $existingHistory = $bh->show($paymentDetails['data']['reference']);
 
-            if ($existingHistory) {
-                return redirect(route(
-                    'organisation.billing.index'
-                ))->with('global:message', [
-                    'status' => 'success',
-                    'message' => 'Payment method added successfully!',
-                ]);
-                // return $existingHistory;
-            }
-
-            // Only store if does not exist already
+            $sc = new SubscriptionController();
             $pm = new PaymentMethodController();
+
             $pm->store(
                 array(
                     "auth_code" => $paymentDetails['data']['authorization']['authorization_code'],
@@ -83,29 +73,12 @@ class PaystackController extends Controller
             );
 
 
-            $bh->store(array(
-                "transaction_ref" => $paymentDetails['data']['reference'],
-                "currency" => $paymentDetails['data']['currency'],
-                "amount" => $paymentDetails['data']['amount'] / 100, // this is because paystack stores in kobo
-                "description" => "Add payment method",
-                "provider" => "PAYSTACK",
-                "organisation_id" => $paymentDetails['data']['metadata']['organisation_id'],
-            ));
-
-            // Refund
-            if (!str_contains($existingHistory?->description, 'Refunded')) {
-                $this->initiateRefund(array(
-                    "transaction" => $paymentDetails['data']['reference'],
-                    "amount" => $paymentDetails['data']['amount'],
-                ));
-            }
-
-
-            $org = \App\Models\Organisation::where('id', '=', $paymentDetails['data']['metadata']['organisation_id'])->first();
-
-            if (!$org->hasActiveSubscription()) {
-                // charge user
-                \App\Jobs\BillOrganizationJob::dispatch($org);
+            $selectedPlan = $paymentDetails['data']['metadata']['selected_plan'] ?? '';
+            if ($selectedPlan != '') {
+                $sc->createSub([
+                    "selected_plan" => $selectedPlan,
+                    "organisation_id" => $paymentDetails['data']['metadata']['organisation_id'],
+                ]);
             }
 
 
@@ -140,6 +113,7 @@ class PaystackController extends Controller
 
         $event = json_decode($input);
 
+        $sc = new SubscriptionController();
         $bh = new BillingController();
         $pm = new PaymentMethodController();
 
@@ -184,47 +158,31 @@ class PaystackController extends Controller
                     )
                 );
 
-                if (!str_contains($existingHistory?->description, 'Refunded')) {
-                    $this->initiateRefund(array(
-                        "transaction" => $event['data']['reference'],
-                        "amount" => $event['data']['amount'],
-                    ));
-                }
-
 
                 $org = \App\Models\Organisation::where('id', '=', $event['data']['metadata']['organisation_id'])->first();
 
-                if (!$org->hasActiveSubscription()) {
-                    // charge user
-                    \App\Jobs\BillOrganizationJob::dispatch($org);
+
+                if (!$org->activeSubscription()) {
+                    $selectedPlan = $event['data']['metadata']['selected_plan'] ?? '';
+                    if ($selectedPlan != '') {
+                        $sc->createSub([
+                            "selected_plan" => $selectedPlan,
+                            "organisation_id" => $event['data']['metadata']['organisation_id'],
+                        ]);
+                    }
                 }
             }
 
             if ($type === 'SUBSCRIPTION') {
-                // What to do?
-                $bh->store(array(
-                    "transaction_ref" => $event['data']['reference'],
-                    "currency" => $event['data']['currency'],
-                    "amount" => $event['data']['amount'] / 100, // this is because paystack stores in kobo
-                    "description" => $event['data']['metadata']['description'] ?? "Subscription",
-                    "provider" => "PAYSTACK",
-                    "organisation_id" => $event['data']['metadata']['organisation_id'],
-                ));
+                if (!$org->activeSubscription()) {
+                    $selectedPlan = $event['data']['metadata']['plan'] ?? '';
+                    $sc->createSub([
+                        "selected_plan" => $selectedPlan,
+                        "organisation_id" => $event['data']['metadata']['organisation_id'],
+                    ]);
+                }
             }
         }
-
-
-        // Handle for refund
-        if ($event['event']["refund.processed"]) {
-            $existingHistory = $bh->show($event['data']['reference']);
-
-            if ($existingHistory && !str_contains($existingHistory->description, 'Refunded')) {
-                $existingHistory->description = "{$existingHistory->description} (Refunded)";
-                $existingHistory->save();
-            }
-        }
-
-
 
 
         return response()->json([], 200);
@@ -280,6 +238,58 @@ class PaystackController extends Controller
                 'message' => 'An error occurred during the refund request.',
                 'exception' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+
+    public function chargeCard($data)
+    {
+        $paymentMethod = $data['payment_method'];
+        $amount = $data['amount'];
+        $currency = $data['currency'];
+        $metadata = $data['metadata'];
+
+
+        $secretKey = config('paystack.secretKey'); // Assuming SECRET_KEY is stored in config/paystack.php
+        $paystackUrl = config('paystack.paymentUrl');
+        $baseUrl = $paystackUrl . '/transaction/charge_authorization';
+
+        $client = new Client();
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $secretKey,
+            'Content-Type' => 'application/json',
+        ];
+
+        // Log::info($paymentMethod);
+
+        $data = [
+            'authorization_code' => $paymentMethod->auth_code,
+            'email' => $paymentMethod->email_address, // Get customer email from request
+            'amount' => $amount,
+            'currency' => $currency,
+            'metadata' => $metadata,
+        ];
+
+
+        $response = $client->post($baseUrl, [
+            'headers' => $headers,
+            'json' => $data,
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody()->getContents();
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            $event = json_decode($responseBody);
+            return $event;
+        } else {
+            Log::error([
+                'data' => json_decode($responseBody),
+                'status' => $statusCode
+            ]);
+
+            return null;
         }
     }
 

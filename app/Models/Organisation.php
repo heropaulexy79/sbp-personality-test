@@ -28,10 +28,26 @@ class Organisation extends Model
         return $this->hasMany(PaymentMethod::class, 'organisation_id');
     }
 
-    public function billingHistories()
+    // public function billingHistories()
+    // {
+    //     return $this->hasMany(BillingHistory::class, 'organisation_id');
+    // }
+
+
+    public function subscriptions()
     {
-        return $this->hasMany(BillingHistory::class, 'organisation_id');
+        return $this->hasMany(Subscription::class, 'organisation_id');
     }
+
+
+    public function activeSubscription()
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->where('next_billing_date', '>', now())
+            ->first();
+    }
+
 
 
     public function hasActiveSubscription()

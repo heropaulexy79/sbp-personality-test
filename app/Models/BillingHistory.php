@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class BillingHistory extends Model
 {
     use HasFactory;
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'billing_historiess';
 
     protected $fillable = [
         "transaction_ref",
