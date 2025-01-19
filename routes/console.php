@@ -1,6 +1,6 @@
 <?php
 
-use App\Console\Commands\BillOrganisationsMonthly;
+use App\Jobs\ProcessSubscriptionBilling;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -9,9 +9,13 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 
-Schedule::command(BillOrganisationsMonthly::class)->monthly()
-    ->environments(['production'])
-    ->runInBackground();
+// Schedule::command(BillOrganisationsMonthly::class)->monthly()
+//     ->environments(['production'])
+//     ->runInBackground();
+
+Schedule::job(new ProcessSubscriptionBilling)
+    ->dailyAt('1:00')
+    ->environments(['production']);
 
 
 // Schedule::command('queue:work --stop-when-empty')

@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         $middleware->alias([
             'enrolled' => \App\Http\Middleware\EnsureEnrolledInCourse::class,
-            'subscribed' => \App\Http\Middleware\EnsureOrganisationHasActiveSubscription::class,
+            'subscribed' => \App\Http\Middleware\EnsureOrganisationHasSubscription::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
