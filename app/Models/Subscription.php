@@ -12,14 +12,11 @@ class Subscription extends Model
         'organisation_id',
         'plan',
         'status',
-        'payment_method_id',
         'billed_at',
         'next_billing_date',
         "description",
         'amount',
-
-        "provider",
-        "transaction_ref"
+        'currency',
     ];
 
     protected $casts = [

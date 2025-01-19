@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Events\SubscriptionBillingFailed;
 use App\Http\Controllers\Payments\PaystackController;
 use App\Models\Subscription;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -21,7 +20,7 @@ class SubscriptionController extends Controller
         return Inertia::render('Organisation/Billing/Index', [
             "payment_method" => $org->paymentMethods->first(),
             "subscription" => $subscription,
-            "history" => $org->billingHistories
+            "history" => $org->billingHistories ?? []
         ]);
     }
 
@@ -132,7 +131,6 @@ class SubscriptionController extends Controller
             'next_billing_date' => now()->addMonth(),
             'amount' => $amount,
             'description' => '',
-            'transaction_ref' => '',
         ]);
 
 

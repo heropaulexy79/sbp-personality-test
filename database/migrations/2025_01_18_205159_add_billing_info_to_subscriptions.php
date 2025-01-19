@@ -34,7 +34,7 @@ return new class extends Migration
             $table->dropColumn('billed_at');
             $table->dropColumn('plan');
             $table->dropColumn('status');
-            $table->dropColumn('payment_method_id');
+            $table->dropConstrainedForeignId('payment_method_id');
         });
     }
 };
