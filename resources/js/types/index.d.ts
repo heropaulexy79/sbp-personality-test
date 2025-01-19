@@ -170,3 +170,29 @@ export type BillingHistory = {
     created_at?: Date | null;
     updated_at?: Date | null;
 };
+
+export type Subscription = {
+    id: number;
+    plan: "starter" | "enterprise";
+    status: "active" | "inactive";
+    description: string;
+    organisation_id: Organisation["id"];
+
+    amount: number;
+    currency: "NGN";
+
+    billed_at?: Date | null;
+    next_billing_date?: Date | null;
+
+    created_at?: Date | null;
+    updated_at?: Date | null;
+};
+
+export type SubscriptionPlan = {
+    id: string;
+    name: string;
+    price: number;
+    currency: string;
+    description: string;
+    features: string[];
+};

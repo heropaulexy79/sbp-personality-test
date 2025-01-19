@@ -2,7 +2,7 @@
 import LaravelPagination from "@/Components/ui/LaravelPagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Course, Paginated } from "@/types";
-import { Head, Link, usePage } from "@inertiajs/vue3";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import CreateOrganisationForm from "./Partials/CreateOrganisationForm.vue";
 import CourseCard from "../Course/Partials/CourseCard.vue";
 
@@ -77,6 +77,11 @@ const courseNav = [
                 <CreateOrganisationForm
                     class="mx-auto max-w-screen-sm"
                     v-if="!$page.props.auth.user.organisation_id"
+                    @on-success="
+                        () => {
+                            router.visit(route('subscriptions.show'));
+                        }
+                    "
                 />
                 <div v-else class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <!-- <div
