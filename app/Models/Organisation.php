@@ -42,10 +42,15 @@ class Organisation extends Model
 
     public function activeSubscription()
     {
-        $date = now()->addHours(22);
         return $this->subscriptions()
-            ->where('status', 'active')
-            ->where('next_billing_date', '>', $date)
+            ->where(function ($query) {
+                $query->where('status', 'active')
+                    ->where('next_billing_date', '>', now()->addHours(23));
+            })
+            ->orWhere(function ($query) {
+                $query->where('status', 'cancelled')
+                    ->where('next_billing_date', '>', now());
+            })
             ->first();
     }
 

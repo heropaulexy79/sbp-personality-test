@@ -98,7 +98,7 @@ class SubscriptionController extends Controller
         $sub = $organisation->activeSubscription();
 
         $sub->update([
-            'status' => 'active',
+            'status' => 'cancelled',
             'next_billing_date' => null,
         ]);
 
