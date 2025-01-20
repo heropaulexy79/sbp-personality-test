@@ -28,10 +28,10 @@ class Organisation extends Model
         return $this->hasMany(PaymentMethod::class, 'organisation_id');
     }
 
-    // public function billingHistories()
-    // {
-    //     return $this->hasMany(BillingHistory::class, 'organisation_id');
-    // }
+    public function billingHistories()
+    {
+        return $this->hasMany(BillingHistory::class, 'organisation_id');
+    }
 
 
     public function subscriptions()
@@ -42,37 +42,13 @@ class Organisation extends Model
 
     public function activeSubscription()
     {
+        $date = now()->addHours(22);
         return $this->subscriptions()
             ->where('status', 'active')
-            ->where('next_billing_date', '>', now())
+            ->where('next_billing_date', '>', $date)
             ->first();
     }
 
-
-
-    public function hasActiveSubscription()
-    {
-        // $isFirstMonth = $this->created_at->gt(now()->subDays(30));
-        $isNewUser = $this->created_at->startOfMonth()->gte(now()->startOfMonth());
-
-        // config('app.env') === 'staging'
-        if (config('app.env') === 'local'  || $isNewUser ||  config('app.env') === 'staging') {
-            return true;
-        }
-
-        $latestPayment = BillingHistory::where('organisation_id', $this->id)
-            // ->where('status', 'success')
-            ->where('description', 'LIKE', '%subscription%')
-            ->latest()
-            ->first();
-
-        if ($latestPayment) {
-            // Check if the payment is within the subscription period (e.g., last 30 days)
-            return $latestPayment->created_at->gte(now()->subDays(30));
-        }
-
-        return false;
-    }
 
     public function courses()
     {

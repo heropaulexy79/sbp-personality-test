@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
 
         if ($org && $user->account_type === 'ORG') {
             $has_payment_method = $org->paymentMethods->count() > 0;
-            $hasActiveSubscription = $org->activeSubscription();
+            $hasActiveSubscription = $org->activeSubscription() != null;
         }
 
 
