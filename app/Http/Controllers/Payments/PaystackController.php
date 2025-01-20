@@ -281,8 +281,11 @@ class PaystackController extends Controller
         $responseBody = $response->getBody()->getContents();
 
         if ($statusCode >= 200 && $statusCode < 300) {
-            $event = json_decode($responseBody);
-            return $event;
+            $event = json_decode($responseBody, true);
+            return [
+                "gateway" => "PAYSTACK",
+                'event' => $event
+            ];
         } else {
             Log::error([
                 'data' => json_decode($responseBody),

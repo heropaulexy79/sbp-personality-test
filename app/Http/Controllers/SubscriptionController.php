@@ -139,7 +139,7 @@ class SubscriptionController extends Controller
         //     "currency" => $event['data']['currency'],
         //     "amount" => $event['data']['amount'] / 100, // this is because paystack stores in kobo
         //     "description" => $event['data']['metadata']['description'] ?? "Subscription",
-        //     "provider" => "PAYSTACK",
+        //     "provider" => $resp['gateway'],
         //     "organisation_id" => $event['data']['metadata']['organisation_id'],
         // ));
 
@@ -156,15 +156,22 @@ class SubscriptionController extends Controller
         $orgCount = $org->employees->count();
         $paymentMethod = $org->paymentMethods->first();
 
-        $billedAt = $subscription->billed_at->format('Y-m-d');
+        // First sub billed at is null
+        $billedAt = $subscription->billed_at ? $subscription->billed_at->format('Y-m-d') : null;
+
+        if (!$billedAt) {
+            $billedAt = $subscription->created_at->format('Y-m-d');
+        }
+
         $nextBillDate = $subscription->next_billing_date->format('Y-m-d');
 
         // TODO: Make factory to pick gateway based on payment method provider / plan currency
         $pg = new PaystackController();
 
-        $event = $pg->chargeCard([
+        $resp = $pg->chargeCard([
             "payment_method" => $paymentMethod,
             "amount" => $orgCount * ($subscription->amount),
+            "currency" => $plan['currency'],
             "metadata" => [
                 "type" => "SUBSCRIPTION",
                 "plan" => $plan['id'],
@@ -173,6 +180,9 @@ class SubscriptionController extends Controller
             ]
         ]);
 
+        $event = $resp['event'];
+
+        // Log::debug("event", ["event" => $event]);
 
         if (!$event) {
             event(new SubscriptionBillingFailed($org));
@@ -192,7 +202,7 @@ class SubscriptionController extends Controller
             "currency" => $event['data']['currency'],
             "amount" => $event['data']['amount'] / 100, // this is because paystack stores in kobo
             "description" => $event['data']['metadata']['description'] ?? "Subscription",
-            "provider" => "PAYSTACK",
+            "provider" => $resp['gateway'],
             "organisation_id" => $event['data']['metadata']['organisation_id'],
         ));
 
