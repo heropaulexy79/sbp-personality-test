@@ -24,7 +24,8 @@ const page = usePage();
 const showingNavigationDropdown = ref(false);
 const billingAlert = ref(
     !page.props.global.hasActiveSubscription &&
-        !route().current("organisation.billing.index"),
+        !route().current("organisation.billing.index") &&
+        !route().current("subscriptions.show"),
 );
 </script>
 
@@ -67,13 +68,15 @@ const billingAlert = ref(
                                                 .organisation_id
                                         "
                                         :href="
-                                            route('public.course.index', {
+                                            route('course.index', {
                                                 // organisation:
                                                 //     $page.props.auth.user
                                                 //         .organisation_id,
                                             })
                                         "
                                         :active="
+                                            route().current('course.*') ||
+                                            route().current('lesson.*') ||
                                             route().current('public.course.*')
                                         "
                                     >
@@ -256,8 +259,8 @@ const billingAlert = ref(
                                 Dashboard
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
-                                :href="route('public.course.index')"
-                                :active="route().current('public.course.*')"
+                                :href="route('course.index')"
+                                :active="route().current('course.*')"
                             >
                                 Courses
                             </ResponsiveNavLink>
@@ -328,7 +331,8 @@ const billingAlert = ref(
                         v-if="
                             $page.props.auth.user.role === 'ADMIN' &&
                             $page.props.auth.user.organisation_id !== null &&
-                            !$page.props.global.has_payment_method
+                            !$page.props.global.has_payment_method &&
+                            !route().current('subscriptions.show')
                         "
                     />
 

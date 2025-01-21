@@ -13,6 +13,8 @@ watch(
     (flash) => {
         if (!flash) return;
 
+        // TODO: FIX RUN 2WICE
+        // console.log("runn");
         const message = flash.message;
         const action = flash.action;
         const type = flash.status;

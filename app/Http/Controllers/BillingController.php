@@ -8,19 +8,6 @@ use Inertia\Inertia;
 
 class BillingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        //
-        $org = $request->user()->organisationNew->organisation;
-
-        return Inertia::render('Organisation/Billing/Index', [
-            "payment_method" => $org->paymentMethods->first(),
-            "history" => $org->billingHistories,
-        ]);
-    }
 
     /**
      * Store a newly created resource in storage.

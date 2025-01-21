@@ -4,7 +4,8 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+
+const emit = defineEmits(["onSuccess"]);
 
 const form = useForm({
     name: "",
@@ -15,6 +16,7 @@ const createOrganisation = () => {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
+            emit("onSuccess");
         },
         onError: () => {
             // if (form.errors.password) {

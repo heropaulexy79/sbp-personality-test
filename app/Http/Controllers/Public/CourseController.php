@@ -7,8 +7,6 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-use function Laravel\Prompts\search;
-use function PHPUnit\Framework\isEmpty;
 
 class CourseController extends Controller
 {
@@ -17,6 +15,13 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
+        $organisation = $user->organisation();
+
+        if (!$user->isAdminInOrganisation($organisation)) {
+            abort(404);
+        }
+
         $search = strip_tags($request->query('search') ?? '');
 
         //
@@ -46,9 +51,10 @@ class CourseController extends Controller
     {
 
         $user = $request->user();
+        $organisation = $user->organisation();
 
         // If it is public allow?
-        if (!$course->is_published) {
+        if (!$course->is_published || !$user->isAdminInOrganisation($organisation)) {
             abort(404);
         }
 

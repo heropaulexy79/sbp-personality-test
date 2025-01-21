@@ -15,6 +15,7 @@ class Course extends Model
         'description',
         'slug',
         'teacher_id',
+        'organisation_id',
         'is_published',
         'banner_image',
     ];
@@ -37,6 +38,11 @@ class Course extends Model
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class, 'organisation_id');
     }
 
     public function lessons()

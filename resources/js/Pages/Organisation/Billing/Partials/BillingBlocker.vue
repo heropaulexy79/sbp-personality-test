@@ -41,7 +41,7 @@ const vmodel = defineModel("open", { default: false });
             <AlertDialogFooter>
                 <!-- <AlertDialogCancel>Close</AlertDialogCancel> -->
                 <AlertDialogAction v-if="canUpdateMethod" as-child>
-                    <Link :href="route('organisation.billing.index')">
+                    <Link :href="route('subscriptions.show')">
                         Renew Subscription
                     </Link>
                 </AlertDialogAction>

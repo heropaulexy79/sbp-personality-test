@@ -18,13 +18,14 @@ class CourseEnrollmentController extends Controller
     public function show(Request $request, Course $course)
     {
         $user = $request->user();
+        $organisation = $user->organisation();
 
 
-        $enrolledUsers  = $course->enrolledUsers()->whereHas('organisationNew', function ($query) use ($user) {
-            $query->where('organisation_id', $user->organisationNew->organisation_id);
+        $enrolledUsers  = $course->enrolledUsers()->whereHas('organisationNew', function ($query) use ($organisation) {
+            $query->where('organisation_id', $organisation->id);
         })->get();
 
-        if (!$enrolledUsers || count($enrolledUsers) < 1) {
+        if (!$enrolledUsers) {
             abort(404);
         }
 
@@ -49,7 +50,7 @@ class CourseEnrollmentController extends Controller
             ];
         }
 
-        return Inertia::render('Organisation/Course/Leaderboard', [
+        return Inertia::render('Organisation/Course/Leaderboard/Index', [
             "course" => $course,
             "students" => $students,
         ]);

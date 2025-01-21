@@ -33,7 +33,7 @@ import GlobalLayout from "@/Layouts/GlobalLayout.vue";
                 <div class="absolute inset-0 bg-primary" />
                 <img
                     class="absolute inset-0 h-full w-full object-cover"
-                    src="/images/symbal.jpeg"
+                    src="/images/symbal.webp"
                     alt=""
                 />
                 <div

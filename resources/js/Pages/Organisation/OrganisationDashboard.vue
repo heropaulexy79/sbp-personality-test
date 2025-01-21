@@ -2,7 +2,7 @@
 import LaravelPagination from "@/Components/ui/LaravelPagination.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Course, Paginated } from "@/types";
-import { Head, Link, usePage } from "@inertiajs/vue3";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import CreateOrganisationForm from "./Partials/CreateOrganisationForm.vue";
 import CourseCard from "../Course/Partials/CourseCard.vue";
 
@@ -38,19 +38,19 @@ const courseNav = [
         }),
         label: "Completed",
     },
-    page.props.auth.user.role === "ADMIN"
-        ? {
-              active: page.props.query?.["status"] === "all_enrolled",
+    // page.props.auth.user.role === "ADMIN"
+    //     ? {
+    //           active: page.props.query?.["status"] === "all_enrolled",
 
-              href: route("dashboard", {
-                  _query: {
-                      ...page.props.query,
-                      status: "all_enrolled",
-                  },
-              }),
-              label: "All enrolled",
-          }
-        : undefined,
+    //           href: route("dashboard", {
+    //               _query: {
+    //                   ...page.props.query,
+    //                   status: "all_enrolled",
+    //               },
+    //           }),
+    //           label: "All enrolled",
+    //       }
+    //     : undefined,
 ].filter(Boolean) as {
     active: boolean;
     href: string;
@@ -61,7 +61,7 @@ const courseNav = [
 <template>
     <Head title="Dashboard" />
 
-    <AuthenticatedLayout v-if="$page.props.auth.user.account_type === 'ORG'">
+    <AuthenticatedLayout>
         <div class="py-12">
             <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div
@@ -75,7 +75,13 @@ const courseNav = [
 
             <div class="container">
                 <CreateOrganisationForm
+                    class="mx-auto max-w-screen-sm"
                     v-if="!$page.props.auth.user.organisation_id"
+                    @on-success="
+                        () => {
+                            router.visit(route('subscriptions.show'));
+                        }
+                    "
                 />
                 <div v-else class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <!-- <div
@@ -106,7 +112,9 @@ const courseNav = [
                         </div>
                     </Transition>
 
-                    <ul class="space-y-4">
+                    <ul
+                        class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] space-y-4"
+                    >
                         <li v-for="course in courses.data">
                             <CourseCard
                                 :course="course"

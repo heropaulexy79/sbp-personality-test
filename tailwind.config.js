@@ -48,6 +48,10 @@ module.exports = {
                     DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",
                 },
+                alternate: {
+                    DEFAULT: "hsl(var(--alternate))",
+                    foreground: "hsl(var(--alternate-foreground))",
+                },
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
                     foreground: "hsl(var(--secondary-foreground))",
@@ -105,5 +109,10 @@ module.exports = {
             },
         },
     },
-    plugins: [require("@tailwindcss/typography"), forms, animate],
+    plugins: [
+        require("@tailwindcss/container-queries"),
+        require("@tailwindcss/typography"),
+        forms,
+        animate,
+    ],
 };

@@ -10,6 +10,7 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\CourseController as PublicCourseController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -30,8 +31,14 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+Route::get('/terms-and-conditions', function () {
+    return view('terms-conditions', []);
+})->name('website.terms');
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy', []);
+})->name('website.privacy');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'subscribed'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -52,49 +59,51 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/org/{organisation}/employee/{employee}', [OrganisationUserController::class, 'destroy'])->name('organisation.employee.delete')->middleware(['subscribed']);
     Route::get('/org/employee/', [OrganisationUserController::class, 'index'])->name('organisation.employees')->middleware(['subscribed']);
 
-    Route::get('/org/course/{course:slug}', [CourseEnrollmentController::class, 'show'])->name('organisation.course.leaderboard')->middleware(['subscribed']);
-    Route::delete('/org/course/{course:slug}/{student}', [CourseEnrollmentController::class, 'destroy'])->name('organisation.course.student.destroy')->middleware(['subscribed']);
-    Route::delete('/org/course/{course:slug}/leaderboard/reset', [CourseEnrollmentController::class, 'resetAll'])->name('organisation.course.leaderboard.reset.students.progress')->middleware(['subscribed']);
-    Route::delete('/org/course/{course:slug}/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'reset'])->name('organisation.course.leaderboard.reset.student.progress')->middleware(['subscribed']);
-    Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll')->middleware(['subscribed']);
-
-    Route::get('/settings/billing', [BillingController::class, 'index'])->name('organisation.billing.index');
+    Route::get('/settings/subscription', [SubscriptionController::class, 'show'])->name('subscriptions.show');
+    Route::post('/settings/subscription', [SubscriptionController::class, 'store'])->name('subscriptions.store');
+    Route::delete('/settings/subscription', [SubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
+    Route::get('/settings/billing', [SubscriptionController::class, 'index'])->name('organisation.billing.index');
 
     // Org-course
-    // Enroll users
+    Route::get('/org/course', [CourseController::class, 'index'])->name('course.index')->middleware(['subscribed']);
+    // Route::get("/org/{organisation}/course", [CourseController::class, 'index'])->name('course.index');
+    Route::get('/org/course/{course}', [CourseController::class, 'show'])->name('course.show')->middleware(['subscribed']);
+    Route::get('/org/course/{course}/edit', [CourseController::class, 'edit'])->name('course.edit')->middleware(['subscribed']);
+    Route::get('/org/course/create', [CourseController::class, 'create'])->name('course.create')->middleware(['subscribed']);
 
-    // Teacher-Course
-    Route::get('/teacher/course', [CourseController::class, 'index'])->name('course.index');
-    // Route::get("/teacher/{organisation}/course", [CourseController::class, 'index'])->name('course.index');
-    Route::get('/teacher/course/{course}', [CourseController::class, 'show'])->name('course.show');
-    Route::get('/teacher/course/{course}/edit', [CourseController::class, 'edit'])->name('course.edit');
-    Route::get('/teacher/course/create', [CourseController::class, 'create'])->name('course.create');
+    Route::post('/org/course', [CourseController::class, 'store'])->name('course.store')->middleware(['subscribed']);
+    Route::patch('/org/course/{course}', [CourseController::class, 'update'])->name('course.update')->middleware(['subscribed']);
+    Route::delete('/org/course/{course}', [CourseController::class, 'destroy'])->name('course.destroy')->middleware(['subscribed']);
 
-    Route::post('/teacher/course', [CourseController::class, 'store'])->name('course.store');
-    Route::patch('/teacher/course/{course}', [CourseController::class, 'update'])->name('course.update');
-    Route::delete('/teacher/course/{course}', [CourseController::class, 'destroy'])->name('course.destroy');
+    Route::get('/org/course/{course:slug}/stats/leaderboard', [CourseEnrollmentController::class, 'show'])->name('organisation.course.leaderboard')->middleware(['subscribed']);
+    Route::delete('/org/course/{course:slug}/student/{student}', [CourseEnrollmentController::class, 'destroy'])->name('organisation.course.student.destroy')->middleware(['subscribed']);
+    Route::delete('/org/course/{course:slug}/stats/leaderboard/reset', [CourseEnrollmentController::class, 'resetAll'])->name('organisation.course.leaderboard.reset.students.progress')->middleware(['subscribed']);
+    Route::delete('/org/course/{course:slug}/stats/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'reset'])->name('organisation.course.leaderboard.reset.student.progress')->middleware(['subscribed']);
+    Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll')->middleware(['subscribed']);
+
 
     // Course - public?
-    Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index');
-    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show');
+    Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware(['subscribed']);
+    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware(['subscribed']);
     // Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
 
     // Lesson - public?
-    Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
+    Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show')->middleware(['subscribed']);
     // Lesson
-    Route::get('/teacher/course/{course}/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit');
-    Route::patch('/teacher/course/{course}/lesson/{lesson}', [LessonController::class, 'update'])->name('lesson.update');
-    Route::patch('/teacher/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position');
-    Route::get('/teacher/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create');
-    Route::post('/teacher/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store');
+    Route::get('/org/course/{course}/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit')->middleware(['subscribed']);
+    Route::patch('/org/course/{course}/lesson/{lesson}', [LessonController::class, 'update'])->name('lesson.update')->middleware(['subscribed']);
+    Route::patch('/org/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position')->middleware(['subscribed']);
+    Route::get('/org/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create')->middleware(['subscribed']);
+    Route::post('/org/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store')->middleware(['subscribed']);
 
     // Classrooom
-    Route::middleware(['enrolled', 'subscribed'])->group(function () {
-        Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'show:slug'])->name('classroom.course.show');
-        Route::get('/classroom/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
-        Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
+    Route::middleware(['subscribed', 'enrolled'])->group(function () {
+        // TODO: FIX show:slug
+        Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'show:slug'])->name('classroom.course.show')->middleware(['subscribed']);
+        Route::get('/classroom/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index')->middleware(['subscribed']);
+        Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show')->middleware(['subscribed']);
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete')->middleware(['subscribed']);
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz')->middleware(['subscribed']);
     });
 });
 

@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class BillingHistory extends Model
 {
     use HasFactory;
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'billing_historiess';
 
     protected $fillable = [
         "transaction_ref",
@@ -15,6 +21,8 @@ class BillingHistory extends Model
         "description",
         "provider",
         "organisation_id"
+        // 
+        // next_bill_date
     ];
 
     public function organisation()
