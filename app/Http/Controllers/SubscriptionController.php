@@ -87,7 +87,7 @@ class SubscriptionController extends Controller
         // ]);
 
 
-        return redirect()->back()->with('global:message', [
+        return redirect()->intended(route('dashboard'))->with('global:message', [
             'status' => 'success',
             'message' => 'Subscription created!',
         ]);
