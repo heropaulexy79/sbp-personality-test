@@ -28,11 +28,15 @@ class SubscriptionController extends Controller
 
     public function show(Request $request)
     {
-        $org = $request->user()->organisationNew->organisation;
+        $user = $request->user();
+        $org = $user->organisationNew->organisation;
+
+
 
         return Inertia::render('Organisation/Subscription/Index', [
             "plans" => config('subscriptions.plans'),
             "payment_method" => $org->paymentMethods->first(),
+            "is_admin" => $user->isAdminInOrganisation($org),
         ]);
     }
 
@@ -42,6 +46,10 @@ class SubscriptionController extends Controller
     {
         $user = $request->user();
         $organisation = $user->organisation();
+
+        if (!$user->isAdminInOrganisation($organisation)) {
+            return abort(404);
+        }
 
 
 

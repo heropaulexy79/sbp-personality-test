@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { PaymentMethod, SubscriptionPlan } from "@/types";
-import { Head, useForm, usePage } from "@inertiajs/vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/vue3";
 import PricingCard from "./Partials/PricingCard.vue";
 import { toast } from "vue-sonner";
 import { errorBagToString } from "@/lib/errors";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/Components/ui/card";
+import { AlertTriangle } from "lucide-vue-next";
+import { Button } from "@/Components/ui/button";
 
 const page = usePage();
 const props = defineProps<{
@@ -12,6 +22,7 @@ const props = defineProps<{
         [k: string]: SubscriptionPlan;
     };
     payment_method: PaymentMethod | null;
+    is_admin: false;
     // subscription: Subscription | null;
     // history: TBillingHistory[];
 }>();
@@ -85,7 +96,7 @@ function onSelect(plan: SubscriptionPlan) {
 
         <div class="py-0">
             <!-- <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8"> -->
-            <div class="">
+            <div class="" v-if="is_admin">
                 <div
                     class="relative isolate bg-white px-6 py-4 sm:py-4 lg:px-8"
                 >
@@ -146,6 +157,73 @@ function onSelect(plan: SubscriptionPlan) {
                             @on-select="onSelect"
                         />
                     </div>
+                </div>
+            </div>
+
+            <div v-else>
+                <div
+                    class="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4"
+                >
+                    <Card class="w-full max-w-md">
+                        <CardHeader class="text-center">
+                            <div
+                                class="mx-auto mb-4 w-fit rounded-full bg-yellow-100 p-3"
+                            >
+                                <AlertTriangle
+                                    class="h-8 w-8 text-yellow-600"
+                                />
+                            </div>
+                            <CardTitle class="text-2xl font-bold"
+                                >Subscription Expired</CardTitle
+                            >
+                            <CardDescription
+                                >Your access has been temporarily
+                                suspended</CardDescription
+                            >
+                        </CardHeader>
+                        <CardContent class="text-center">
+                            <p class="mb-4">
+                                We're sorry, but your subscription has expired.
+                                To regain access to your account and continue
+                                using our services, please contact your
+                                administrator to renew the subscription.
+                            </p>
+                            <p class="font-semibold">
+                                What should you do next?
+                            </p>
+                            <ul class="mt-2 list-inside list-disc text-left">
+                                <li>
+                                    Contact your company's IT department or
+                                    account administrator
+                                </li>
+                                <li>Request a subscription renewal</li>
+                                <li>
+                                    Once renewed, you can log back in to access
+                                    your account
+                                </li>
+                            </ul>
+                        </CardContent>
+                        <CardFooter class="flex flex-col space-y-2">
+                            <!-- <Button class="w-full" asChild>
+            <Link href="mailto:admin@yourcompany.com">
+              <Mail class="mr-2 h-4 w-4" /> Contact Admin
+            </Link>
+          </Button> -->
+                            <Button variant="outline" class="w-full" asChild>
+                                <Link href="/">Return to Homepage</Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                    <p class="mt-8 text-center text-sm text-gray-500">
+                        If you believe this is an error, please contact our
+                        <Link
+                            href="mailto:info@imageandtime.com"
+                            class="font-medium text-blue-600 hover:underline"
+                        >
+                            support team
+                        </Link>
+                        .
+                    </p>
                 </div>
             </div>
         </div>
