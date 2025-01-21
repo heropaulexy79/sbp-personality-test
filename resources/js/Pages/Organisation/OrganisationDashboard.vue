@@ -113,7 +113,7 @@ const courseNav = [
                     </Transition>
 
                     <ul
-                        class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] space-y-4"
+                        class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] gap-4"
                     >
                         <li v-for="course in courses.data">
                             <CourseCard
