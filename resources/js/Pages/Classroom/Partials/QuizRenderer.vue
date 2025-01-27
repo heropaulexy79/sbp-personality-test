@@ -18,6 +18,7 @@ import { useQuizAnswerManager } from "./use-quiz-answer-manager";
 import { computed } from "vue";
 import { cn } from "@/lib/utils";
 import { AngryIcon, SmileIcon } from "lucide-vue-next";
+import { Progress } from "@/Components/ui/progress";
 
 const page = usePage();
 
@@ -140,21 +141,18 @@ const scoreInPercent = computed(
             >
                 Show score
             </Button>
-            <div
-                class="radial-progress size-11 rounded-full text-xs"
-                :style="{
-                    '--progress':
-                        (currentQuestionIdx + 1 / lesson.content_json.length) *
-                        100,
-                }"
-            >
-                <span
-                    class="flex size-9 items-center justify-center rounded-full bg-background"
-                >
-                    {{ currentQuestionIdx + 1 }} /
-                    {{ lesson.content_json.length }}
-                </span>
-            </div>
+
+            <Progress
+                :model-value="
+                    ((currentQuestionIdx + 1) / lesson.content_json.length) *
+                    100
+                "
+                class="h-3"
+            />
+            <span class="flex-shrink-0">
+                {{ currentQuestionIdx + 1 }} /
+                {{ lesson.content_json.length }}
+            </span>
         </div>
         <div class="relative border border-border p-6">
             <!-- <div class="my-6">
