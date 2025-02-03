@@ -18,10 +18,10 @@ withDefaults(
 
 <template>
     <div class="@container">
-        <div class="@md:p-4 rounded-lg bg-background p-2 shadow transition-all">
-            <div class="@md:items-center @lg:flex-row flex flex-col gap-5">
+        <div class="rounded-lg bg-background p-2 shadow transition-all @md:p-4">
+            <div class="flex flex-col gap-5 @md:items-center @lg:flex-row">
                 <div
-                    class="@lg:size-32 aspect-video w-full rounded-md bg-gray-400 bg-cover"
+                    class="aspect-video w-full rounded-md bg-gray-400 bg-cover @lg:size-32"
                     :style="{
                         backgroundImage: course.banner_image
                             ? `url(${course.banner_image})`
@@ -29,7 +29,7 @@ withDefaults(
                     }"
                 ></div>
                 <div
-                    class="@lg:flex-row @md:justify-between flex flex-1 flex-col gap-6"
+                    class="flex flex-1 flex-col gap-6 @md:justify-between @lg:flex-row"
                 >
                     <Link
                         :href="
@@ -46,7 +46,7 @@ withDefaults(
                     </Link>
 
                     <div
-                        class="@md:max-w-52 @xs:flex-row @lg:flex-col @md:mt-0 mt-4 flex flex-col"
+                        class="mt-4 flex flex-col @xs:flex-row @md:mt-0 @md:max-w-52 @lg:flex-col"
                         v-if="$page.props.auth.user.role === 'ADMIN'"
                     >
                         <Link
@@ -59,10 +59,14 @@ withDefaults(
                                           course: course.slug,
                                       })
                             "
+                            class="group"
                             :class="cn(buttonVariants({ size: 'lg' }))"
                         >
                             <span>Go to course</span>
-                            <ArrowRight :size="16" />
+                            <ArrowRight
+                                :size="16"
+                                class="transition-all group-hover:translate-x-2"
+                            />
                         </Link>
                         <Link
                             :href="
