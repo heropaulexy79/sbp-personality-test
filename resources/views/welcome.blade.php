@@ -13,7 +13,7 @@
 
 
     {{-- <link rel="icon" type="image/x-icon" href="/favicon.ico" /> --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
 
 
     @vite('resources/css/app.css')
