@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Course;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +22,10 @@ class EnsureEnrolledInCourse
 
         $course = $request->route('course');
 
+
+        if (is_string($course)) {
+            $course = Course::where('slug', $course)->firstOrFail();
+        }
 
         if (!$course || !$course->is_published  || (!$user->isEnrolledInCourse($course->id) && $user->cannot('update', $course->organisation))) {
 

@@ -10,7 +10,8 @@ const props = defineProps<{
     course: Course;
     lessons: WithUserLesson<Omit<Lesson, "content" | "content_json">>[];
     progress: number;
-    completedLessons: number;
+    completed_lessons: number;
+    total_score: number;
 }>();
 </script>
 
@@ -33,7 +34,8 @@ const props = defineProps<{
                             :course="course"
                             :lessons="lessons"
                             :progress="progress"
-                            :completed-lessons="completedLessons"
+                            :completed_lessons="completed_lessons"
+                            :total_score="total_score"
                         />
                     </div>
                 </div>

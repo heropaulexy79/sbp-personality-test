@@ -9,7 +9,8 @@ defineProps<{
     course: Course;
     lessons: WithUserLesson<Omit<Lesson, "content" | "content_json">>[];
     progress: number;
-    completedLessons: number;
+    completed_lessons: number;
+    total_score: number;
 }>();
 </script>
 
@@ -37,23 +38,21 @@ defineProps<{
                         {{ progress }}% Complete
                     </p>
                 </div>
-                <div class="mb-6 grid gap-4 md:grid-cols-1">
+                <div class="mb-6 grid gap-4 md:grid-cols-2">
                     <div class="text-center">
                         <p class="text-4xl font-bold text-primary">
-                            {{ completedLessons }}
+                            {{ completed_lessons }}
                         </p>
                         <p class="text-muted-foreground">Lessons Completed</p>
                     </div>
-                    <!-- <div class="text-center">
-                        <p
-                            class="text-4xl font-bold text-purple-600 dark:text-purple-400"
-                        >
-                            48
+                    <div class="text-center">
+                        <p class="text-4xl font-bold text-purple-600">
+                            {{ total_score }}
                         </p>
                         <p class="text-gray-600 dark:text-gray-300">
-                            Hours Spent
+                            Points Won
                         </p>
-                    </div> -->
+                    </div>
                 </div>
                 <div
                     class="mb-6 border-t border-gray-200 pt-6 dark:border-gray-700"

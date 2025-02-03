@@ -144,18 +144,30 @@ class ClassroomController extends Controller
 
         $lessons->makeHidden('user_lesson');
 
-        // dd($enrollment);
 
-        if (!$enrollment->is_completed) {
-            return redirect(route('classroom.lesson.index', ['course' => $course->slug]));
-        }
+        // if (!$enrollment->is_completed) {
+        //     return redirect(route('classroom.lesson.index', ['course' => $course->slug]));
+        // }
+
+        // dd($enrollment);
+        $userScores = $user->lessons()
+            ->with('lesson')
+            ->whereHas('lesson', function ($query) use ($course) {
+                $query->where('course_id', $course->id);
+            })
+            ->select('user_lessons.score') // Select specific columns
+            ->get();
+
+
+
 
         return Inertia::render('Classroom/Completed', [
             'course' => $course,
             'lessons' => $lessons,
             'enrollment' => $enrollment,
             'progress' => ($total_completed / count($lessons) * 100),
-            'completedLessons' => $total_completed,
+            'completed_lessons' => $total_completed,
+            'total_score' => $userScores->sum('score'),
         ]);
     }
 
