@@ -99,11 +99,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Classrooom
     Route::middleware(['subscribed', 'enrolled'])->group(function () {
         // TODO: FIX show:slug
-        Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'show:slug'])->name('classroom.course.show')->middleware(['subscribed']);
-        Route::get('/classroom/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index')->middleware(['subscribed']);
-        Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show')->middleware(['subscribed']);
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete')->middleware(['subscribed']);
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz')->middleware(['subscribed']);
+        Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
+        Route::get('/classroom/course/{course:slug}/completed', [ClassroomController::class, 'showCompleted'])->name('classroom.course.completed.show');
+        Route::get('/classroom/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
+        Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
     });
 });
 

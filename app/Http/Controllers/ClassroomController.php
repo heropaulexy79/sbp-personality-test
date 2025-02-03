@@ -112,6 +112,53 @@ class ClassroomController extends Controller
         ]);
     }
 
+    public function showCompleted(Request $request, Course $course)
+    {
+
+        $user = $request->user();
+        $lessons = $course->lessons()->published()->orderBy('position')
+            ->with(['user_lesson' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }])
+            ->get(['title', 'position', 'type', 'id', 'slug',]);
+        $total_completed = 0;
+
+        foreach ($lessons as $l) {
+            $l->completed = $l->user_lesson->first()?->completed === 1;
+            if ($l->completed) {
+                $total_completed++;
+            }
+        };
+
+        $enrollment = CourseEnrollment::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->first();
+        if ($total_completed === count($lessons)) {
+
+            if ($enrollment) {
+                $enrollment->is_completed = true;
+                $enrollment->save();
+            }
+        }
+
+
+        $lessons->makeHidden('user_lesson');
+
+        // dd($enrollment);
+
+        if (!$enrollment->is_completed) {
+            return redirect(route('classroom.lesson.index', ['course' => $course->slug]));
+        }
+
+        return Inertia::render('Classroom/Completed', [
+            'course' => $course,
+            'lessons' => $lessons,
+            'enrollment' => $enrollment,
+            'progress' => ($total_completed / count($lessons) * 100),
+            'completedLessons' => $total_completed,
+        ]);
+    }
+
 
 
     public function markLessonComplete(Request $request, Course $course, Lesson $lesson)

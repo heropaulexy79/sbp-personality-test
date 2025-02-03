@@ -44,7 +44,7 @@ const {
     props.lesson.answers ?? null,
 );
 
-const successDialog = ref(false);
+const successDialog = ref(true);
 
 const completionForm = useForm({
     answers: [],
@@ -108,8 +108,13 @@ function onContinue() {
 
         return;
     }
-    successDialog.value = false;
-    router.reload();
+    router.visit(
+        route("classroom.course.completed.show", {
+            course: props.course.slug,
+        }),
+    );
+    // successDialog.value = false;
+    // router.reload();
 }
 
 const score = computed(() => {
