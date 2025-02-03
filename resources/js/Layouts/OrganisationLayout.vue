@@ -94,7 +94,7 @@ const billingAlert = ref(
                                                 variant="ghost"
                                                 class="-mr-4 hover:bg-transparent"
                                             >
-                                                <Avatar>
+                                                <Avatar class="size-8">
                                                     <AvatarImage
                                                         :src="
                                                             getPublicProfileImage(
