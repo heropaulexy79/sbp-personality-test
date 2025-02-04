@@ -30,7 +30,10 @@ function markAsComplete() {
 
 <template>
     <div>
-        <div v-if="lesson.type === 'DEFAULT'" class="prose lg:prose-lg">
+        <div
+            v-if="lesson.type === 'DEFAULT'"
+            class="prose px-12 py-12 lg:prose-lg"
+        >
             <article v-html="lesson.content" />
 
             <form

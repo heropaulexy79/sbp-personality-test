@@ -17,8 +17,9 @@ import { WithUserLesson } from "./types";
 import { useQuizAnswerManager } from "./use-quiz-answer-manager";
 import { computed } from "vue";
 import { cn } from "@/lib/utils";
-import { AngryIcon, SmileIcon } from "lucide-vue-next";
+import { AngryIcon, ArrowLeft, ArrowRight, SmileIcon } from "lucide-vue-next";
 import { Progress } from "@/Components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 
 const page = usePage();
 
@@ -44,7 +45,7 @@ const {
     props.lesson.answers ?? null,
 );
 
-const successDialog = ref(true);
+const successDialog = ref(false);
 
 const completionForm = useForm({
     answers: [],
@@ -136,71 +137,81 @@ const scoreInPercent = computed(
 </script>
 
 <template>
-    <div class="mx-auto max-w-screen-md rounded-md">
-        <div class="mb-6 flex items-center justify-end gap-4">
-            <Button
-                variant="outline"
-                size="sm"
-                @click="successDialog = true"
-                v-if="isCompleted"
-            >
-                Show score
-            </Button>
+    <div
+        class="flex min-h-[calc(100svh-65px)] items-center justify-center bg-gradient-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
+    >
+        <Card class="mx-auto w-full max-w-screen-md rounded-md">
+            <CardHeader>
+                <div class="mb-6 flex items-center justify-end gap-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="successDialog = true"
+                        v-if="isCompleted"
+                    >
+                        Show score
+                    </Button>
 
-            <Progress
-                :model-value="
-                    ((currentQuestionIdx + 1) / lesson.content_json.length) *
-                    100
-                "
-                class="h-3"
-            />
-            <span class="flex-shrink-0">
-                {{ currentQuestionIdx + 1 }} /
-                {{ lesson.content_json.length }}
-            </span>
-        </div>
-        <div class="relative border border-border p-6">
-            <!-- <div class="my-6">
+                    <Progress
+                        :model-value="
+                            ((currentQuestionIdx + 1) /
+                                lesson.content_json.length) *
+                            100
+                        "
+                        class="h-3"
+                    />
+                    <span class="flex-shrink-0">
+                        {{ currentQuestionIdx + 1 }} /
+                        {{ lesson.content_json.length }}
+                    </span>
+                </div>
+            </CardHeader>
+            <CardContent class="">
+                <div class="relative border border-border p-6">
+                    <!-- <div class="my-6">
             You scored {{ score }} / {{ lesson.content_json.length }}
         </div> -->
 
-            <div class="mb-6 max-w-screen-sm text-lg font-bold">
-                {{ currentQuesion.text }}
-            </div>
+                    <CardTitle class="mb-6 max-w-screen-sm text-lg font-bold">
+                        {{ currentQuesion.text }}
+                    </CardTitle>
 
-            <div class="">
-                <RadioGroup
-                    :key="currentQuesion.id"
-                    :default-value="currentAnswer as string | undefined"
-                    @update:model-value="
-                        (v) => {
-                            answerQuestion(currentQuesion.id, v);
-                        }
-                    "
-                    :disabled="isCompleted"
-                    v-if="currentQuesion.type === 'single_choice'"
-                >
-                    <div
-                        v-for="option in currentQuesion.options"
-                        :key="option.id"
-                        class="flex items-center space-x-2"
-                        :class="
-                            cn(
-                                isCompleted && currentAnswer === option.id
-                                    ? correctOption?.id === option.id
-                                        ? 'text-green-500'
-                                        : 'text-destructive'
-                                    : '',
-                            )
-                        "
-                    >
-                        <RadioGroupItem
-                            :id="option.id"
-                            :value="option.id"
+                    <div class="">
+                        <RadioGroup
+                            :key="currentQuesion.id"
+                            :default-value="currentAnswer as string | undefined"
+                            @update:model-value="
+                                (v) => {
+                                    answerQuestion(currentQuesion.id, v);
+                                }
+                            "
                             :disabled="isCompleted"
-                        />
-                        <Label :for="option.id"> {{ option.text }} </Label>
-                        <!-- <RadioGroupItem
+                            v-if="currentQuesion.type === 'single_choice'"
+                        >
+                            <div
+                                v-for="option in currentQuesion.options"
+                                :key="option.id"
+                                class="flex items-center space-x-2"
+                                :class="
+                                    cn(
+                                        isCompleted &&
+                                            currentAnswer === option.id
+                                            ? correctOption?.id === option.id
+                                                ? 'text-green-500'
+                                                : 'text-destructive'
+                                            : '',
+                                    )
+                                "
+                            >
+                                <RadioGroupItem
+                                    :id="option.id"
+                                    :value="option.id"
+                                    :disabled="isCompleted"
+                                />
+                                <Label :for="option.id">
+                                    {{ option.text }}
+                                </Label>
+                                <!-- <RadioGroupItem
         v-bind="forwardedProps"
         :class="
             cn(
@@ -213,104 +224,126 @@ const scoreInPercent = computed(
             <Circle class="h-2.5 w-2.5 fill-current text-current" />
         </RadioGroupIndicator>
     </RadioGroupItem> -->
+                            </div>
+                        </RadioGroup>
+
+                        <div v-if="isCompleted" class="my-4">
+                            The correct answer is {{ correctOption?.text }}
+                        </div>
                     </div>
-                </RadioGroup>
 
-                <div v-if="isCompleted" class="my-4">
-                    The correct answer is {{ correctOption?.text }}
+                    <div
+                        class="mt-6 flex items-center justify-between gap-4 [&_button]:min-w-20"
+                    >
+                        <Button
+                            class="group"
+                            variant="secondary"
+                            size="sm"
+                            @click="previousQuestion"
+                            :disabled="!hasPreviousQuesion"
+                        >
+                            <ArrowLeft
+                                :size="16"
+                                class="transition-all group-hover:-translate-x-2"
+                            />
+
+                            Previous
+                        </Button>
+                        <Button
+                            class="group"
+                            size="sm"
+                            @click="nextQuestion"
+                            :disabled="!hasNextQuesion"
+                            v-if="hasNextQuesion || isCompleted"
+                        >
+                            Next
+
+                            <ArrowRight
+                                :size="16"
+                                class="transition-all group-hover:translate-x-2"
+                            />
+                        </Button>
+
+                        <Button
+                            class="group"
+                            size="sm"
+                            @click="submit"
+                            v-if="!hasNextQuesion && !isCompleted"
+                        >
+                            Submit
+                            <ArrowRight
+                                :size="16"
+                                class="transition-all group-hover:translate-x-2"
+                            />
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            </CardContent>
+        </Card>
 
-            <div class="mt-6 flex items-center gap-4">
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    @click="previousQuestion"
-                    :disabled="!hasPreviousQuesion"
-                >
-                    Previous
-                </Button>
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    @click="nextQuestion"
-                    :disabled="!hasNextQuesion"
-                    v-if="hasNextQuesion || isCompleted"
-                >
-                    Next
-                </Button>
-
-                <Button
-                    size="sm"
-                    @click="submit"
-                    v-if="!hasNextQuesion && !isCompleted"
-                >
-                    Submit
-                </Button>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <Dialog v-model:open="successDialog">
-            <!-- <DialogTrigger as-child>
+        <div>
+            <Dialog v-model:open="successDialog">
+                <!-- <DialogTrigger as-child>
       <Button variant="outline">
         Edit Profile
       </Button>
     </DialogTrigger> -->
-            <DialogContent class="sm:max-w-[575px]">
-                <DialogHeader>
-                    <DialogTitle class="text-center">
-                        Quiz Results
-                    </DialogTitle>
-                    <!-- <DialogDescription>
+                <DialogContent class="sm:max-w-[575px]">
+                    <DialogHeader>
+                        <DialogTitle class="text-center">
+                            Quiz Results
+                        </DialogTitle>
+                        <!-- <DialogDescription>
                         Make changes to your profile here. Click save when
                         you're done.
                     </DialogDescription> -->
-                </DialogHeader>
-                <div class="text-center">
-                    <div
-                        class="radial-progress mx-auto size-32 rounded-full text-4xl font-bold"
-                        :style="{
-                            '--progress': Number(scoreInPercent),
-                        }"
-                    >
-                        <span
-                            class="flex size-28 items-center justify-center rounded-full bg-background"
+                    </DialogHeader>
+                    <div class="text-center">
+                        <div
+                            class="radial-progress mx-auto size-32 rounded-full text-4xl font-bold"
+                            :style="{
+                                '--progress': Number(scoreInPercent),
+                            }"
                         >
-                            {{ scoreInPercent ?? 0 }} %
-                        </span>
-                    </div>
+                            <span
+                                class="flex size-28 items-center justify-center rounded-full bg-background"
+                            >
+                                {{ scoreInPercent ?? 0 }} %
+                            </span>
+                        </div>
 
-                    <!-- <div class="mt-4">
+                        <!-- <div class="mt-4">
                         {{ $page.props.flash.message?.message }}
                     </div> -->
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex flex-col items-center space-y-2">
-                            <SmileIcon class="size-8 text-green-600" />
-                            <span class="text-sm font-medium">
-                                Correct Answers
-                            </span>
-                            <span class="text-2xl font-bold">{{ score }}</span>
-                        </div>
-                        <div class="flex flex-col items-center space-y-2">
-                            <AngryIcon class="size-8 text-destructive" />
-                            <span class="text-sm font-medium">
-                                Incorrect Answers
-                            </span>
-                            <span class="text-2xl font-bold">
-                                {{ lesson.content_json.length - score }}
-                            </span>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col items-center space-y-2">
+                                <SmileIcon class="size-8 text-green-600" />
+                                <span class="text-sm font-medium">
+                                    Correct Answers
+                                </span>
+                                <span class="text-2xl font-bold">{{
+                                    score
+                                }}</span>
+                            </div>
+                            <div class="flex flex-col items-center space-y-2">
+                                <AngryIcon class="size-8 text-destructive" />
+                                <span class="text-sm font-medium">
+                                    Incorrect Answers
+                                </span>
+                                <span class="text-2xl font-bold">
+                                    {{ lesson.content_json.length - score }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <DialogFooter
-                    class="mt-4 items-center justify-center sm:justify-center"
-                >
-                    <Button @click="onContinue"> Continue </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                    <DialogFooter
+                        class="mt-4 items-center justify-center sm:justify-center"
+                    >
+                        <Button @click="onContinue"> Continue </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div>
     </div>
 </template>
