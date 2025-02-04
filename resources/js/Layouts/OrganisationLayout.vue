@@ -21,6 +21,10 @@ import { getPublicProfileImage } from "@/lib/utils";
 
 const page = usePage();
 
+withDefaults(defineProps<{ isFullscreen: boolean }>(), {
+    isFullscreen: false,
+});
+
 const showingNavigationDropdown = ref(false);
 const billingAlert = ref(
     !page.props.global.hasActiveSubscription &&
@@ -34,7 +38,8 @@ const billingAlert = ref(
         <div>
             <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
                 <nav
-                    class="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800"
+                    v-if="!isFullscreen"
+                    class="z-30 border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
                     <!-- Primary Navigation Menu -->
                     <div class="container">
