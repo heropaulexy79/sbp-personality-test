@@ -138,11 +138,11 @@ const scoreInPercent = computed(
 
 <template>
     <div
-        class="flex min-h-[calc(100svh-65px)] items-center justify-center bg-gradient-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
+        class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-gradient-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
     >
-        <Card class="mx-auto w-full max-w-screen-md rounded-md">
+        <Card class="mx-auto mb-6 w-full max-w-screen-md rounded-md">
             <CardHeader>
-                <div class="mb-6 flex items-center justify-end gap-4">
+                <div class="flex items-center justify-end gap-4">
                     <Button
                         variant="outline"
                         size="sm"
@@ -166,15 +166,45 @@ const scoreInPercent = computed(
                     </span>
                 </div>
             </CardHeader>
+        </Card>
+        <Card class="mx-auto w-full max-w-screen-md rounded-md">
+            <CardHeader>
+                <!-- <div class="mb-6 flex items-center justify-end gap-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="successDialog = true"
+                        v-if="isCompleted"
+                    >
+                        Show score
+                    </Button>
+
+                    <Progress
+                        :model-value="
+                            ((currentQuestionIdx + 1) /
+                                lesson.content_json.length) *
+                            100
+                        "
+                        class="h-3"
+                    />
+                    <span class="flex-shrink-0">
+                        {{ currentQuestionIdx + 1 }} /
+                        {{ lesson.content_json.length }}
+                    </span>
+                </div> -->
+                <CardTitle class="mb-6 max-w-screen-sm text-lg font-bold">
+                    {{ currentQuesion.text }}
+                </CardTitle>
+            </CardHeader>
             <CardContent class="">
-                <div class="relative border border-border p-6">
+                <div class="relative">
                     <!-- <div class="my-6">
             You scored {{ score }} / {{ lesson.content_json.length }}
         </div> -->
 
-                    <CardTitle class="mb-6 max-w-screen-sm text-lg font-bold">
+                    <!-- <CardTitle class="mb-6 max-w-screen-sm text-lg font-bold">
                         {{ currentQuesion.text }}
-                    </CardTitle>
+                    </CardTitle> -->
 
                     <div class="">
                         <RadioGroup
