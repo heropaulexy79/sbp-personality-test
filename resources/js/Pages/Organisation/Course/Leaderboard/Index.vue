@@ -80,7 +80,10 @@ function resetCourseProgress() {
                         <h2 class="text-2xl font-semibold tracking-tight">
                             Leaderboard
                         </h2>
-                        <div class="flex items-center justify-between gap-4">
+                        <div
+                            class="flex items-center justify-between gap-4"
+                            v-if="$page.props.auth.user.role === 'ADMIN'"
+                        >
                             <Dialog
                                 :open="enrollModal"
                                 @update:open="

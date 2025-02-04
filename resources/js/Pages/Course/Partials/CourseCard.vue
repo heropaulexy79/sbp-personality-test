@@ -47,7 +47,6 @@ withDefaults(
 
                     <div
                         class="mt-4 flex flex-col @xs:flex-row @md:mt-0 @md:max-w-52 @lg:flex-col"
-                        v-if="$page.props.auth.user.role === 'ADMIN'"
                     >
                         <Link
                             :href="

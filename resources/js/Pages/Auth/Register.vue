@@ -21,8 +21,8 @@ const form = useForm({
     name: "",
     email:
         (props?.prefilled?.email?.trim().length ?? 0) > 0
-            ? props.prefilled?.email
-            : page.props.query.email ?? "",
+            ? props.prefilled?.email?.toLowerCase()
+            : page.props.query.email?.toLowerCase() ?? "",
     password: "",
     password_confirmation: "",
     invitation_token: page.props.query["tk"] ?? "",

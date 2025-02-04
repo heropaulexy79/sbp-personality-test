@@ -31,11 +31,12 @@ class DashboardController extends Controller
             case 'all_enrolled':
                 $courses = Course::whereHas('enrolledUsers.organisationNew', function ($query) use ($user) {
                     $query->where('organisation_id', $user->organisationNew->organisation_id);
+                    $query->where('is_published', true);
                 })->paginate()->withQueryString();
                 break;
 
             default:
-                $courses = $request->user()->enrolledCourses()->where("is_completed", $status === "completed" ? "1" : "0")
+                $courses = $request->user()->enrolledCourses()->where("is_completed", $status === "completed" ? "1" : "0")->where("is_published", true)
                     ->paginate()->withQueryString();
                 break;
         }
