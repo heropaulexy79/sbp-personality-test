@@ -23,7 +23,7 @@ const form = useForm({
 const inviteToOrganisation = () => {
     form.transform((d) => {
         return {
-            invites: d.invites.map((e) => ({ email: e })),
+            invites: d.invites.map((e) => ({ email: e.toLowerCase() })),
         };
     }).post(route("organisation.invite", { id: props.organisation.id }), {
         preserveScroll: true,
