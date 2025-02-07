@@ -51,7 +51,7 @@ class CourseEnrollmentController extends Controller
         }
 
         $students = collect($students);
-        $sorted = $students->sortBy('score', SORT_DESC);
+        $sorted = $students->sortByDesc('score');
 
 
         return Inertia::render('Organisation/Course/Leaderboard/Index', [
