@@ -56,7 +56,7 @@ class CourseEnrollmentController extends Controller
 
         return Inertia::render('Organisation/Course/Leaderboard/Index', [
             "course" => $course,
-            "students" => $students,
+            "students" => $students->values()->all(),
         ]);
     }
 
