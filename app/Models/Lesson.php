@@ -17,6 +17,11 @@ class Lesson extends Model
         'is_published' => 'boolean',
     ];
 
+
+    const TYPE_DEFAULT = 'DEFAULT';
+    const TYPE_QUIZ = 'QUIZ';
+    const TYPE_PERSONALITY_QUIZ = 'PERSONALITY_QUIZ';
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
@@ -34,6 +39,10 @@ class Lesson extends Model
 
     public function quizWithoutCorrectAnswer()
     {
+        if ($this->type !== self::TYPE_QUIZ || !is_array($this->content_json)) {
+            return [];
+        }
+
         $filtered = [];
 
         foreach ($this->content_json as $quiz) {
@@ -43,7 +52,14 @@ class Lesson extends Model
         return $filtered;
     }
 
-    const TYPE_DEFAULT = 'DEFAULT';
-
-    const TYPE_QUIZ = 'QUIZ';
+    public function getPersonalityQuizData(): array
+    {
+        if ($this->type !== self::TYPE_PERSONALITY_QUIZ || !is_array($this->content_json)) {
+            return ['questions' => [], 'traits' => []];
+        }
+        return [
+            'questions' => $this->content_json['questions'] ?? [],
+            'traits' => $this->content_json['traits'] ?? [],
+        ];
+    }
 }

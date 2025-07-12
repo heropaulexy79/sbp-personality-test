@@ -55,6 +55,8 @@ class LessonController extends Controller
             $lesson->type = $request->type;
             if ($lesson->type === Lesson::TYPE_QUIZ) {
                 $lesson->content_json = $request->quiz;
+            } else if ($lesson->type === Lesson::TYPE_PERSONALITY_QUIZ) {
+                $lesson->content_json = $request->personality_quiz;
             } else {
                 $lesson->content = $request->content;
             }
@@ -131,6 +133,8 @@ class LessonController extends Controller
             if ($request->has('content') || $request->has('quiz')) {
                 if ($lesson->type === Lesson::TYPE_QUIZ) {
                     $lesson->content_json = $request->quiz;
+                } else if ($lesson->type === Lesson::TYPE_PERSONALITY_QUIZ) {
+                    $lesson->content_json = $request->personality_quiz;
                 } else {
                     $lesson->content = $request->content;
                 }
@@ -181,7 +185,7 @@ class LessonController extends Controller
      */
     public function destroy(Lesson $lesson)
     {
-        // TODO: Delete a lesson 
-        // Cannot delete lesson if ? 
+        // TODO: Delete a lesson
+        // Cannot delete lesson if ?
     }
 }

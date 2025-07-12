@@ -1,4 +1,8 @@
 // import { Question } from "@/Pages/Organisation/Course/Lesson/Partials/use-quiz-manager";
+import {
+  PersonalityTrait,
+  PersonalityQuestion,
+} from "@/Pages/Organisation/Course/Lesson/Partials/Personality/types";
 
 export interface User {
   id: number;
@@ -86,7 +90,7 @@ export interface Lesson {
   title: string;
   slug: string;
   content: string;
-  content_json: Question[];
+  content_json: Question[] | PersonalityQuiz;
   course_id: Course["id"];
   type: "DEFAULT" | "QUIZ" | (string & {});
 
@@ -95,6 +99,11 @@ export interface Lesson {
   created_at: Date;
   deleted_at: Date | null;
 }
+
+export type PersonalityQuiz = {
+  traits: PersonalityTrait[];
+  questions: PersonalityQuestion[];
+};
 
 export type Question = SingleChoice | MultipleChoice;
 

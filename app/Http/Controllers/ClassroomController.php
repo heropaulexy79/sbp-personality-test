@@ -203,7 +203,7 @@ class ClassroomController extends Controller
         $request->validate([
             'answers' => 'required|array|min:0',
             'answers.*.question_id' => 'required|string',
-            'answers.*.selected_option' => 'nullable|string',
+            'answers.*.selected_option_id' => 'nullable|string',
         ]);
 
         $score = 0.0;
@@ -227,7 +227,7 @@ class ClassroomController extends Controller
             if ($question['type'] === 'single_choice') {
                 $total++;
 
-                if ($question['correct_option'] === $value['selected_option']) {
+                if ($question['correct_option'] === $value['selected_option_id']) {
                     $score++;
                 }
             }
@@ -253,6 +253,111 @@ class ClassroomController extends Controller
             'status' => 'success',
             'message' => 'You scored ' . $score . ' out of ' . $total,
             'score' => $scoreInPercent
+        ]);
+    }
+
+    public function answerPersonalityQuiz(Request $request, Course $course, Lesson $lesson)
+    {
+        if ($lesson->type !== Lesson::TYPE_PERSONALITY_QUIZ) {
+            return redirect()->back()->with('message', [
+                'status' => 'error',
+                'message' => 'This is not a personality quiz lesson.',
+            ]);
+        }
+
+        $request->validate([
+            'answers' => 'required|array|min:1',
+            'answers.*.question_id' => 'required|string',
+            'answers.*.selected_option_id' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $userAnswers = $request->input('answers');
+
+
+        $quizData = $lesson->getPersonalityQuizData();
+        $personalityQuestions = collect($quizData['questions']);
+        $personalityTraits = collect($quizData['traits']);
+
+
+        $calculatedTraitScores = []; // Holds sum of scores for each trait
+        $traitQuestionCounts = []; // Holds count of questions that contributed to each trait
+
+        // Initialize with 0 for all traits
+        foreach ($personalityTraits as $trait) {
+            $calculatedTraitScores[$trait['id']] = 0;
+            $traitQuestionCounts[$trait['id']] = 0;
+        }
+
+        // 3. Calculate Scores
+        foreach ($userAnswers as $userAnswer) {
+            $questionId = $userAnswer['question_id'];
+            $selectedOptionId = $userAnswer['selected_option_id'];
+
+            $question = $personalityQuestions->firstWhere('id', $questionId);
+
+            if (!$question) {
+                // Log or handle case where question is not found (e.g., tampered data)
+                continue;
+            }
+
+
+            $selectedOption = collect($question['options'])->firstWhere('id', $selectedOptionId);
+
+            if (!$selectedOption || !isset($selectedOption['scores']) || !is_array($selectedOption['scores'])) {
+                // Log or handle case where option is not found or has no scores
+                continue;
+            }
+
+
+            foreach ($selectedOption['scores'] as $traitId => $scoreValue) {
+                if (isset($calculatedTraitScores[$traitId])) { // Ensure the trait ID is valid
+                    $calculatedTraitScores[$traitId] += (float) $scoreValue; // Add score
+                    // Only count if this question actually contributes to the trait's score
+                    // This is important for averaging, as some questions might not impact all traits
+                    if ((float) $scoreValue !== 0 || count($selectedOption['scores']) === 1) { // Count non-zero contributions, or if it's the only score for an option
+                        $traitQuestionCounts[$traitId]++;
+                    }
+                }
+            }
+        }
+
+
+        $finalPersonalityResults = [];
+        foreach ($calculatedTraitScores as $traitId => $sumScore) {
+            $count = $traitQuestionCounts[$traitId];
+            $averageScore = $count > 0 ? ($sumScore / $count) : 0;
+            // Ensure score stays within 0-100 bounds
+            $finalPersonalityResults[$traitId] = max(0, min(100, round($averageScore)));
+        }
+
+        // Prepare data for saving
+        // Convert array of answers and final results to JSON strings
+        $answersJson = json_encode($userAnswers);
+        $resultsJson = json_encode($finalPersonalityResults);
+
+
+        // 5. Save Results to UserLesson (similar to answerQuiz)
+        // UserLesson::upsert(
+        //     [[
+        //         'user_id' => $user->id,
+        //         'lesson_id' => $lesson->id,
+        //         'completed' => true,
+        //         'answers' => $answersJson, // Save raw answers
+        //         'score' => null, // Quiz-specific score, not directly applicable here unless you calculate a composite
+        //         'personality_scores' => $resultsJson, // Save calculated personality scores
+        //     ]],
+        //     uniqueBy: ['user_id', 'lesson_id'],
+        //     update: ['completed', 'answers', 'personality_scores'] // Update specific columns
+        // );
+
+        // 6. Return Response
+        return redirect()->back()->with('message', [
+            'status' => 'success',
+            'message' => 'Personality quiz completed!',
+            'answersJson' => $answersJson,
+            'personality_results' => $finalPersonalityResults,
+            'personality_traits' => $personalityTraits->toArray(), // Also return traits for frontend interpretation
         ]);
     }
 }

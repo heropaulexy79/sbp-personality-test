@@ -48,7 +48,7 @@ class StoreLessonRequest extends FormRequest
                 !$lesson ? Rule::unique('lessons', 'slug')->where('course_id', $course->id) : "max:255",
                 'max:255'
             ],
-            'type' => 'nullable|in:QUIZ,DEFAULT',
+            'type' => 'nullable|in:QUIZ,DEFAULT,PERSONALITY_QUIZ',
             'is_published' => 'boolean',
 
             'content' => [Rule::requiredIf($this->input('type', Lesson::TYPE_DEFAULT) === Lesson::TYPE_DEFAULT), 'nullable', 'string'],

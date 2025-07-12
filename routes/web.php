@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
         Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
         Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
+        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-personality-quiz', [ClassroomController::class, 'answerPersonalityQuiz'])->name('classroom.lesson.answerPersonalityQuiz');
     });
 });
 

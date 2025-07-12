@@ -4,6 +4,7 @@ import { Course, Lesson } from "@/types";
 import { useForm } from "@inertiajs/vue3";
 import { WithUserLesson } from "./types";
 import QuizRenderer from "./QuizRenderer.vue";
+import PersonalityQuizRenderer from "./PersonalityQuiz/PersonalityQuizRenderer.vue";
 
 const props = defineProps<{
   course: Course;
@@ -47,6 +48,13 @@ function markAsComplete() {
     </div>
     <div v-else-if="lesson.type === 'QUIZ'">
       <QuizRenderer
+        :course="course"
+        :lesson="lesson"
+        :next-lesson-id="nextLessonId"
+      />
+    </div>
+    <div v-else-if="lesson.type === 'PERSONALITY_QUIZ'">
+      <PersonalityQuizRenderer
         :course="course"
         :lesson="lesson"
         :next-lesson-id="nextLessonId"
