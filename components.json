@@ -8,7 +8,7 @@
     "baseColor": "slate",
     "cssVariables": true
   },
-  "framework": "laravel",
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/Components",
     "utils": "@/lib/utils",
