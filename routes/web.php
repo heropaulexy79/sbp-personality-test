@@ -81,12 +81,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/org/course/{course:slug}/stats/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'reset'])->name('organisation.course.leaderboard.reset.student.progress')->middleware(['subscribed']);
     Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll')->middleware(['subscribed']);
 
-
-    // Course - public?
-    Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware(['subscribed']);
-    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware(['subscribed']);
-    // Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
-
     // Lesson - public?
     Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show')->middleware(['subscribed']);
     // Lesson
@@ -106,6 +100,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
         Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
     });
+});
+
+Route::middleware([])->group(function (){
+    // Course - public?
+    Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware([]);
+    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware([]);
+    // Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

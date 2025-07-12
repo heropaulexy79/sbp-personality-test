@@ -50,7 +50,8 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'invitation_token' => 'nullable|string',
+            'course_id' => 'nullable|exists:courses,id', // <-- NEW
+            // 'invitation_token' => 'nullable|string',
         ]);
 
         $user = User::create([
@@ -59,38 +60,28 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // from verify-email controller
-        if ($request->invitation_token) {
+        OrganisationUser::create([
+            "user_id" => $user->id,
+            "organisation_id" => 1,
+            "role" => 'STUDENT'
+        ]);
 
-            $invitation = OrganisationInvitation::where('token', $request->invitation_token)->first();
 
-            if (!$invitation) {
-                // abort invitation expired
-            }
-
-            if ($user->markEmailAsVerified()) {
-                event(new Verified($user));
-            }
-
-            // $org = Organisation::find($invitation->organisation_id);
-
-            // $user->organisation_id = $invitation->organisation_id;
-            // $user->role = $invitation->role ?? 'STUDENT';
-
-            OrganisationUser::create([
-                "user_id" => $user->id,
-                "organisation_id" => $invitation->organisation_id,
-                "role" => $invitation->role ?? 'STUDENT'
-            ]);
-
-            $user->save();
-
-            $invitation->delete();
+        if ($request->filled('course_id')) {
+            $user->enrolledCourses()->attach($request->course_id);
         }
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        if ($request->filled('course_id')) {
+
+            return redirect(route('dashboard', absolute: false))->with(['global:message' => [
+                'status' => 'success',
+                'message' => 'Successfully enrolled in the course!',
+            ]], 201);
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

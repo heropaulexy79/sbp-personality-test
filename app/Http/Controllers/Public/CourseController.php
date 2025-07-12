@@ -50,16 +50,11 @@ class CourseController extends Controller
     public function show(Request $request, Course $course)
     {
 
-        $user = $request->user();
-        $organisation = $user->organisation();
+        // $user = $request->user();
 
-        // If it is public allow?
-        if (!$course->is_published || !$user->isAdminInOrganisation($organisation)) {
+        if (!$course->is_published){
             abort(404);
         }
-
-        // dd($course->enrolledUsers()->count());
-        // dd($course->lessons()->published()->get());
 
         return Inertia::render('Course/View', [
             'course' => $course,

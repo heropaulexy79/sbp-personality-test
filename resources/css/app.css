@@ -196,7 +196,7 @@
   }
   @variant lg {
     padding-inline: 2rem;
-    max-width: 64rem;
+    /* max-width: 64rem; */
   }
   @variant xl {
     max-width: 80rem;
