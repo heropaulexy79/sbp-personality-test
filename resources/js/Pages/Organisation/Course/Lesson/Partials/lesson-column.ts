@@ -1,7 +1,7 @@
 import { Badge } from "@/Components/ui/badge";
 import { Course, Lesson } from "@/types";
 import { Link } from "@inertiajs/vue3";
-import { createColumnHelper } from "@tanstack/vue-table";
+import { createColumnHelper, type ColumnDef } from "@tanstack/vue-table";
 import { GripVertical } from "lucide-vue-next";
 import { h } from "vue";
 
@@ -97,4 +97,4 @@ export const lessonColumns = [
   //       }))
   //     },
   //   }),
-];
+] as ColumnDef<Lesson>[];

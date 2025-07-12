@@ -186,4 +186,21 @@ class CourseController extends Controller
         return redirect()->back();
         // return redirect(route('dashboard'));
     }
+
+    public function updateResources(Request $request, Course $course)
+    {
+        $validated = $request->validate([
+            'resources' => ['required', 'array'],
+            'resources.*.label' => ['required', 'string', 'max:255'],
+            'resources.*.url' => ['required', 'url', 'max:2048'],
+        ]);
+
+        $metadata = $course->metadata;
+
+        $metadata['resources'] = $validated['resources'];
+        $course->metadata = $metadata;
+        $course->save();
+
+        return redirect()->back()->with('global:message', ['status' => 'success', 'message' => 'Course resources updated successfully!']);
+    }
 }

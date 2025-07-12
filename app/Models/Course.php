@@ -21,6 +21,7 @@ class Course extends Model
     ];
 
     protected $casts = [
+        'metadata' => 'json',
         'is_published' => 'boolean',
     ];
 

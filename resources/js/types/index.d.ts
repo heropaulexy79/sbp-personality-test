@@ -71,6 +71,11 @@ export interface Course {
   is_published: boolean;
   banner_image: string | null;
 
+  metadata: {
+    tags: { label: string; url: string }[];
+    resources: { label: string; url: string }[];
+  };
+
   created_at: Date;
   deleted_at: Date | null;
   updated_at: Date | null;

@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/org/course/{course}', [CourseController::class, 'show'])->name('course.show')->middleware(['subscribed']);
     Route::get('/org/course/{course}/edit', [CourseController::class, 'edit'])->name('course.edit')->middleware(['subscribed']);
     Route::get('/org/course/create', [CourseController::class, 'create'])->name('course.create')->middleware(['subscribed']);
+    Route::patch('/org/course/{course}/resources', [CourseController::class, 'updateResources'])->name('courses.update-resources');
 
     Route::post('/org/course', [CourseController::class, 'store'])->name('course.store')->middleware(['subscribed']);
     Route::patch('/org/course/{course}', [CourseController::class, 'update'])->name('course.update')->middleware(['subscribed']);
@@ -102,7 +103,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-Route::middleware([])->group(function (){
+Route::middleware([])->group(function () {
     // Course - public?
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware([]);
     Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware([]);

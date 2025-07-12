@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import { Course, Lesson } from "@/types";
-import { WithUserLesson } from "./types";
-import { Link } from "@inertiajs/vue3";
 import { ExternalLink, FileText } from "lucide-vue-next";
 import {
   SidebarGroup,
@@ -13,8 +10,7 @@ import {
 } from "@/Components/ui/sidebar";
 
 const props = defineProps<{
-  course: Course;
-  lessons: WithUserLesson<Omit<Lesson, "content" | "content_json">>[];
+  resources: { label: string; url: string }[];
 }>();
 </script>
 
@@ -26,29 +22,19 @@ const props = defineProps<{
     </SidebarGroupLabel>
     <SidebarGroupContent>
       <SidebarMenu>
-        <SidebarMenuItem v-for="lesson in lessons" :key="lesson.id">
+        <SidebarMenuItem v-for="(resource, idx) in resources" :key="idx">
           <SidebarMenuButton
-            :data-active="
-              route().current('classroom.lesson.show', {
-                course: course.slug,
-                lesson: lesson.slug,
-              })
-            "
             class="group flex w-full items-center gap-2"
             as-child
           >
-            <Link
-              :href="
-                route('classroom.lesson.show', {
-                  course: course.slug,
-                  lesson: lesson.slug,
-                })
-              "
+            <a
+              :href="resource.url"
+              target="_blank"
               class="group flex w-full items-center gap-2"
             >
               <ExternalLink className="h-4 w-4" />
-              <span class="truncate">{{ lesson.title }}</span>
-            </Link>
+              <span class="truncate">{{ resource.label }}</span>
+            </a>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
