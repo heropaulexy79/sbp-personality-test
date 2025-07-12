@@ -184,7 +184,7 @@ const showingNavigationDropdown = ref(false);
                                         showingNavigationDropdown =
                                             !showingNavigationDropdown
                                     "
-                                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
+                                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-hidden dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
                                 >
                                     <svg
                                         class="h-6 w-6"
@@ -277,7 +277,7 @@ const showingNavigationDropdown = ref(false);
 
                 <!-- Page Heading -->
                 <header
-                    class="bg-white shadow dark:bg-gray-800"
+                    class="bg-white shadow-sm dark:bg-gray-800"
                     v-if="$slots.header"
                 >
                     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

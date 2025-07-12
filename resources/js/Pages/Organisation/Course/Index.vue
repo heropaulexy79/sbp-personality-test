@@ -24,7 +24,7 @@ defineProps<{ courses: Course[] }>();
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <header class="bg-white shadow dark:bg-gray-800">
+        <header class="bg-white shadow-sm dark:bg-gray-800">
             <div class="container flex items-center justify-between py-6">
                 <div>
                     <BaseBreadcrumb

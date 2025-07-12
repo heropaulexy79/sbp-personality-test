@@ -9,7 +9,7 @@ defineProps<{ course: Course }>();
 </script>
 
 <template>
-    <header class="bg-white shadow dark:bg-gray-800">
+    <header class="bg-white shadow-sm dark:bg-gray-800">
         <div class="container flex items-center justify-between py-6">
             <div>
                 <BaseBreadcrumb
@@ -31,7 +31,7 @@ defineProps<{ course: Course }>();
                         })
                     "
                     :class="
-                        cn(buttonVariants({ size: 'sm', variant: 'outline' }))
+                        cn(buttonVariants({ size: 'sm', variant: 'outline-solid' }))
                     "
                     v-if="course.is_published"
                 >

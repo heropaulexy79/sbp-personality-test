@@ -84,7 +84,7 @@
             </div>
             <div class="sticky top-10 self-start">
                 <img src="/images/screenshot-course-page.webp" alt="Product screenshot"
-                    class="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
+                    class="w-192 max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-228 md:-ml-4 lg:-ml-0"
                     width="2432" height="1442">
             </div>
         </div>

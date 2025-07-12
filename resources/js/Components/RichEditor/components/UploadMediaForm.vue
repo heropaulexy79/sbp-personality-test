@@ -199,7 +199,7 @@ function submitUploaded() {
                         <Button
                             type="button"
                             size="icon"
-                            class="absolute -right-[0.625rem] -top-[0.125rem] hidden rounded-full group-hover:inline-flex"
+                            class="absolute -right-2.5 -top-0.5 hidden rounded-full group-hover:inline-flex"
                             @click="deleteFile(file)"
                         >
                             <XIcon className="block h-6 w-6" />

@@ -20,7 +20,7 @@ defineProps<{
             class="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-gray-800"
         >
             <div
-                class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-center"
+                class="bg-linear-to-r from-blue-500 to-purple-600 p-6 text-center"
             >
                 <AwardIcon class="mx-auto mb-4 h-16 w-16 text-white" />
                 <h1 class="mb-2 text-3xl font-bold text-white">

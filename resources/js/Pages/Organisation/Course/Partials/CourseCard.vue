@@ -12,7 +12,7 @@ defineProps<{
 
 <template>
     <div
-        class="flex items-center justify-between rounded-lg bg-background p-4 shadow transition-all"
+        class="flex items-center justify-between rounded-lg bg-background p-4 shadow-sm transition-all"
     >
         <div class="flex items-center gap-5">
             <div

@@ -39,7 +39,7 @@ defineProps<{
                     :class="
                         cn(
                             buttonVariants({
-                                variant: 'outline',
+                                variant: 'outline-solid',
                                 class: 'h-10 w-10 p-0',
                             }),
                         )
@@ -55,7 +55,7 @@ defineProps<{
                     :class="
                         cn(
                             buttonVariants({
-                                variant: 'outline',
+                                variant: 'outline-solid',
                                 class: 'h-10 w-10 p-0',
                             }),
                         )
@@ -75,7 +75,7 @@ defineProps<{
                                 buttonVariants({
                                     variant: item.active
                                         ? 'default'
-                                        : 'outline',
+                                        : 'outline-solid',
                                     class: 'h-10 w-10 p-0',
                                 }),
                             )
@@ -98,7 +98,7 @@ defineProps<{
                     :class="
                         cn(
                             buttonVariants({
-                                variant: 'outline',
+                                variant: 'outline-solid',
                                 class: 'h-10 w-10 p-0',
                             }),
                         )
@@ -114,7 +114,7 @@ defineProps<{
                     :class="
                         cn(
                             buttonVariants({
-                                variant: 'outline',
+                                variant: 'outline-solid',
                                 class: 'h-10 w-10 p-0',
                             }),
                         )

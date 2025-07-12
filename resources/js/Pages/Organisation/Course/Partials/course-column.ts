@@ -50,7 +50,7 @@ export const courseColumns = [
                 h(
                     Badge,
                     {
-                        variant: isPublished ? "default" : "outline",
+                        variant: isPublished ? "default" : "outline-solid",
                         class: "uppercase",
                     },
                     () => (isPublished ? "Published" : "Draft"),
@@ -95,7 +95,7 @@ export const courseColumns = [
     //             h(
     //                 Button,
     //                 {
-    //                     variant: isPublished ? "default" : "outline",
+    //                     variant: isPublished ? "default" : "outline-solid",
     //                     class: cn(form.processing && "opacity-25"),
     //                     size: "sm",
 
@@ -120,7 +120,7 @@ export const courseColumns = [
     //                 "span",
     //                 {
     //                     class: cn({
-    //                         variant: isPublished ? "default" : "outline",
+    //                         variant: isPublished ? "default" : "outline-solid",
     //                         size: "sm",
     //                     }),
     //                     disabled: !isPublished,

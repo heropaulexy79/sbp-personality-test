@@ -85,7 +85,7 @@ const editor = useEditor({
     editable: !props.disabled,
     editorProps: {
         attributes: {
-            class: "prose max-w-[unset] w-full rounded-md  bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            class: "prose max-w-[unset] w-full rounded-md  bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         },
     },
 });

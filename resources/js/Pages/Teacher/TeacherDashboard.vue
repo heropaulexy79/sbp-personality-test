@@ -18,7 +18,7 @@ const props = defineProps<{
     <Head title="Dashboard" />
 
     <TeacherLayout v-if="$page.props.auth.user.account_type === 'TEACHER'">
-        <header class="bg-white shadow dark:bg-gray-800">
+        <header class="bg-white shadow-sm dark:bg-gray-800">
             <div class="container flex items-center justify-between py-6">
                 <div>
                     <BaseBreadcrumb

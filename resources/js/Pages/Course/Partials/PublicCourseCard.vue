@@ -13,7 +13,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="rounded-lg bg-background p-4 shadow transition-all">
+    <div class="rounded-lg bg-background p-4 shadow-sm transition-all">
         <div class="">
             <div
                 class="h-[200px] w-full rounded-md bg-gray-400 bg-cover"

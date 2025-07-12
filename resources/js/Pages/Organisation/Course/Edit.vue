@@ -16,7 +16,7 @@ defineProps<{ course: Course }>();
             <div class="py-4">
                 <div class="container">
                     <div
-                        class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
+                        class="bg-white p-4 shadow-sm dark:bg-gray-800 sm:rounded-lg sm:p-8"
                     >
                         <UpdateCourseForm :course="course" />
                     </div>

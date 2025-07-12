@@ -35,13 +35,13 @@ const props = defineProps<{
             <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <div class="grid gap-6 md:grid-cols-2">
                     <div
-                        class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
+                        class="bg-white p-4 shadow-sm dark:bg-gray-800 sm:rounded-lg sm:p-8"
                     >
                         <UpdatePaymentMethod :payment_method="payment_method" />
                     </div>
 
                     <div
-                        class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
+                        class="bg-white p-4 shadow-sm dark:bg-gray-800 sm:rounded-lg sm:p-8"
                     >
                         <ManageSubscription
                             :subscription="subscription"
@@ -51,7 +51,7 @@ const props = defineProps<{
                 </div>
 
                 <div
-                    class="bg-white p-4 shadow dark:bg-gray-800 sm:rounded-lg sm:p-8"
+                    class="bg-white p-4 shadow-sm dark:bg-gray-800 sm:rounded-lg sm:p-8"
                 >
                     <BillingHistory :billing_history="history" />
                 </div>

@@ -138,9 +138,9 @@ const scoreInPercent = computed(
 
 <template>
     <div
-        class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-gradient-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
+        class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-linear-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
     >
-        <Card class="mx-auto mb-6 w-full max-w-screen-md rounded-md">
+        <Card class="mx-auto mb-6 w-full max-w-(--breakpoint-md) rounded-md">
             <CardHeader>
                 <div class="flex items-center justify-end gap-4">
                     <Button
@@ -160,14 +160,14 @@ const scoreInPercent = computed(
                         "
                         class="h-3"
                     />
-                    <span class="flex-shrink-0">
+                    <span class="shrink-0">
                         {{ currentQuestionIdx + 1 }} /
                         {{ lesson.content_json.length }}
                     </span>
                 </div>
             </CardHeader>
         </Card>
-        <Card class="mx-auto w-full max-w-screen-md rounded-md">
+        <Card class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
             <CardHeader>
                 <!-- <div class="mb-6 flex items-center justify-end gap-4">
                     <Button
@@ -187,12 +187,12 @@ const scoreInPercent = computed(
                         "
                         class="h-3"
                     />
-                    <span class="flex-shrink-0">
+                    <span class="shrink-0">
                         {{ currentQuestionIdx + 1 }} /
                         {{ lesson.content_json.length }}
                     </span>
                 </div> -->
-                <CardTitle class="mb-6 max-w-screen-sm text-lg font-bold">
+                <CardTitle class="mb-6 max-w-(--breakpoint-sm) text-lg font-bold">
                     {{ currentQuesion.text }}
                 </CardTitle>
             </CardHeader>
@@ -202,7 +202,7 @@ const scoreInPercent = computed(
             You scored {{ score }} / {{ lesson.content_json.length }}
         </div> -->
 
-                    <!-- <CardTitle class="mb-6 max-w-screen-sm text-lg font-bold">
+                    <!-- <CardTitle class="mb-6 max-w-(--breakpoint-sm) text-lg font-bold">
                         {{ currentQuesion.text }}
                     </CardTitle> -->
 
@@ -245,7 +245,7 @@ const scoreInPercent = computed(
         v-bind="forwardedProps"
         :class="
             cn(
-                'aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+                'aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
                 props.class,
             )
         "

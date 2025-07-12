@@ -24,7 +24,7 @@ const props = defineProps<{
                 class="relative grid min-h-[calc(100svh-65px)] bg-background md:grid-cols-[225px_1fr]"
             >
                 <LessonsSidenav
-                    class="fixed top-0 h-[100svh] self-start overflow-auto border-r bg-background md:sticky"
+                    class="fixed top-0 h-svh self-start overflow-auto border-r bg-background md:sticky"
                     :course="course"
                     :lessons="lessons"
                 />

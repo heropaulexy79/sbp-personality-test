@@ -65,7 +65,7 @@ const courseNav = [
         <div class="py-12">
             <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg"
                 >
                     <div class="p-6 ">
                         You're logged in!
@@ -75,7 +75,7 @@ const courseNav = [
 
             <div class="container">
                 <CreateOrganisationForm
-                    class="mx-auto max-w-screen-sm"
+                    class="mx-auto max-w-(--breakpoint-sm)"
                     v-if="!$page.props.auth.user.organisation_id"
                     @on-success="
                         () => {
@@ -85,7 +85,7 @@ const courseNav = [
                 />
                 <div v-else class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <!-- <div
-                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
+                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg"
                         >
                         <div class="p-6 ">
                             You're logged in!
@@ -105,7 +105,7 @@ const courseNav = [
                                 "
                                 :href="item.href"
                                 preserve-scroll
-                                class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-primary ring-offset-background transition-all hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow hover:data-[state=active]:bg-primary/70"
+                                class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-primary ring-offset-background transition-all hover:bg-muted hover:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm hover:data-[state=active]:bg-primary/70"
                             >
                                 {{ item.label }}
                             </Link>

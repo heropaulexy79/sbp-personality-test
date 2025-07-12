@@ -60,7 +60,7 @@ export const lessonColumns = [
                 h(
                     Badge,
                     {
-                        variant: isPublished ? "default" : "outline",
+                        variant: isPublished ? "default" : "outline-solid",
                         class: "uppercase",
                     },
                     () => (isPublished ? "Published" : "Draft"),

@@ -1,8 +1,8 @@
-<footer class="mx-auto mt-auto w-full max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8">
+<footer class="mx-auto mt-auto w-full max-w-340 px-4 py-10 sm:px-6 lg:px-8">
 
     <div class="mb-10 flex justify-between gap-6">
         <div class="hidden max-w-[500px] sm:block">
-            {{-- <a class="flex-none text-xl font-semibold focus:opacity-80 focus:outline-none" href="#"
+            {{-- <a class="flex-none text-xl font-semibold focus:opacity-80 focus:outline-hidden" href="#"
                 aria-label="Brand">Brand</a> --}}
 
             <a href="/">
@@ -20,19 +20,19 @@
 
                 <ul class="mt-3 grid space-y-3 text-sm">
                     <li>
-                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
+                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-hidden"
                             href="{{ route('register') }}">Get Started</a>
                     </li>
                     <li>
-                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
+                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-hidden"
                             href="/#pricing">Pricing</a>
                     </li>
                     <li>
-                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
+                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-hidden"
                             href="/#features">Features</a>
                     </li>
                     <li>
-                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
+                        <a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-hidden"
                             href="/#contact">Contact</a>
                     </li>
                 </ul>
@@ -47,9 +47,9 @@
                 <h4 class="text-xs font-semibold uppercase text-foreground">Legal</h4>
 
                 <ul class="mt-3 grid space-y-3 text-sm">
-                    <li><a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
+                    <li><a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-hidden"
                             href={{ route('website.terms') }}>Terms</a></li>
-                    <li><a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-none"
+                    <li><a class="inline-flex gap-x-2 text-muted-foreground hover:text-foreground focus:text-foreground focus:outline-hidden"
                             href={{ route('website.privacy') }}>Privacy</a></li>
                 </ul>
 

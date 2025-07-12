@@ -155,7 +155,7 @@ function generateSlug() {
                             type="button"
                             variant="outline"
                             size="icon"
-                            class="flex-shrink-0"
+                            class="shrink-0"
                             :disabled="!form.title"
                             @click="generateSlug"
                         >

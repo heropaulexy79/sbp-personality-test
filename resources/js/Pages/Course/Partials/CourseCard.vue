@@ -18,7 +18,7 @@ withDefaults(
 
 <template>
     <div class="@container">
-        <div class="rounded-lg bg-background p-2 shadow transition-all @md:p-4">
+        <div class="rounded-lg bg-background p-2 shadow-sm transition-all @md:p-4">
             <div class="flex flex-col gap-5 @md:items-center @lg:flex-row">
                 <div
                     class="aspect-video w-full rounded-md bg-gray-400 bg-cover @lg:size-32"
