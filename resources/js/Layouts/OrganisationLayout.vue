@@ -21,16 +21,11 @@ import { getPublicProfileImage } from "@/lib/utils";
 
 const page = usePage();
 
-withDefaults(defineProps<{ isFullscreen: boolean }>(), {
+withDefaults(defineProps<{ isFullscreen?: boolean }>(), {
     isFullscreen: false,
 });
 
 const showingNavigationDropdown = ref(false);
-const billingAlert = ref(
-    !page.props.global.hasActiveSubscription &&
-        !route().current("organisation.billing.index") &&
-        !route().current("subscriptions.show"),
-);
 </script>
 
 <template>
@@ -49,7 +44,7 @@ const billingAlert = ref(
                                 <div class="flex shrink-0 items-center">
                                     <Link :href="route('dashboard')">
                                         <ApplicationLogo
-                                            class="block h-6 max-h-9 w-auto fill-current text-primary dark:text-primary-foreground"
+                                            class="text-primary dark:text-primary-foreground block h-6 max-h-9 w-auto fill-current"
                                         />
                                     </Link>
                                 </div>
@@ -256,7 +251,7 @@ const billingAlert = ref(
                         }"
                         class="sm:hidden"
                     >
-                        <div class="space-y-1 pb-3 pt-2">
+                        <div class="space-y-1 pt-2 pb-3">
                             <ResponsiveNavLink
                                 :href="route('dashboard')"
                                 :active="route().current('dashboard')"
@@ -273,7 +268,7 @@ const billingAlert = ref(
 
                         <!-- Responsive Settings Options -->
                         <div
-                            class="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600"
+                            class="border-t border-gray-200 pt-4 pb-1 dark:border-gray-600"
                         >
                             <div class="px-4">
                                 <div
@@ -338,15 +333,6 @@ const billingAlert = ref(
                             $page.props.auth.user.organisation_id !== null &&
                             !$page.props.global.has_payment_method &&
                             !route().current('subscriptions.show')
-                        "
-                    />
-
-                    <BillingBlocker
-                        v-if="!$page.props.auth.user.organisation_id !== null"
-                        v-model:open="billingAlert"
-                        :canUpdateMethod="
-                            $page.props.auth.user.role === 'ADMIN' &&
-                            $page.props.auth.user.organisation_id !== null
                         "
                     />
 

@@ -49,6 +49,8 @@
 
   --font-sans: "Fig", Arial, ui-sans-serif, system-ui, sans-serif;
 
+  --color-sidebar: var(--sidebar);
+
   @keyframes accordion-down {
     from {
       height: 0;
@@ -129,6 +131,7 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(0 0% 98%);
 }
 
 .dark {
@@ -169,6 +172,7 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(240 5.9% 10%);
 }
 
 @layer base {
@@ -219,4 +223,17 @@
     var(--radial-color) calc(var(--progress) * 1%),
     transparent calc(var(--progress) * 1%)
   );
+}
+
+/*
+  ---break---
+*/
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
