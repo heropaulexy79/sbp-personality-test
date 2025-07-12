@@ -59,10 +59,10 @@ const courseNav = [
 </script>
 
 <template>
-   <Head title="Dashboard" /> <AuthenticatedLayout
-    >
+  <Head title="Dashboard" />
+  <AuthenticatedLayout>
     <div class="py-12">
-       <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <!-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div
                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg"
                 >
@@ -72,46 +72,29 @@ const courseNav = [
                 </div>
             </div> -->
       <div class="container">
-         <CreateOrganisationForm
-          class="mx-auto max-w-(--breakpoint-sm)"
-          v-if="!$page.props.auth.user.organisation_id"
-          @on-success="
-            () => {
-              router.visit(route('subscriptions.show'));
-            }
-          "
-        />
-        <div v-else class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-           <!-- <div
-                        class="bg-white dark:bg-gray-800 overflow-hidden shadow-xs sm:rounded-lg"
-                        >
-                        <div class="p-6 ">
-                            You're logged in!
-                        </div>
-                    </div> --> <!-- <h2 class="text-lg font-medium">Here are your courses</h2> -->
-          <Transition name="fade" mode="out-in" appear
-            >
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <h2 class="mb-6 text-3xl font-bold">Your Courses</h2>
+          <Transition name="fade" mode="out-in" appear>
             <div
               :key="$page.props.query?.['status']"
               class="border-primary bg-muted text-muted-foreground mb-6 inline-flex h-9 items-center justify-center rounded-lg border p-1"
             >
-               <Link
+              <Link
                 v-for="item in courseNav"
                 :data-state="item.active ? 'active' : 'inactive'"
                 :href="item.href"
                 preserve-scroll
                 class="text-primary ring-offset-background hover:bg-muted hover:text-muted-foreground focus-visible:ring-ring data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:data-[state=active]:bg-primary/70 inline-flex items-center justify-center rounded-md px-3 py-1 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm"
-                > {{ item.label }} </Link
               >
+                {{ item.label }}
+              </Link>
             </div>
-             </Transition
-          >
+          </Transition>
           <ul
-            class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] gap-4"
+            class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4"
           >
-
             <li v-for="course in courses.data">
-               <CourseCard
+              <CourseCard
                 :course="course"
                 :can-view-lesson="
                   $page.props.query['status'] !== 'all_enrolled'
@@ -120,21 +103,16 @@ const courseNav = [
             </li>
 
             <li v-if="courses.data.length === 0" class="text-center">
-               No enrolled courses at the moment
+              No enrolled courses at the moment
             </li>
-
           </ul>
-           <LaravelPagination
+          <LaravelPagination
             v-if="courses.total > courses.data.length"
             :items="courses"
             class="flex justify-center py-6"
           />
         </div>
-
       </div>
-
     </div>
-     </AuthenticatedLayout
-  >
+  </AuthenticatedLayout>
 </template>
-
