@@ -1,6 +1,6 @@
-import forms from "@tailwindcss/forms";
-import defaultTheme from "tailwindcss/defaultTheme";
-const animate = require("tailwindcss-animate");
+// import forms from ;
+// import defaultTheme from "tailwindcss/defaultTheme";
+// const animate = ;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -36,7 +36,7 @@ module.exports = {
         },
         extend: {
             fontFamily: {
-                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                // sans: ["Figtree", ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 border: "hsl(var(--border))",
@@ -124,7 +124,7 @@ module.exports = {
     plugins: [
         require("@tailwindcss/container-queries"),
         require("@tailwindcss/typography"),
-        forms,
-        animate,
+        require("@tailwindcss/forms"),
+        require("tailwindcss-animate")
     ],
 };
