@@ -92,7 +92,7 @@ export interface Lesson {
   content: string;
   content_json: Question[] | PersonalityQuiz;
   course_id: Course["id"];
-  type: "DEFAULT" | "QUIZ" | (string & {});
+  type: "DEFAULT" | "QUIZ" | "PERSONALITY_QUIZ" | (string & {});
 
   is_published: boolean;
 

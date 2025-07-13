@@ -13,6 +13,7 @@ import {
   SidebarInset,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarMenuButton,
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
@@ -23,6 +24,8 @@ import { Separator } from "@/Components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
   BreadcrumbLink,
   BreadcrumbList,
 } from "@/Components/ui/breadcrumb";
@@ -74,7 +77,13 @@ const progress = Math.floor((completed / props.lessons.length) * 100);
                     />
                     <span class=""> My Courses </span>
                   </Link>
-
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size="lg"
+                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
                   <div class="grid flex-1 text-left text-sm leading-tight">
                     <h2 class="text-lg font-semibold">
                       {{ course.title }}

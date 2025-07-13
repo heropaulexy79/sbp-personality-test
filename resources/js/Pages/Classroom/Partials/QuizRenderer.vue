@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { AngryIcon, ArrowLeft, ArrowRight, SmileIcon } from "lucide-vue-next";
 import { Progress } from "@/Components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import QuizOptionTile from "./Quiz/QuizOptionTile.vue";
 
 const page = usePage();
 
@@ -124,28 +125,36 @@ function onContinue() {
 }
 
 const score = computed(() => {
-  return quizzQuestionData.reduce((prev, curr) => {
-    const answr = answers.value.get(curr.id);
+  return Math.round(
+    quizzQuestionData.reduce((prev, curr) => {
+      const answr = answers.value.get(curr.id);
 
-    if (answr?.selected_option_id === curr.correct_option) {
-      return prev + 1;
-    }
+      if (answr?.selected_option_id === curr.correct_option) {
+        return prev + 1;
+      }
 
-    return prev;
-  }, 0);
+      return prev;
+    }, 0),
+  );
 });
-const scoreInPercent = computed(
-  () =>
+const scoreInPercent = computed(() =>
+  Math.round(
     page.props.flash.message?.score ??
-    (score.value / quizzQuestionData.length) * 100,
+      (score.value / quizzQuestionData.length) * 100,
+  ),
 );
+
+const handleOptionUpdate = (selectedValue: string) => {
+  answerQuestion(currentQuesion.value.id, selectedValue);
+};
 </script>
 
 <template>
+  <!-- class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-linear-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800" -->
   <div
-    class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-linear-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
+    class="bg-primary/20 flex min-h-[calc(100svh-65px)] flex-col items-center justify-center p-4"
   >
-    <Card class="mx-auto mb-6 w-full max-w-(--breakpoint-md) rounded-md">
+    <!-- <Card class="mx-auto mb-6 w-full max-w-(--breakpoint-md) rounded-md">
       <CardHeader>
         <div class="flex items-center justify-end gap-4">
           <Button
@@ -169,33 +178,32 @@ const scoreInPercent = computed(
           </span>
         </div>
       </CardHeader>
-    </Card>
+    </Card> -->
     <Card class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
       <CardHeader>
-        <!-- <div class="mb-6 flex items-center justify-end gap-4">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        @click="successDialog = true"
-                        v-if="isCompleted"
-                    >
-                        Show score
-                    </Button>
+        <div class="mb-2 flex items-center justify-end gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            @click="successDialog = true"
+            v-if="isCompleted"
+          >
+            Show score
+          </Button>
 
-                    <Progress
-                        :model-value="
-                            ((currentQuestionIdx + 1) /
-                                lesson.content_json.length) *
-                            100
-                        "
-                        class="h-3"
-                    />
-                    <span class="shrink-0">
-                        {{ currentQuestionIdx + 1 }} /
-                        {{ lesson.content_json.length }}
-                    </span>
-                </div> -->
-        <CardTitle class="mb-6 max-w-(--breakpoint-sm) text-lg font-bold">
+          <Progress
+            :model-value="
+              ((currentQuestionIdx + 1) / quizzQuestionData.length) * 100
+            "
+            class="h-2"
+          />
+          <span class="shrink-0">
+            {{ currentQuestionIdx + 1 }} /
+            {{ quizzQuestionData.length }}
+          </span>
+        </div>
+
+        <CardTitle class="mb-6 text-center text-lg font-bold">
           {{ currentQuesion.text }}
         </CardTitle>
       </CardHeader>
@@ -209,8 +217,8 @@ const scoreInPercent = computed(
                         {{ currentQuesion.text }}
                     </CardTitle> -->
 
-          <div class="">
-            <RadioGroup
+          <div class="grid gap-4 sm:grid-cols-2">
+            <!-- <RadioGroup
               :key="currentQuesion.id"
               :default-value="currentAnswer as string | undefined"
               @update:model-value="
@@ -242,8 +250,8 @@ const scoreInPercent = computed(
                 />
                 <Label :for="option.id">
                   {{ option.text }}
-                </Label>
-                <!-- <RadioGroupItem
+                </Label> -->
+            <!-- <RadioGroupItem
         v-bind="forwardedProps"
         :class="
             cn(
@@ -256,12 +264,25 @@ const scoreInPercent = computed(
             <Circle class="h-2.5 w-2.5 fill-current text-current" />
         </RadioGroupIndicator>
     </RadioGroupItem> -->
-              </div>
+            <!-- </div>
             </RadioGroup>
 
             <div v-if="isCompleted" class="my-4">
               The correct answer is {{ correctOption?.text }}
-            </div>
+            </div> -->
+
+            <QuizOptionTile
+              v-for="option in currentQuesion.options"
+              :key="option.id"
+              :value="option.id"
+              :model-value="currentAnswer"
+              @update:model-value="handleOptionUpdate"
+              :disabled="isCompleted"
+              :is-quiz-completed="isCompleted"
+              :is-correct-option="option.id === correctOption?.id"
+            >
+              {{ option.text }}
+            </QuizOptionTile>
           </div>
 
           <div
@@ -338,7 +359,7 @@ const scoreInPercent = computed(
               <span
                 class="bg-background flex size-28 items-center justify-center rounded-full"
               >
-                {{ scoreInPercent ?? 0 }} %
+                {{ scoreInPercent ?? 0 }}%
               </span>
             </div>
 

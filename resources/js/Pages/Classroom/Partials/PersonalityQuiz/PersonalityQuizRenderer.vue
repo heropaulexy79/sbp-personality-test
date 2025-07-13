@@ -21,6 +21,7 @@ import { Progress } from "@/Components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { PersonalityTrait } from "@/Pages/Organisation/Course/Lesson/Partials/Personality/types";
 import PersonalityQuizFinalResults from "./PersonalityQuizFinalResults.vue";
+import PersonalityQuizOptionTile from "./PersonalityQuizOptionTile.vue";
 
 const page = usePage();
 
@@ -127,49 +128,38 @@ function onContinue() {
   );
 }
 
-const getTraitName = (traitId: string) => {
-  return (
-    personalityQuizTraits.value.find((t) => t.id === traitId)?.name || traitId
-  );
-};
-
-const getTraitDescription = (traitId: string) => {
-  return (
-    personalityQuizTraits.value.find((t) => t.id === traitId)?.description || ""
-  );
+const handleOptionUpdate = (selectedValue: string) => {
+  answerQuestion(currentQuestion.value.id, selectedValue);
 };
 </script>
 
 <template>
   <div
-    class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-linear-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800"
+    class="bg-primary/20 flex min-h-[calc(100svh-65px)] flex-col items-center justify-center p-4"
   >
-    <Card class="mx-auto mb-6 w-full max-w-(--breakpoint-md) rounded-md">
+    <Card class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
       <CardHeader>
-        <div class="flex items-center justify-end gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            @click="resultsDialog = true"
-            v-if="isCompleted"
-          >
-            Show Results
-          </Button>
+        <div class="mb-2 flex items-center justify-end gap-4">
+          <!-- <Button
+              variant="outline"
+              size="sm"
+              @click="resultsDialog = true"
+              v-if="isCompleted"
+            >
+              Show Results
+            </Button> -->
 
           <Progress
             :model-value="((currentQuestionIdx + 1) / totalQuestions) * 100"
-            class="h-3"
+            class="h-2"
           />
           <span class="shrink-0">
             {{ currentQuestionIdx + 1 }} /
             {{ totalQuestions }}
           </span>
         </div>
-      </CardHeader>
-    </Card>
-    <Card class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
-      <CardHeader>
-        <CardTitle class="mb-6 max-w-(--breakpoint-sm) text-lg font-bold">
+
+        <CardTitle class="mb-6 text-center text-lg font-bold">
           {{ currentQuestion.text }}
         </CardTitle>
       </CardHeader>
@@ -177,7 +167,7 @@ const getTraitDescription = (traitId: string) => {
         <div class="relative">
           <div class="">
             <!-- Render Likert Scale Questions -->
-            <RadioGroup
+            <!-- <RadioGroup
               v-if="currentQuestion.type === 'likert_scale'"
               :key="currentQuestion.id + 'or'"
               :default-value="currentAnswer as string | undefined"
@@ -202,10 +192,10 @@ const getTraitDescription = (traitId: string) => {
                   {{ option.text }}
                 </Label>
               </div>
-            </RadioGroup>
+            </RadioGroup> -->
 
             <!-- Render Multiple Choice Questions -->
-            <RadioGroup
+            <!-- <RadioGroup
               v-else-if="currentQuestion.type === 'multiple_choice'"
               :key="currentQuestion.id + 'mult'"
               :default-value="currentAnswer as string | undefined"
@@ -230,7 +220,20 @@ const getTraitDescription = (traitId: string) => {
                   {{ option.text }}
                 </Label>
               </div>
-            </RadioGroup>
+            </RadioGroup> -->
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <PersonalityQuizOptionTile
+                v-for="option in currentQuestion.options"
+                :key="option.id"
+                :value="option.id"
+                :model-value="currentAnswer as string | undefined"
+                :disabled="isCompleted"
+                @update:model-value="handleOptionUpdate"
+              >
+                {{ option.text }}
+              </PersonalityQuizOptionTile>
+            </div>
 
             <!-- <p v-else class="text-red-500">
               Unknown question type: {{ currentQuestion.type }}
