@@ -112,6 +112,40 @@ class ClassroomController extends Controller
         ]);
     }
 
+    public function showLessonPublic(Request $request, Course $course, Lesson $lesson)
+    {
+        $temp_content_json = $lesson->content_json;
+
+        if ($lesson->type === Lesson::TYPE_QUIZ) {
+            $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
+        }
+
+        $lessons = $course->lessons()->published()->orderBy('position')
+            ->get(['title', 'position', 'type', 'id', 'slug',]);
+        $total_completed = 0;
+
+
+        foreach ($lessons as $l) {
+            $l->completed = $l->user_lesson->first()?->completed === 1;
+
+
+            if ($l->completed) {
+                $total_completed++;
+            }
+        };
+
+
+        if ($lesson->completed) {
+            $lesson->content_json = $temp_content_json;
+        }
+
+        return Inertia::render('OpenClassroom/Lesson', [
+            'course' => $course,
+            'lessons' => $lessons,
+            'lesson' => $lesson,
+        ]);
+    }
+
     public function showCompleted(Request $request, Course $course)
     {
 
@@ -283,7 +317,7 @@ class ClassroomController extends Controller
         $calculatedTraitScores = []; // Holds sum of scores for each trait
         $traitQuestionCounts = []; // Holds count of questions that contributed to each trait
 
-        // Initialize with 0 for all traits
+
         foreach ($personalityTraits as $trait) {
             $calculatedTraitScores[$trait['id']] = 0;
             $traitQuestionCounts[$trait['id']] = 0;
@@ -331,25 +365,24 @@ class ClassroomController extends Controller
             $finalPersonalityResults[$traitId] = max(0, min(100, round($averageScore)));
         }
 
-        // Prepare data for saving
-        // Convert array of answers and final results to JSON strings
+
         $answersJson = json_encode($userAnswers);
         $resultsJson = json_encode($finalPersonalityResults);
 
 
-        // 5. Save Results to UserLesson (similar to answerQuiz)
-        // UserLesson::upsert(
-        //     [[
-        //         'user_id' => $user->id,
-        //         'lesson_id' => $lesson->id,
-        //         'completed' => true,
-        //         'answers' => $answersJson, // Save raw answers
-        //         'score' => null, // Quiz-specific score, not directly applicable here unless you calculate a composite
-        //         'personality_scores' => $resultsJson, // Save calculated personality scores
-        //     ]],
-        //     uniqueBy: ['user_id', 'lesson_id'],
-        //     update: ['completed', 'answers', 'personality_scores'] // Update specific columns
-        // );
+
+        UserLesson::upsert(
+            [[
+                'user_id' => $user->id,
+                'lesson_id' => $lesson->id,
+                'completed' => true,
+                'answers' => $answersJson,
+                'score' => null,
+                'personality_scores' => $resultsJson,
+            ]],
+            uniqueBy: ['user_id', 'lesson_id'],
+            update: ['completed', 'answers', 'personality_scores']
+        );
 
         // 6. Return Response
         return redirect()->back()->with('message', [
@@ -357,7 +390,7 @@ class ClassroomController extends Controller
             'message' => 'Personality quiz completed!',
             'answersJson' => $answersJson,
             'personality_results' => $finalPersonalityResults,
-            'personality_traits' => $personalityTraits->toArray(), // Also return traits for frontend interpretation
+            'personality_traits' => $personalityTraits->toArray(),
         ]);
     }
 }

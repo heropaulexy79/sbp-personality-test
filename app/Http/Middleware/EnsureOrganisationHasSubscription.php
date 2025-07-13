@@ -15,6 +15,8 @@ class EnsureOrganisationHasSubscription
      */
     public function handle(Request $request, Closure $next): Response
     {
+        return $next($request);
+
         $user = $request->user();
         $org = $user?->organisationNew?->organisation;
 

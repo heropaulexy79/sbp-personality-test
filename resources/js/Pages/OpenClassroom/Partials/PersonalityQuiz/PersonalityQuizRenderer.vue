@@ -135,7 +135,7 @@ const handleOptionUpdate = (selectedValue: string) => {
 
 <template>
   <div
-    class="bg-primary/20 flex min-h-[calc(100svh-65px)] flex-col items-center justify-center p-4"
+    class="bg-primary/20 flex min-h-[calc(100svh)] flex-col items-center justify-center p-4"
   >
     <Card class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
       <CardHeader>

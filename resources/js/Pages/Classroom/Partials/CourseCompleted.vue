@@ -4,6 +4,7 @@ import { Progress } from "@/Components/ui/progress";
 import { Course, Lesson } from "@/types";
 import { AwardIcon, ExternalLink } from "lucide-vue-next";
 import { WithUserLesson } from "./types";
+import { Card, CardContent } from "@/Components/ui/card";
 
 const props = defineProps<{
   course: Course;
@@ -17,6 +18,8 @@ const hasQuiz = props.lessons.some((r) => r.type === "QUIZ");
 const hasPersonalityQuiz = props.lessons.some(
   (r) => r.type === "PERSONALITY_QUIZ",
 );
+
+console.log(props.lessons);
 </script>
 
 <template>
@@ -52,12 +55,12 @@ const hasPersonalityQuiz = props.lessons.some(
             <p class="text-muted-foreground">Points Won</p>
           </div>
 
-          <div class="flex-1 text-center" v-show="!hasPersonalityQuiz">
+          <!-- <div class="flex-1 text-center" v-show="!hasPersonalityQuiz">
             <p class="text-alternate text-4xl font-bold">
               {{ total_score }}
             </p>
             <p class="text-muted-foreground">Personality</p>
-          </div>
+          </div> -->
         </div>
         <div class="grid md:grid-cols-2">
           <div class="mb-6 border-t border-gray-200 pt-6 dark:border-gray-700">
