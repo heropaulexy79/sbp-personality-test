@@ -109,6 +109,10 @@ Route::middleware([])->group(function () {
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware([]);
     Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware([]);
     // Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
+    //
+    //
+
+    Route::get('/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLessonPublic'])->name('classroom.lesson.public.show');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
