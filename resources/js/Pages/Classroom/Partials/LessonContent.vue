@@ -42,7 +42,7 @@ function markAsComplete() {
         class="mt-10 flex items-center justify-center"
       >
         <Button type="submit" size="sm" v-if="!lesson.completed">
-          Mark as complete
+          Next lesson
         </Button>
       </form>
     </div>

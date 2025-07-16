@@ -10,6 +10,7 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\CourseController as PublicCourseController;
+use App\Http\Controllers\Public\ClassroomController as PublicClassroomController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
@@ -38,10 +39,9 @@ Route::get('/privacy-policy', function () {
     return view('privacy-policy', []);
 })->name('website.privacy');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'subscribed'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-
     // Uploads
     Route::post('/upload', [UploadController::class, 'store'])->name('upload');
     Route::delete('/upload', [UploadController::class, 'destroy'])->name('upload.delete');
@@ -82,7 +82,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/org/course/{course:slug}/stats/leaderboard/reset/{student}', [CourseEnrollmentController::class, 'reset'])->name('organisation.course.leaderboard.reset.student.progress')->middleware(['subscribed']);
     Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll')->middleware(['subscribed']);
 
-    // Lesson - public?
+
     Route::get('/course/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show')->middleware(['subscribed']);
     // Lesson
     Route::get('/org/course/{course}/lesson/{lesson}/edit', [LessonController::class, 'edit'])->name('lesson.edit')->middleware(['subscribed']);
@@ -90,36 +90,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/org/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position')->middleware(['subscribed']);
     Route::get('/org/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create')->middleware(['subscribed']);
     Route::post('/org/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store')->middleware(['subscribed']);
-
-    // Classrooom
-    Route::middleware(['subscribed', 'enrolled'])->group(function () {
-        // TODO: FIX show:slug
-        Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
-        Route::get('/classroom/course/{course:slug}/completed', [ClassroomController::class, 'showCompleted'])->name('classroom.course.completed.show');
-        Route::get('/classroom/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
-        Route::get('/classroom/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
-        Route::patch('/classroom/course/{course:slug}/lesson/{lesson:slug}/answer-personality-quiz', [ClassroomController::class, 'answerPersonalityQuiz'])->name('classroom.lesson.answerPersonalityQuiz');
-    });
 });
+
 
 Route::middleware([])->group(function () {
-    // Course - public?
+    // Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
+
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware([]);
     Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware([]);
-    // Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'store'])->name('course.enroll');
-    //
-    //
 
-    Route::get('/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLessonPublic'])->name('classroom.lesson.public.show');
+
+    Route::get('/course/{course:slug}/personality-quiz', [ClassroomController::class, 'showPersonalityQuiz'])->name('classroom.personality.show');
+
+    Route::get('/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
+    Route::patch('/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
+    Route::patch('/course/{course:slug}/lesson/{lesson:slug}/answer-quiz', [ClassroomController::class, 'answerQuiz'])->name('classroom.lesson.answerQuiz');
+    Route::patch('/course/{course:slug}/lesson/{lesson:slug}/answer-personality-quiz', [ClassroomController::class, 'answerPersonalityQuiz'])->name('classroom.lesson.answerPersonalityQuiz');
+
+
+    Route::get('/course/{course:slug}/completed', [ClassroomController::class, 'showCompleted'])->name('classroom.course.completed.show');
+    Route::get('/course/{course:slug}/lesson', [ClassroomController::class, 'showLessons'])->name('classroom.lesson.index');
+    Route::get('/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLessonPublic'])->name('classroom.lesson.show');
+    Route::patch('/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/payment/paystack/pay', [App\Http\Controllers\Payments\PaystackController::class, 'redirectToGateway'])->name('paystack.pay');
-    Route::get('/payment/paystack/callback', [App\Http\Controllers\Payments\PaystackController::class, 'handleGatewayCallback'])->name('paystack.pay.gateway');
-    Route::get('/payment/paystack/wbhk', [App\Http\Controllers\Payments\PaystackController::class, 'handleWebhook'])->name('paystack.pay.webhook');
-});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

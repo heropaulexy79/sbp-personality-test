@@ -26,48 +26,6 @@ const props = defineProps<{
 </script>
 
 <template>
-  <!-- <div>
-        <div class="px-4 py-6">
-            <h2 class="text-sm font-bold">{{ course.title }}</h2>
-        </div>
-        <nav class="mb-6 px-0 py-0">
-            <ul class="space-y-2">
-                <li v-for="lesson in lessons">
-                    <Link
-                        :href="
-                            route('classroom.lesson.show', {
-                                course: course.slug,
-                                lesson: lesson.slug,
-                            })
-                        "
-                        :data-active="
-                            route().current('classroom.lesson.show', {
-                                course: course.slug,
-                                lesson: lesson.slug,
-                            })
-                        "
-                        class="group flex w-full items-center gap-2 border-l-[6px] border-l-transparent px-3 py-1 data-[active='true']:border-l-primary data-[active='true']:bg-accent data-[active='true']:text-accent-foreground"
-                    >
-                        <span
-                            class="flex size-7 items-center justify-center rounded-full leading-none data-[completed='true']:bg-primary data-[completed='true']:text-primary-foreground group-data-[active='true']:bg-primary group-data-[active='true']:text-primary-foreground"
-                            :data-completed="lesson.completed"
-                        >
-                            <Check v-if="lesson.completed" class="size-4" />
-                            <template v-else>
-                                <Star
-                                    v-if="lesson.type === 'QUIZ'"
-                                    class="size-4"
-                                />
-                                <BookOpenText v-else class="size-4" />
-                            </template>
-                        </span>
-                        <span class="truncate">{{ lesson.title }}</span>
-                    </Link>
-                </li>
-            </ul>
-        </nav>
-    </div> -->
-
   <SidebarGroup>
     <SidebarGroupLabel class="flex items-center gap-2">
       <BookOpen class="h-4 w-4" />

@@ -3,6 +3,7 @@ import { Course, Lesson } from "@/types";
 import { computed } from "vue";
 import LessonContent from "./Partials/LessonContent.vue";
 import { WithUserLesson } from "./Partials/types";
+import ClassroomLayout from "../Classroom/Partials/ClassroomLayout.vue";
 
 const props = defineProps<{
   course: Course;
@@ -18,9 +19,11 @@ const nextLesson = computed(() => {
 </script>
 
 <template>
-  <LessonContent
-    :lesson="lesson"
-    :course="course"
-    :next-lesson-id="nextLesson?.slug ?? null"
-  />
+  <ClassroomLayout :course="course" :lesson="lesson" :lessons="lessons">
+    <LessonContent
+      :lesson="lesson"
+      :course="course"
+      :next-lesson-id="nextLesson?.slug ?? null"
+    />
+  </ClassroomLayout>
 </template>

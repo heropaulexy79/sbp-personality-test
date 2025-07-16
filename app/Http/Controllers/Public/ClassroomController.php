@@ -28,71 +28,15 @@ class ClassroomController extends Controller
 
     public function showLesson(Request $request, Course $course, Lesson $lesson)
     {
-
-        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $lesson->slug]));
-
-        $user = $request->user();
-
-        $temp_content_json = $lesson->content_json;
-
         if ($lesson->type === Lesson::TYPE_QUIZ) {
             $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
         }
 
-        $lessons = $course->lessons()->published()->orderBy('position')
-            ->with(['user_lesson' => function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            }])
+        $lessons = $course->lessons()
+            ->published()
+            ->orderBy('position')
             ->get(['title', 'position', 'type', 'id', 'slug',]);
-        $total_completed = 0;
 
-        // foreach ($lessons as $l) {
-        //     $l->completed = UserLesson::where('user_id', $user->id)
-        //         ->where('lesson_id', $l->id)
-        //         ->where('completed', 1)->exists() ?? false;
-
-        //     if ($l->completed) {
-        //         $total_completed++;
-        //     }
-        // };
-        foreach ($lessons as $l) {
-            $l->completed = $l->user_lesson->first()?->completed === 1;
-
-
-            if ($l->completed) {
-                $total_completed++;
-            }
-        };
-
-
-
-
-        // dd($lessons);
-
-        if ($total_completed === count($lessons)) {
-            $enrollment = CourseEnrollment::where('user_id', $user->id)
-                ->where('course_id', $course->id)
-                ->first();
-
-            if ($enrollment) {
-                $enrollment->is_completed = true;
-                $enrollment->save();
-            }
-        }
-
-        $user_lesson = $lessons->filter(function ($item) use ($lesson) {
-            return $item['id'] === $lesson->id;  // Strict comparison with ===
-        })->first()->user_lesson->first();
-
-
-        $lesson->completed = $user_lesson?->completed === 1;
-        $lesson->answers = $user_lesson?->answers ?? null;
-
-        if ($lesson->completed) {
-            $lesson->content_json = $temp_content_json;
-        }
-
-        $lessons->makeHidden('user_lesson');
 
         return Inertia::render('Classroom/Lesson', [
             'course' => $course,
@@ -105,54 +49,33 @@ class ClassroomController extends Controller
     {
         $temp_content_json = $lesson->content_json;
 
-        if ($lesson->type === Lesson::TYPE_PERSONALITY_QUIZ) {
-            return abort(404);
+        if ($lesson->type === Lesson::TYPE_QUIZ) {
+            $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
         }
 
-        // if ($lesson->type === Lesson::TYPE_QUIZ) {
-        //     $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
-        // }
-
-        $lessons = $course->lessons()->published()
-            ->where('type', '!=', Lesson::TYPE_PERSONALITY_QUIZ)
-            ->orderBy('position')
+        $lessons = $course->lessons()->published()->orderBy('position')
             ->get(['title', 'position', 'type', 'id', 'slug',]);
+        $total_completed = 0;
 
 
-        // if ($lesson->completed) {
-        // }
-        // $lesson->content_json = $temp_content_json;
+        foreach ($lessons as $l) {
+            $l->completed = $l->user_lesson->first()?->completed === 1;
 
 
+            if ($l->completed) {
+                $total_completed++;
+            }
+        };
+
+
+        if ($lesson->completed) {
+            $lesson->content_json = $temp_content_json;
+        }
 
         return Inertia::render('Classroom/Lesson', [
             'course' => $course,
             'lessons' => $lessons,
             'lesson' => $lesson,
-        ]);
-    }
-
-    public function showPersonalityQuiz(Request $request, Course $course)
-    {
-
-        // if ($lesson->type === Lesson::TYPE_QUIZ) {
-        //     $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
-        // }
-
-        $quiz = $course->lessons()->published()
-            ->where('type', '=', Lesson::TYPE_PERSONALITY_QUIZ)
-            ->first();
-
-        // dd($quiz);
-
-        if (!$quiz) {
-            return abort(404);
-        }
-
-
-        return Inertia::render('Classroom/PersonalityQuiz', [
-            'course' => $course,
-            'quiz' => $quiz,
         ]);
     }
 
@@ -176,17 +99,17 @@ class ClassroomController extends Controller
 
 
 
-
     public function markLessonComplete(Request $request, Course $course, Lesson $lesson)
     {
         $next_lesson_id = $request->query('next') ?? $lesson->slug;
-
         return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $next_lesson_id]));
     }
 
 
     public function answerQuiz(Request $request, Course $course, Lesson $lesson)
     {
+        $user = $request->user();
+
         $request->validate([
             'answers' => 'required|array|min:0',
             'answers.*.question_id' => 'required|string',
@@ -223,6 +146,18 @@ class ClassroomController extends Controller
 
         $scoreInPercent = ($score / $total) * 100;
 
+        // Todo : Quiz, lesson
+        UserLesson::upsert(
+            [[
+                'user_id' => $user->id,
+                'lesson_id' => $lesson->id,
+                'completed' => true,
+                'answers' => json_encode($answers),
+                'score' => $scoreInPercent
+            ]],
+            uniqueBy: ['user_id', 'lesson_id'],
+            update: ['completed', 'score', 'answers']
+        );
 
         return redirect()->back()->with('message', [
             'status' => 'success',
@@ -312,18 +247,18 @@ class ClassroomController extends Controller
 
 
 
-        // UserLesson::upsert(
-        //     [[
-        //         'user_id' => $user->id,
-        //         'lesson_id' => $lesson->id,
-        //         'completed' => true,
-        //         'answers' => $answersJson,
-        //         'score' => null,
-        //         'personality_scores' => $resultsJson,
-        //     ]],
-        //     uniqueBy: ['user_id', 'lesson_id'],
-        //     update: ['completed', 'answers', 'personality_scores']
-        // );
+        UserLesson::upsert(
+            [[
+                'user_id' => $user->id,
+                'lesson_id' => $lesson->id,
+                'completed' => true,
+                'answers' => $answersJson,
+                'score' => null,
+                'personality_scores' => $resultsJson,
+            ]],
+            uniqueBy: ['user_id', 'lesson_id'],
+            update: ['completed', 'answers', 'personality_scores']
+        );
 
         // 6. Return Response
         return redirect()->back()->with('message', [

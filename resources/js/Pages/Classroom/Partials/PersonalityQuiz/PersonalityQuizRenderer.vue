@@ -135,9 +135,12 @@ const handleOptionUpdate = (selectedValue: string) => {
 
 <template>
   <div
-    class="bg-primary/20 flex min-h-[calc(100svh-65px)] flex-col items-center justify-center p-4"
+    class="bg-primary/20 flex min-h-[calc(100svh)] flex-col items-center justify-center p-4"
   >
-    <Card class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
+    <Card
+      v-if="!finalPersonalityResults"
+      class="mx-auto w-full max-w-(--breakpoint-md) rounded-md"
+    >
       <CardHeader>
         <div class="mb-2 flex items-center justify-end gap-4">
           <!-- <Button
@@ -301,23 +304,13 @@ const handleOptionUpdate = (selectedValue: string) => {
       </CardContent>
     </Card>
 
-    <div>
-      <Dialog v-model:open="resultsDialog">
-        <DialogContent class="sm:max-w-[575px]">
-          <DialogHeader>
-            <DialogTitle class="text-center"> Personality Results </DialogTitle>
-          </DialogHeader>
-          <div>
-            <PersonalityQuizFinalResults
-              :final-personality-results="finalPersonalityResults"
-              :personality-quiz-traits="personalityQuizTraits"
-            />
-          </div>
-          <DialogFooter class="items-center justify-center sm:justify-center">
-            <Button @click="onContinue"> Continue </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    <div v-else class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
+      <PersonalityQuizFinalResults
+        :final-personality-results="finalPersonalityResults"
+        :personality-quiz-traits="personalityQuizTraits"
+        :resources="course.metadata.resources || []"
+        :course="course"
+      />
     </div>
   </div>
 </template>

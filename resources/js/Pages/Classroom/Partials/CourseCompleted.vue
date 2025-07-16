@@ -15,11 +15,6 @@ const props = defineProps<{
 }>();
 
 const hasQuiz = props.lessons.some((r) => r.type === "QUIZ");
-const hasPersonalityQuiz = props.lessons.some(
-  (r) => r.type === "PERSONALITY_QUIZ",
-);
-
-console.log(props.lessons);
 </script>
 
 <template>
@@ -102,7 +97,7 @@ console.log(props.lessons);
         <div
           class="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          <Button class="w-full sm:w-auto"> Go to dashboard </Button>
+          <Button class="w-full sm:w-auto"> SHARE </Button>
         </div>
       </CardContent>
     </Card>

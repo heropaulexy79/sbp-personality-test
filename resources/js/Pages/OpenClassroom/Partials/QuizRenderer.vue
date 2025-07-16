@@ -45,6 +45,7 @@ const {
   hasNextQuesion,
   hasPreviousQuesion,
   answers,
+  persistScore,
 } = useQuizAnswerManager(
   `${props.course.id}:${props.lesson.id}`,
   quizzQuestionData,
@@ -143,6 +144,10 @@ const scoreInPercent = computed(() =>
       (score.value / quizzQuestionData.length) * 100,
   ),
 );
+
+watch(scoreInPercent, (newValue) => {
+  persistScore(newValue);
+});
 
 const handleOptionUpdate = (selectedValue: string) => {
   answerQuestion(currentQuesion.value.id, selectedValue);

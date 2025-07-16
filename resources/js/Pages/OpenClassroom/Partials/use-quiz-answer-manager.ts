@@ -9,6 +9,7 @@ export function useQuizAnswerManager(
   initialQuestions: Q[] = [],
   initialAnswers?: Answer[],
 ) {
+  const scorePersitKey = ref(`lesson:score:${key}`);
   const ansPersitKey = ref(`lesson:answers:${key}`);
   const lastQuestPersitKey = ref(`lesson:question:${key}`);
   const currentQuestionIdx = ref(
@@ -45,6 +46,10 @@ export function useQuizAnswerManager(
       ansPersitKey.value,
       JSON.stringify(Array.from(value.entries())),
     );
+  }
+
+  function persistScore(value: number) {
+    localStorage.setItem(scorePersitKey.value, value + "");
   }
 
   function retrieveAnswers() {
@@ -118,5 +123,6 @@ export function useQuizAnswerManager(
     hasNextQuesion,
     hasPreviousQuesion,
     answers,
+    persistScore,
   };
 }
