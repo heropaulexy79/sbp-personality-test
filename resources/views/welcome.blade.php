@@ -4,67 +4,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-
-
-    {{-- <link rel="icon" type="image/x-icon" href="/favicon.ico" /> --}}
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
-
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=dm-sans:100,200,300,400,500,600,700,800,900" rel="stylesheet" />
 
     @vite('resources/css/app.css')
 </head>
 
 <body class="font-sans antialiased">
+    <div class="relative min-h-screen flex items-center justify-center">
+        <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star-icon lucide-star"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
 
-    <img id="background" class="pointer-events-none absolute inset-0 h-screen w-full bg-right object-cover"
-        src="/images/home-bg.webp" />
+        <!-- <main>
 
-    <div class="relative min-h-screen">
-        <x-layout.header />
-        <main class="mt-6">
-
-            <section>
-                <div class="container">
-                    <div class="max-w-2xl px-8 py-20 pb-32">
-                        <h1 class="text-balance text-4xl font-bold md:text-5xl lg:text-6xl">From onboarding to mastery.
-                        </h1>
-                        <p class="mt-2 text-lg"> The right values aren't just learnt; they're built.
-                            <br />
-                            Culture is the key to progress and productivity, whether in the classroom,
-                            boardroom or society.
-                        </p>
-                        <div class="mt-5 inline-flex gap-4">
-                            <a href="{{ route('register') }}"
-                                class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                                Get Started
-                            </a>
-
-                            <a href="{{ route('login') }}"
-                                class="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-primary bg-transparent px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                                Log in
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-
-            <x-features />
-
-            <x-pricing />
-
-
-            <x-get-started-cta />
-
-        </main>
-        <x-layout.footer />
-
+        </main> -->
     </div>
 </body>
 

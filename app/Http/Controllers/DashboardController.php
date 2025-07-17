@@ -13,6 +13,8 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
 
+        return redirect(route('course.index'));
+
         $user = $request->user();
 
         if ($user->account_type === "TEACHER") {

@@ -28,10 +28,11 @@ const handleClick = () => {
         'text-lg font-semibold',
         props.disabled
           ? 'cursor-not-allowed opacity-70' // Disabled state
-          : 'hover:bg-primary/10 hover:border-primary', // Hover state when not disabled
+          : 'hover:bg-primary/10 hover:border-primary hover:text-black dark:hover:text-white', // Hover state when not disabled
         isSelected
           ? 'bg-primary text-primary-foreground border-primary shadow-lg' // Selected state
-          : 'border-gray-300 bg-white text-gray-800 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100', // Default state
+          : '', // Default state
+        // : 'border-gray-300 bg-white text-gray-800 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100', // Default state
       )
     "
     @click="handleClick"

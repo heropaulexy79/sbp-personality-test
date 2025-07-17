@@ -100,7 +100,8 @@ Route::middleware([])->group(function () {
     Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware([]);
 
 
-    Route::get('/course/{course:slug}/personality-quiz', [ClassroomController::class, 'showPersonalityQuiz'])->name('classroom.personality.show');
+    Route::get('/course/{course:slug}/personality-quiz', [ClassroomController::class, 'showPersonalityQuizIndex'])->name('classroom.personality.index');
+    Route::get('/course/{course:slug}/personality-quiz/start', [ClassroomController::class, 'showPersonalityQuiz'])->name('classroom.personality.show');
 
     Route::get('/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLesson'])->name('classroom.lesson.show');
     Route::patch('/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');

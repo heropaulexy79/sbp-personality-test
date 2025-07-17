@@ -109,7 +109,7 @@ const progress = computed(() => {
           </Breadcrumb>
         </header>
 
-        <div class="bg-white">
+        <div class="bg-background">
           <slot />
         </div>
       </SidebarInset>

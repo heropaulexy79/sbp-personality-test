@@ -135,7 +135,7 @@ const handleOptionUpdate = (selectedValue: string) => {
 
 <template>
   <div
-    class="bg-primary/20 flex min-h-[calc(100svh)] flex-col items-center justify-center p-4"
+    class="bg-background flex min-h-[calc(100svh)] flex-col items-center justify-center p-4"
   >
     <Card
       v-if="!finalPersonalityResults"
@@ -143,15 +143,6 @@ const handleOptionUpdate = (selectedValue: string) => {
     >
       <CardHeader>
         <div class="mb-2 flex items-center justify-end gap-4">
-          <!-- <Button
-              variant="outline"
-              size="sm"
-              @click="resultsDialog = true"
-              v-if="isCompleted"
-            >
-              Show Results
-            </Button> -->
-
           <Progress
             :model-value="((currentQuestionIdx + 1) / totalQuestions) * 100"
             class="h-2"
@@ -169,62 +160,6 @@ const handleOptionUpdate = (selectedValue: string) => {
       <CardContent class="">
         <div class="relative">
           <div class="">
-            <!-- Render Likert Scale Questions -->
-            <!-- <RadioGroup
-              v-if="currentQuestion.type === 'likert_scale'"
-              :key="currentQuestion.id + 'or'"
-              :default-value="currentAnswer as string | undefined"
-              @update:model-value="
-                (v) => {
-                  answerQuestion(currentQuestion.id, v);
-                }
-              "
-              :disabled="isCompleted"
-            >
-              <div
-                v-for="option in currentQuestion.options"
-                :key="option.id"
-                class="mb-2 flex items-center space-x-2"
-              >
-                <RadioGroupItem
-                  :id="option.id"
-                  :value="option.id"
-                  :disabled="isCompleted"
-                />
-                <Label :for="option.id">
-                  {{ option.text }}
-                </Label>
-              </div>
-            </RadioGroup> -->
-
-            <!-- Render Multiple Choice Questions -->
-            <!-- <RadioGroup
-              v-else-if="currentQuestion.type === 'multiple_choice'"
-              :key="currentQuestion.id + 'mult'"
-              :default-value="currentAnswer as string | undefined"
-              @update:model-value="
-                (v) => {
-                  answerQuestion(currentQuestion.id, v);
-                }
-              "
-              :disabled="isCompleted"
-            >
-              <div
-                v-for="option in currentQuestion.options"
-                :key="option.id"
-                class="mb-2 flex items-center space-x-2"
-              >
-                <RadioGroupItem
-                  :id="option.id"
-                  :value="option.id"
-                  :disabled="isCompleted"
-                />
-                <Label :for="option.id">
-                  {{ option.text }}
-                </Label>
-              </div>
-            </RadioGroup> -->
-
             <div class="grid gap-4 sm:grid-cols-2">
               <PersonalityQuizOptionTile
                 v-for="option in currentQuestion.options"
@@ -304,7 +239,7 @@ const handleOptionUpdate = (selectedValue: string) => {
       </CardContent>
     </Card>
 
-    <div v-else class="mx-auto w-full max-w-(--breakpoint-md) rounded-md">
+    <div v-else class="mx-auto w-full">
       <PersonalityQuizFinalResults
         :final-personality-results="finalPersonalityResults"
         :personality-quiz-traits="personalityQuizTraits"

@@ -132,6 +132,27 @@ class ClassroomController extends Controller
         ]);
     }
 
+    public function showPersonalityQuizIndex(Request $request, Course $course)
+    {
+
+        $quiz = $course->lessons()->published()
+            ->where('type', '=', Lesson::TYPE_PERSONALITY_QUIZ)
+            ->first();
+
+        if (!$quiz) {
+            return abort(404);
+        }
+
+
+        return Inertia::render('Classroom/PersonalityQuizIntro', [
+            'course' => $course,
+            'quiz' => [
+                'title' => $quiz->title,
+                'description' => 'Powerful, self-serve team engagement tools and analytics. Supercharge your managers & keep employees engaged from anywhere.',
+            ]
+        ]);
+    }
+
     public function showPersonalityQuiz(Request $request, Course $course)
     {
 

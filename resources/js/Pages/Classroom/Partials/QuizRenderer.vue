@@ -157,7 +157,7 @@ watch(scoreInPercent, (newValue) => {
 <template>
   <!-- class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center bg-linear-to-b from-rose-100 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800" -->
   <div
-    class="bg-primary/20 flex min-h-[calc(100svh-65px)] flex-col items-center justify-center p-4"
+    class="flex min-h-[calc(100svh-65px)] flex-col items-center justify-center p-4"
   >
     <!-- <Card class="mx-auto mb-6 w-full max-w-(--breakpoint-md) rounded-md">
       <CardHeader>

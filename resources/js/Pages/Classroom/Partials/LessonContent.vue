@@ -33,7 +33,7 @@ function markAsComplete() {
   <div>
     <div
       v-if="lesson.type === 'DEFAULT'"
-      class="prose lg:prose-lg mx-auto max-w-[80ch] px-12 py-12"
+      class="prose lg:prose-lg dark:prose-invert mx-auto max-w-[80ch] px-12 py-12"
     >
       <article v-html="lesson.content" />
 
