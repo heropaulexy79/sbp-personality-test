@@ -82,6 +82,7 @@ class CourseController extends Controller
             'user_id' => $user->id,
             'organisation_id' => $organisation->id,
             'banner_image' => $request->input('banner_image'),
+            'metadata' => ['resources' => [], 'tags' => []]
         ]);
 
         // Redirect to course lesson management

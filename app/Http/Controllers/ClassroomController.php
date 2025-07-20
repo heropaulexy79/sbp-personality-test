@@ -148,7 +148,8 @@ class ClassroomController extends Controller
             'course' => $course,
             'quiz' => [
                 'title' => $quiz->title,
-                'description' => 'Powerful, self-serve team engagement tools and analytics. Supercharge your managers & keep employees engaged from anywhere.',
+                // 'description' => 'Powerful, self-serve team engagement tools and analytics. Supercharge your managers & keep employees engaged from anywhere.',
+                'description' => $course->description,
             ]
         ]);
     }
