@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { PersonalityTrait } from "@/Pages/Organisation/Course/Lesson/Partials/Personality/types";
 import PersonalityQuizFinalResults from "./PersonalityQuizFinalResults.vue";
 import PersonalityQuizOptionTile from "./PersonalityQuizOptionTile.vue";
+import MarketingEmailCapture from "@/Components/MarketingEmailCapture.vue";
+import { getCookie } from "@/Pages/Classroom/Partials/cookie";
 
 const page = usePage();
 
@@ -59,6 +61,8 @@ const {
 
 const resultsDialog = ref(false);
 const finalPersonalityResults = ref<{ [traitId: string]: number } | null>(null);
+const emailSubmittedViaCookie = ref(getCookie("email_captured") === "true");
+const showEmailCollection = ref(false);
 
 const completionForm = useForm({
   answers: [],
@@ -78,6 +82,7 @@ function submitPersonalityQuiz() {
       }),
       {
         onSuccess(page) {
+          showEmailCollection.value = true;
           const flashMessage = page.props.flash.message as
             | {
                 status: string;
@@ -138,7 +143,7 @@ const handleOptionUpdate = (selectedValue: string) => {
     class="bg-background flex min-h-[calc(100svh)] flex-col items-center justify-center p-4"
   >
     <Card
-      v-if="!finalPersonalityResults"
+      v-if="!finalPersonalityResults && !showEmailCollection"
       class="mx-auto w-full max-w-(--breakpoint-md) rounded-md"
     >
       <CardHeader>
@@ -239,7 +244,21 @@ const handleOptionUpdate = (selectedValue: string) => {
       </CardContent>
     </Card>
 
-    <div v-else class="mx-auto w-full">
+    <!-- <Card
+      v-else-if=""
+      class="mx-auto w-full max-w-(--breakpoint-md) rounded-md"
+    >
+      <CardHeader>
+        <CardTitle class="mb-6 text-center text-lg font-bold">
+          Enter your email to see your results!
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+
+      </CardContent>
+    </Card> -->
+
+    <div v-else-if="finalPersonalityResults" class="mx-auto w-full">
       <PersonalityQuizFinalResults
         :final-personality-results="finalPersonalityResults"
         :personality-quiz-traits="personalityQuizTraits"
@@ -247,5 +266,30 @@ const handleOptionUpdate = (selectedValue: string) => {
         :course="course"
       />
     </div>
+
+    <Dialog :open="showEmailCollection && !emailSubmittedViaCookie">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle> Enter your email to see your results! </DialogTitle>
+        </DialogHeader>
+        <div>
+          <MarketingEmailCapture
+            @on-success="
+              () => {
+                emailSubmittedViaCookie = true; // Update local ref
+                showEmailCollection = false; // Hide the form
+                // resultsDialog.value = true; // Show results immediately
+              }
+            "
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
+
+<style>
+[data-slot="dialog-overlay"] {
+  backdrop-filter: blur(var(--blur-md));
+}
+</style>

@@ -39,6 +39,28 @@ defineProps<{ course: Course }>();
                 </Link> -->
         <Link
           :href="
+            route('classroom.personality.index', {
+              course: course.slug,
+            })
+          "
+          :class="cn(buttonVariants({ variant: 'secondary' }))"
+        >
+          Personality Quiz
+        </Link>
+
+        <Link
+          :href="
+            route('classroom.lesson.index', {
+              course: course.slug,
+            })
+          "
+          :class="cn(buttonVariants({ variant: 'secondary' }))"
+        >
+          Classroom
+        </Link>
+
+        <Link
+          :href="
             route('course.edit', {
               course: course.id,
             })

@@ -26,9 +26,7 @@ const emit = defineEmits(["update:modelValue"]);
 
 // Create a local ref that will be used by the internal input/slider component.
 // This ref will be synchronized with the `modelValue` prop.
-const localScore = ref<[number] | undefined>(
-  props.modelValue ? [props.modelValue] : undefined,
-);
+const localScore = ref<[number]>(props.modelValue ? [props.modelValue] : [0]);
 
 // Watch for changes in the `modelValue` prop (from parent) and update localScore.
 // This ensures that if the parent updates the score, the local input reflects it.
@@ -36,8 +34,8 @@ watch(
   () => props.modelValue,
   (newVal) => {
     // Prevent unnecessary updates and potential infinite loops if the value is already the same
-    if (newVal !== localScore.value) {
-      localScore.value = newVal ? [newVal] : undefined;
+    if (newVal !== localScore.value[0]) {
+      localScore.value = newVal ? [newVal] : [0];
     }
   },
   // No deep watch needed as modelValue is a primitive
@@ -48,7 +46,7 @@ watch(
 watch(localScore, (newVal) => {
   // Only emit if the local score changes and it's different from the prop,
   // which indicates a change originated from this component (user interaction).
-  if (newVal !== props.modelValue) {
+  if (newVal[0] !== props.modelValue) {
     emit("update:modelValue", newVal?.[0]);
   }
 });
@@ -81,6 +79,7 @@ watch(localScore, (newVal) => {
       :id="`score-${optionId}-${trait.id}`"
       :max="100"
       :step="5"
+      :min="0"
       class="w-full"
     />
 

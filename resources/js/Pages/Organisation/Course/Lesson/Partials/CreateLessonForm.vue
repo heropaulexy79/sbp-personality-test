@@ -39,69 +39,69 @@ const form = useForm({
     },
   ],
   personality_quiz: {
-    // traits: [],
-    // questions: [],
+    traits: [],
+    questions: [],
     //
 
-    traits: [
-      {
-        id: "rrrr",
-        name: "rrrr",
-        description: "rr",
-      },
-      {
-        id: "twill",
-        name: "Twill",
-      },
-    ],
-    questions: [
-      {
-        id: "iC5nG-CQfpBlwqeEAhkGx",
-        text: "Q",
-        type: "multiple_choice",
-        options: [
-          {
-            id: "K9WSC4p_M2qBCXATB7bi0",
-            text: "Rnadmono",
-            scores: {
-              rrrr: 75,
-              twill: 35,
-            },
-          },
-        ],
-      },
-      {
-        id: "yLq59aGdi9HfwoijyYiji",
-        text: "Music to my ears",
-        type: "multiple_choice",
-        options: [
-          {
-            id: "JT9fD607z-Goq3y76Zsy5",
-            text: "One",
-            scores: {
-              rrrr: 45,
-              twill: 70,
-            },
-          },
-          {
-            id: "AR16tx_Au8Ib7Al5WiG5s",
-            text: "Random",
-            scores: {
-              rrrr: 95,
-              twill: 5,
-            },
-          },
-          {
-            id: "nTo0Bzs8FYnmMs01dZdZB",
-            text: "kill",
-            scores: {
-              rrrr: 15,
-              twill: 90,
-            },
-          },
-        ],
-      },
-    ],
+    // traits: [
+    //   {
+    //     id: "rrrr",
+    //     name: "rrrr",
+    //     description: "rr",
+    //   },
+    //   {
+    //     id: "twill",
+    //     name: "Twill",
+    //   },
+    // ],
+    // questions: [
+    //   {
+    //     id: "iC5nG-CQfpBlwqeEAhkGx",
+    //     text: "Q",
+    //     type: "multiple_choice",
+    //     options: [
+    //       {
+    //         id: "K9WSC4p_M2qBCXATB7bi0",
+    //         text: "Rnadmono",
+    //         scores: {
+    //           rrrr: 75,
+    //           twill: 35,
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     id: "yLq59aGdi9HfwoijyYiji",
+    //     text: "Music to my ears",
+    //     type: "multiple_choice",
+    //     options: [
+    //       {
+    //         id: "JT9fD607z-Goq3y76Zsy5",
+    //         text: "One",
+    //         scores: {
+    //           rrrr: 45,
+    //           twill: 70,
+    //         },
+    //       },
+    //       {
+    //         id: "AR16tx_Au8Ib7Al5WiG5s",
+    //         text: "Random",
+    //         scores: {
+    //           rrrr: 95,
+    //           twill: 5,
+    //         },
+    //       },
+    //       {
+    //         id: "nTo0Bzs8FYnmMs01dZdZB",
+    //         text: "kill",
+    //         scores: {
+    //           rrrr: 15,
+    //           twill: 90,
+    //         },
+    //       },
+    //     ],
+    //   },
+    // ],
   },
   type: "DEFAULT",
   is_published: "false",

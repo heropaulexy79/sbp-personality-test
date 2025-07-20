@@ -33,7 +33,7 @@ Update your account's profile information and email address.
 </p> -->
                   </div>
 
-                  <div>
+                  <div class="flex items-center gap-2">
                     <Link
                       :href="
                         route('lesson.create', {

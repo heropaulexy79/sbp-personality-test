@@ -12,3 +12,19 @@ export function getLocalStorageItemsByPrefix(prefix: string) {
   }
   return items;
 }
+
+export function extractParenthesizedText(inputString: string): string[] {
+  const regex = /\(([^)]+)\)/g;
+  const matches: string[] = [];
+  let match;
+
+  while ((match = regex.exec(inputString)) !== null) {
+    matches.push(match[1]);
+  }
+  return matches;
+}
+
+export function removeParenthesizedText(inputString: string): string {
+  const regex = /\([^)]*\)/g; // Matches parentheses and anything inside them
+  return inputString.replace(regex, "").trim(); // Remove and trim any leading/trailing whitespace
+}

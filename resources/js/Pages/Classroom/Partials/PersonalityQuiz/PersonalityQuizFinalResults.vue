@@ -41,6 +41,7 @@ import {
 import { PersonalityTrait } from "@/Pages/Organisation/Course/Lesson/Partials/Personality/types";
 import { Separator } from "@/Components/ui/separator";
 import { Badge } from "@/Components/ui/badge";
+import { extractParenthesizedText, removeParenthesizedText } from "../utils";
 
 const props = defineProps<{
   finalPersonalityResults: { [traitId: string]: number } | null;
@@ -97,7 +98,11 @@ const topTraitResult = computed(() => {
 const copiedShare = ref(false);
 
 const shareMessage = computed(() => {
-  return `I'm ${topTraitResult.value?.name.replace(/\s+/g, "")}${topTraitResult.value?.description ? ", " + topTraitResult.value?.description : ""}. Ready to discover your personality? Take the quiz now!`;
+  return `I'm the ${topTraitResult.value?.name.replace(/\s+/g, "")}. Ready to discover your personality? Take the quiz now!`;
+});
+
+const extraTags = computed(() => {
+  return extractParenthesizedText(topTraitResult.value?.name ?? "");
 });
 
 const handleShare = (platform: string) => {
@@ -108,7 +113,7 @@ const handleShare = (platform: string) => {
 
   switch (platform) {
     case "twitter":
-      shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(url)}`;
+      shareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(url)}`;
       break;
     case "facebook":
       shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(message)}`;
@@ -142,11 +147,16 @@ const copyToClipboard = async () => {
         <div class="grid gap-10 md:grid-cols-[1fr_350px]">
           <div class="space-y-10 self-end">
             <div>
-              <Badge> Quiz Results </Badge>
+              <Badge variant="secondary"> Quiz Results </Badge>
               <h2 class="mt-2 mb-4 text-4xl font-bold lg:text-5xl">
-                You're {{ topTraitResult?.name }}
+                {{ removeParenthesizedText(topTraitResult?.name || "") }}
               </h2>
-              <div class="text-muted-foreground mt-1 text-lg lg:text-2xl">
+
+              <div class="flex items-center gap-2">
+                <Badge v-for="ta in extraTags"> {{ ta }} </Badge>
+              </div>
+
+              <div class="text-muted-foreground mt-2 text-lg lg:text-xl">
                 {{ topTraitResult?.description }}
               </div>
 
@@ -185,7 +195,7 @@ const copyToClipboard = async () => {
                           width="16"
                           src="https://cdn.simpleicons.org/x/fff"
                         />
-                        Twitter
+                        X (Twitter)
                       </Button>
                       <Button
                         @click="() => handleShare('facebook')"
@@ -268,18 +278,17 @@ const copyToClipboard = async () => {
               <Separator />
               <CardContent>
                 <CardDescription>
-                  Take a course on {{ course.title }}
+                  Wanna learn more about the archetypes, the team and what we
+                  do?
                 </CardDescription>
                 <div class="mt-4 space-y-4">
                   <a
-                    :href="
-                      route('classroom.lesson.index', { course: course.slug })
-                    "
+                    href="/"
                     target="_blank"
                     class="group flex w-full items-center gap-2"
                     :class="buttonVariants({ variant: 'outline' })"
                   >
-                    Take Course
+                    Get started
                   </a>
                 </div>
               </CardContent>

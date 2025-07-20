@@ -43,9 +43,12 @@ defineProps<{
         </div>
 
         <div class="mx-auto mt-5 max-w-3xl text-center">
-          <p class="text-muted-foreground text-lg lg:text-2xl">
-            {{ quiz.description }}
-          </p>
+          <div
+            class="text-muted-foreground prose prose-sm mx-auto text-center"
+            v-html="quiz.description"
+          />
+          <!-- {{ quiz.description }} -->
+          <!-- </div> -->
         </div>
 
         <div class="mt-8 flex justify-center gap-3">
