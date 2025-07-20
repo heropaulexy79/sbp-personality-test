@@ -5,6 +5,7 @@ use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LeadCaptureController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\OrganisationUserController;
@@ -47,6 +48,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/upload', [UploadController::class, 'destroy'])->name('upload.delete');
 
 
+    Route::get('/admin/leads', [LeadCaptureController::class, 'index'])->name('leads.index');
+    Route::get('/admin/leads/download', [LeadCaptureController::class, 'downloadCsv'])->name('leads.download.all');
 
     // Organisation
     Route::resource('organisation', OrganisationController::class)->only(['store', 'update']);
@@ -94,6 +97,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 Route::middleware([])->group(function () {
+    Route::post('/lead/capture-email', [LeadCaptureController::class, 'store'])
+        ->name('marketing.captureEmail');
     // Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
 
     Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware([]);
@@ -114,6 +119,7 @@ Route::middleware([])->group(function () {
     Route::get('/course/{course:slug}/lesson/{lesson:slug}', [ClassroomController::class, 'showLessonPublic'])->name('classroom.lesson.show');
     Route::patch('/course/{course:slug}/lesson/{lesson:slug}/mark-complete', [ClassroomController::class, 'markLessonComplete'])->name('classroom.lesson.markComplete');
 });
+
 
 
 Route::middleware('auth')->group(function () {
