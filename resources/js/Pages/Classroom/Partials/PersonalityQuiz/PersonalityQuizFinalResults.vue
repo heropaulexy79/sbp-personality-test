@@ -42,6 +42,7 @@ import { PersonalityTrait } from "@/Pages/Organisation/Course/Lesson/Partials/Pe
 import { Separator } from "@/Components/ui/separator";
 import { Badge } from "@/Components/ui/badge";
 import { extractParenthesizedText, removeParenthesizedText } from "../utils";
+import { Link } from "@inertiajs/vue3";
 
 const props = defineProps<{
   finalPersonalityResults: { [traitId: string]: number } | null;
@@ -282,14 +283,14 @@ const copyToClipboard = async () => {
                   do?
                 </CardDescription>
                 <div class="mt-4 space-y-4">
-                  <a
-                    href="/"
+                  <Link
+                    :href="route('public.course.learn_more')"
                     target="_blank"
                     class="group flex w-full items-center gap-2"
                     :class="buttonVariants({ variant: 'outline' })"
                   >
                     Get started
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

@@ -274,6 +274,13 @@ const handleOptionUpdate = (selectedValue: string) => {
         </DialogHeader>
         <div>
           <MarketingEmailCapture
+            :metadata="{
+              quizResults: {
+                courseId: course.id,
+                courseName: course.title,
+                results: finalPersonalityResults,
+              },
+            }"
             @on-success="
               () => {
                 emailSubmittedViaCookie = true; // Update local ref

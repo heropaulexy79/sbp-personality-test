@@ -356,4 +356,13 @@ class ClassroomController extends Controller
             'personality_traits' => $personalityTraits->toArray(),
         ]);
     }
+
+    public function showLearnMore(Request $request, Course $course)
+    {
+
+        return Inertia::render('Classroom/PersonalityQuizLearnMore', [
+            // 'course' => $course,
+            // 'post' => $quiz,
+        ]);
+    }
 }

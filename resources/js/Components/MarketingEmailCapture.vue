@@ -7,20 +7,26 @@ import InputError from "./InputError.vue";
 import { setCookie } from "@/Pages/Classroom/Partials/cookie";
 import { Button } from "./ui/button";
 
-const emailForm = useForm({
-  // New form for email collection
-  email: "",
-});
-
 const props = withDefaults(
   defineProps<{
     ctaText?: string;
+    context?: string;
+    metadata: any;
   }>(),
   {
     ctaText: "View Results",
+    metadata: {},
   },
 );
+
 const emit = defineEmits(["on-success", "on-error"]);
+
+const emailForm = useForm({
+  // New form for email collection
+  email: "",
+  context: props.context,
+  metadata: props.metadata,
+});
 
 function submitEmail() {
   // Example of an Inertia request (uncomment and modify for your backend):

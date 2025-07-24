@@ -70,10 +70,12 @@ class LeadCaptureController extends Controller
         $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
+            'context' => ['nullable', 'string', 'email', 'max:255'],
+            'metadata' => ['nullable', 'array'],
         ]);
 
         $email = $request->input('email');
-        $context = 'personality_quiz';
+        $context =  $request->input('context', 'personality_quiz');
 
         $existingCapture = LeadCapture::where('email', $email)
             ->where('context', $context)
@@ -83,12 +85,15 @@ class LeadCaptureController extends Controller
             return redirect()->back()->with('message', ['status' => 'success', 'message' => 'Email saved successfully!']);
         }
 
+        $metadata = $request->input('metadata', []);
+
 
         LeadCapture::create([
             'email' => $request->input('email'),
             'user_id' => null,
             'context' => 'personality_quiz',
-            'metadata' => []
+            'context' => $context,
+            'metadata' => $metadata,
         ]);
 
 

@@ -99,10 +99,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware([])->group(function () {
     Route::post('/lead/capture-email', [LeadCaptureController::class, 'store'])
         ->name('marketing.captureEmail');
+    //
     // Route::get('/classroom/course/{course:slug}', [ClassroomController::class, 'showCourse'])->name('classroom.course.show');
+    //
+    Route::get('/secret-behind-the-quiz', [ClassroomController::class, 'showLearnMore'])->name('public.course.learn_more');
 
-    Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index')->middleware([]);
-    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show')->middleware([]);
+    Route::get('/course', [PublicCourseController::class, 'index'])->name('public.course.index');
+    Route::get('/course/{course:slug}', [PublicCourseController::class, 'show'])->name('public.course.show');
 
 
     Route::get('/course/{course:slug}/personality-quiz', [ClassroomController::class, 'showPersonalityQuizIndex'])->name('classroom.personality.index');
