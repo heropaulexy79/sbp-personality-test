@@ -289,7 +289,7 @@ const copyToClipboard = async () => {
                     class="group flex w-full items-center gap-2"
                     :class="buttonVariants({ variant: 'outline' })"
                   >
-                    Get started
+                    Learn more
                   </Link>
                 </div>
               </CardContent>
