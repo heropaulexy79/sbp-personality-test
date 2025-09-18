@@ -18,8 +18,7 @@ yarn-error.log
 /.idea
 /.vscode
 
-docker-compose.yaml
+#docker-compose.yaml
 .dockerignore
 
 *.ignore.*
-

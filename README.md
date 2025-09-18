@@ -1,8 +1,43 @@
-# Personality test app
+### Project Setup & Usage
 
-## How to run
+1. **Install dependencies**
 
-- Setup your project similar to any laravel project i.e (composer install, npm install)
-- Run seed function `php artisan db:seed --class=OrganisationSeeder`
-- Visit `/login` to login or `/register` to create an account
-- Once at the dashboard you can then create a course similar to how it is on SBP (Wurkbook) but with a new quiz type called Personality Quiz
+   ```bash
+   composer install
+   npm install
+   ```
+
+2. **Start services**
+
+   - In one terminal, run:
+
+     ```bash
+     docker compose up
+     ```
+
+   - In a second terminal, run:
+
+     ```bash
+     npm run dev
+     ```
+
+3. **Seed the database**
+   In a third terminal, run:
+
+   ```bash
+   php artisan db:seed --class=OrganisationSeeder
+   ```
+
+4. **Access the application**
+
+   - Go to `/register` to create a new account
+   - Or go to `/login` to sign in
+
+5. **Create a course**
+
+   - Once on the dashboard, you can create a course just like in SBP
+   - A new quiz type, **Personality Quiz**, is available in addition to existing ones
+
+```
+
+```
