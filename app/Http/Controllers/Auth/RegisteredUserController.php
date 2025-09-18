@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
         OrganisationUser::create([
             "user_id" => $user->id,
             "organisation_id" => 1,
-            "role" => 'STUDENT'
+            "role" => 'ADMIN'
         ]);
 
 
