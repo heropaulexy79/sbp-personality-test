@@ -37,7 +37,3 @@
 
    - Once on the dashboard, you can create a course just like in SBP
    - A new quiz type, **Personality Quiz**, is available in addition to existing ones
-
-```
-
-```
