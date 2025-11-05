@@ -1,11 +1,9 @@
-import forms from '@tailwindcss/forms';
-import typography from '@tailwindcss/typography';
-import containerQueries from '@tailwindcss/container-queries';
-import animate from 'tailwindcss-animate';
-// import defaultTheme from "tailwindcss/defaultTheme"; // Uncomment this if you want to use defaultTheme
+// import forms from ;
+// import defaultTheme from "tailwindcss/defaultTheme";
+// const animate = ;
 
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   darkMode: ["class"],
   safelist: ["dark"],
   prefix: "",
@@ -121,10 +119,5 @@ export default {
       },
     },
   },
-  plugins: [
-    forms,
-    typography,
-    containerQueries,
-    animate,
-  ],
+  plugins: [],
 };
