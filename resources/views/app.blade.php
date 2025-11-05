@@ -6,7 +6,7 @@
 
 <head>
     @if (!empty($tag_id))
-    <!-- Google tag (gtag.js) -->
+    <!-- New Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ $tag_id }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];

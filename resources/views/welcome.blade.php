@@ -12,7 +12,7 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '{{ $tag_id }}'); // Quotes are important here!
+        gtag('config', '{{ $tag_id }}'); // Quotes are important here in no little way!
     </script>
     @endif
 
