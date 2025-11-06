@@ -17,22 +17,35 @@ use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use App\Http\Controllers\Payments\PaystackController;
+use App\Http\Controllers\Ai\PersonalityQuizGeneratorController; // <-- 1. ADD THIS IMPORT
+
+// Route::get('/', function () {
+//     // return Inertia::render('Welcome', [
+//     //     'canLogin' => Route::has('login'),
+//     //     'canRegister' => Route::has('register'),
+//     //     'laravelVersion' => Application::VERSION,
+//     //     'phpVersion' => PHP_VERSION,
+//     // ]);
+
+//     return view('welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 
 Route::get('/', function () {
-    // return Inertia::render('Welcome', [
-    //     'canLogin' => Route::has('login'),
-    //     'canRegister' => Route::has('register'),
-    //     'laravelVersion' => Application::VERSION,
-    //     'phpVersion' => PHP_VERSION,
-    // ]);
-
-    return view('welcome', [
+    return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
 Route::get('/terms-and-conditions', function () {
     return view('terms-conditions', []);
 })->name('website.terms');
@@ -93,6 +106,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/org/course/{course}/lesson/{lesson}/postion', [LessonController::class, 'updatePosition'])->name('lesson.update.position')->middleware(['subscribed']);
     Route::get('/org/course/{course}/lesson/create', [LessonController::class, 'create'])->name('lesson.create')->middleware(['subscribed']);
     Route::post('/org/course/{course}/lesson', [LessonController::class, 'store'])->name('lesson.store')->middleware(['subscribed']);
+
+    // --- ADDED PAYSTACK INITIATION ROUTE ---
+    Route::post('/payment/paystack/pay', [PaystackController::class, 'redirectToGateway'])->name('paystack.pay');
+
+    // --- 2. ADD NEW AI ROUTE ---
+    Route::post('/ai/generate-personality-quiz', PersonalityQuizGeneratorController::class)
+        ->name('ai.generate-personality-quiz')
+        ->middleware(['subscribed']); // Protect it
 });
 
 
@@ -124,11 +145,16 @@ Route::middleware([])->group(function () {
 });
 
 
+// --- ADDED PAYSTACK CALLBACK & WEBHOOK ROUTES ---
+Route::get('/payment/paystack/callback', [PaystackController::class, 'handleGatewayCallback'])->name('paystack.callback');
+Route::post('/payment/paystack/webhook', [PaystackController::class, 'handleWebhook'])->name('paystack.webhook');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 require __DIR__ . '/auth.php';

@@ -15,14 +15,14 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-
-
         $this->call([
             OrganisationSeeder::class,
-            User::factory()->create([
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]),
+        ]);
+
+        // Move the User factory call out here
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
         ]);
     }
 }
