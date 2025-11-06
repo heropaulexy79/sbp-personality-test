@@ -1,23 +1,14 @@
 <script lang="ts" setup>
 import { Label } from "@/Components/ui/label";
-import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { watch, ref } from "vue";
-import InputError from "@/Components/InputError.vue";
-import { X, Plus, Edit } from "lucide-vue-next";
+import { X, Edit, WandSparklesIcon } from "lucide-vue-next";
 import { usePersonalityQuizManager } from "./use-personality-quiz-manager";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { PersonalityQuestion, PersonalityTrait } from "./types";
@@ -32,11 +23,13 @@ import {
 } from "@/Components/ui/sheet";
 import { toast } from "vue-sonner";
 import PersonalityTraitManager from "./PersonalityTraitManager.vue";
+import axios from "axios";
+import { generateId } from "../utils";
 
 defineProps<{ errors: { [key: string]: string } | undefined }>();
 
 const questionsModel = defineModel<PersonalityQuestion[]>();
-const traitsModel = defineModel<PersonalityTrait[]>("traits"); // Define a second model for traits
+const traitsModel = defineModel<PersonalityTrait[]>("traits");
 
 const {
   questions,
@@ -47,57 +40,79 @@ const {
   deleteTrait,
 } = usePersonalityQuizManager({
   initialQuestions: questionsModel.value ?? [],
-  initialTraits: traitsModel.value ?? [], // Pass initial traits to the composable
+  initialTraits: traitsModel.value ?? [],
 });
-
-const newTraitName = ref("");
-const newTraitDescription = ref("");
-
-const handleAddTrait = () => {
-  if (newTraitName.value.trim()) {
-    const isDuplicate = traits.value.some(
-      (t) => t.name.toLowerCase() === newTraitName.value.trim().toLowerCase(),
-    );
-    if (!isDuplicate) {
-      addTrait(newTraitName.value.trim(), newTraitDescription.value.trim());
-      newTraitName.value = "";
-      newTraitDescription.value = "";
-    } else {
-      // Potentially show a local error message for duplicate trait name
-      toast.error("Trait with this name already exists.");
-    }
-  }
-};
 
 const isEditorOpen = ref(false);
 const currentQuestionIndex = ref<number | null>(null);
 
-const openEditor = (index: number) => {
-  currentQuestionIndex.value = index;
-  isEditorOpen.value = true;
-};
-const closeEditor = () => {
-  currentQuestionIndex.value = null;
-  isEditorOpen.value = false;
-};
+// --- AI GENERATION LOGIC START ---
+const isGenerating = ref(false);
 
-// Watch for changes in the questions and emit them via the model
-watch(
-  () => questions.value,
-  (n) => {
-    questionsModel.value = n;
-  },
-  { deep: true },
-);
+const generateWithAi = async () => {
+  // Require at least 2 traits to generate a meaningful quiz,
+  // though 4+ is better for standard personality quizzes.
+  if (traits.value.length < 2) {
+      toast.error("Please add at least 2 traits before generating questions.");
+      return;
+  }
 
-// NEW: Watch for changes in traits and emit them via the new traits model
-watch(
-  () => traits.value,
-  (n) => {
-    traitsModel.value = n;
-  },
-  { deep: true },
-);
+  isGenerating.value = true;
+  const loadingToast = toast.loading("Generating quiz with AI... This may take a minute.");
+
+  try {
+    const response = await axios.post(route('ai.generate-personality-quiz'), {
+        archetypes: traits.value.map(t => t.name)
+    });
+
+    const data = response.data;
+
+    // Update Trait Descriptions if AI provided them
+    if (data.archetypes) {
+        traits.value.forEach(trait => {
+            const aiTrait = data.archetypes.find((t: any) => t.name.toLowerCase() === trait.name.toLowerCase());
+            if (aiTrait && aiTrait.description) {
+                trait.description = aiTrait.description;
+            }
+        });
+    }
+
+    // Add Generated Questions
+    if (data.questions) {
+        data.questions.forEach((q: any) => {
+            // Map AI options to internal Trait IDs
+            const mappedOptions = q.options.map((o: any) => {
+                const matchedTrait = traits.value.find(t => t.name.toLowerCase() === o.maps_to_archetype.toLowerCase());
+                return {
+                    id: generateId(),
+                    text: o.option_text,
+                    trait_id: matchedTrait ? matchedTrait.id : "",
+                    points: 1
+                };
+            });
+
+            questions.value.push({
+                id: generateId(),
+                type: 'multiple_choice',
+                text: q.question_text,
+                options: mappedOptions
+            });
+        });
+    }
+
+    toast.success("Quiz generated successfully!");
+  } catch (error: any) {
+    console.error("AI Generation Error:", error);
+    toast.error(error.response?.data?.error || "Failed to generate quiz. Please try again.");
+  } finally {
+    toast.dismiss(loadingToast);
+    isGenerating.value = false;
+  }
+};
+// --- AI GENERATION LOGIC END ---
+
+watch(() => questions.value, (n) => { questionsModel.value = n; }, { deep: true });
+watch(() => traits.value, (n) => { traitsModel.value = n; }, { deep: true });
 </script>
 
 <template>
@@ -113,24 +128,35 @@ watch(
       <div class="mb-4 flex items-center justify-between gap-4">
         <Label class="font-semibold">Personality Questions</Label>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline"> Add Question </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent class="w-56">
-            <!-- <DropdownMenuLabel>My Account</DropdownMenuLabel> -->
-            <!-- <DropdownMenuSeparator /> -->
-            <DropdownMenuGroup>
-              <DropdownMenuItem @select="addQuestion('likert_scale')">
-                <span>Likert Scale Question</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem @select="addQuestion('multiple_choice')">
-                <span>Multiple Choice Question</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div class="flex items-center gap-2">
+            <Button
+                type="button"
+                variant="secondary"
+                @click="generateWithAi"
+                :disabled="isGenerating"
+            >
+                <WandSparklesIcon class="mr-2 size-4" :class="{'animate-pulse': isGenerating}" />
+                {{ isGenerating ? 'Generating...' : 'Generate with AI' }}
+            </Button>
+
+            <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+                <Button variant="outline"> Add Question </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent class="w-56">
+                <DropdownMenuGroup>
+                <DropdownMenuItem @select="addQuestion('likert_scale')">
+                    <span>Likert Scale Question</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem @select="addQuestion('multiple_choice')">
+                    <span>Multiple Choice Question</span>
+                </DropdownMenuItem>
+                </DropdownMenuGroup>
+            </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
       </div>
+
       <ul class="space-y-4">
         <li
           v-for="(question, qIndex) in questions"
@@ -142,26 +168,23 @@ watch(
             <span class="text-muted-foreground line-clamp-2 text-xs">{{
               question.text || "[No Question Text]"
             }}</span>
-            <!-- <span class="ml-2 text-xs text-muted-foreground"> ({{ question.type.replace("_", " ") }}) </span> -->
           </div>
           <div class="flex shrink-0 gap-2">
             <Sheet>
               <SheetTrigger as-child>
                 <Button type="button" variant="ghost" size="icon">
-                  <Edit />
+                  <Edit class="size-4" />
                 </Button>
               </SheetTrigger>
               <SheetContent
                 class="flex flex-col gap-0 sm:max-w-[800px] [&>button:last-child]:fixed [&>button:last-child]:top-3.5 [&>button:last-child]:z-[2]"
               >
-                <SheetHeader class="bg-background sticky top-0 z-[1] border-b">
+                <SheetHeader class="bg-background sticky top-0 z-[1] border-b pb-4">
                   <SheetTitle>
-                    Edit Question
-                    {{ qIndex + 1 }}
+                    Edit Question {{ qIndex + 1 }}
                   </SheetTitle>
                   <SheetDescription>
-                    Make changes to your question, options, and trait scores
-                    here.
+                    Make changes to your question, options, and trait scores here.
                   </SheetDescription>
                 </SheetHeader>
 
@@ -189,13 +212,13 @@ watch(
               size="icon"
               @click="deleteQuestion(qIndex)"
             >
-              <X />
+              <X class="size-4" />
             </Button>
           </div>
         </li>
         <li v-if="!questions.length">
           <p class="text-muted-foreground py-4 text-center text-sm">
-            No questions added yet. Use the buttons below to add one!
+            No questions added yet. Add traits first, then use 'Generate with AI' or add questions manually.
           </p>
         </li>
       </ul>
