@@ -1,11 +1,16 @@
-@import "tailwindcss";@import "tailwindcss";
+/* @import "tailwindcss";@import "tailwindcss"; */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
 
-@plugin "@tailwindcss/container-queries";
+/* @custom-variant dark (&:is(.dark *)); */
+
+/* @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";
-@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/forms"; */
 
 @theme inline {
   --color-background: var(--background);

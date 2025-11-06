@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @php
-    $tag_id = config('goole-analytics.tag_id');
+    $tag_id = config('google-analytics.tag_id');
 @endphp
 
 <head>
