@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log; // Added for logging
+use App\Models\Lesson; // Keep Lesson model for potential future use or context
+use Illuminate\Support\Facades\Gate; // Keep Gate for potential future use or context
 
 class PersonalityQuizGeneratorController extends Controller
 {

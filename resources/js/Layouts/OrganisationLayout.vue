@@ -51,40 +51,36 @@ const showingNavigationDropdown = ref(false);
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                  <!-- <NavLink
-                                        :href="route('dashboard')"
-                                        :active="route().current('dashboard')"
-                                    >
-                                        Dashboard
-                                    </NavLink> -->
-
+                  <!-- Courses Link: Corrected route name to organization-namespaced route -->
                   <NavLink
                     v-if="
                       $page.props.auth.user.role === 'ADMIN' &&
                       $page.props.auth.user.organisation_id
                     "
                     :href="
-                      route('course.index', {
+                      route('organisation.courses.index', {
                         // organisation:
-                        //     $page.props.auth.user
-                        //         .organisation_id,
+                        //     $page.props.auth.user
+                        //         .organisation_id,
                       })
                     "
                     :active="
-                      route().current('course.*') ||
-                      route().current('lesson.*') ||
+                      route().current('organisation.courses.*') ||
+                      route().current('organisation.lessons.*') ||
                       route().current('public.course.*')
                     "
                   >
                     Courses
                   </NavLink>
 
-                  <NavLink
+                  <!-- Leads Link (Problematic route temporarily removed/commented) -->
+                  <!-- The route 'leads.index' caused a Ziggy error as it is currently undefined. -->
+                  <!-- <NavLink
                     :href="route('leads.index')"
                     :active="route().current('leads.index')"
                   >
                     Leads
-                  </NavLink>
+                  </NavLink> -->
                 </div>
               </div>
 
@@ -116,7 +112,7 @@ const showingNavigationDropdown = ref(false);
                       <DropdownMenuLabel>
                         <!-- My Account -->
                         <div
-                          class="text-sm font-medium text-gray-800 dark:text-gray-200"
+                          class="text-base font-medium text-gray-800 dark:text-gray-200"
                         >
                           {{ $page.props.auth.user.name }}
                         </div>
@@ -210,24 +206,26 @@ const showingNavigationDropdown = ref(false);
             class="sm:hidden"
           >
             <div class="space-y-1 pt-2 pb-3">
-              <!-- <ResponsiveNavLink
-                                :href="route('dashboard')"
-                                :active="route().current('dashboard')"
-                            >
-                                Dashboard
-                            </ResponsiveNavLink> -->
+              <!-- Courses Link (Corrected route name and added v-if check) -->
               <ResponsiveNavLink
-                :href="route('course.index')"
-                :active="route().current('course.*')"
+                v-if="
+                  $page.props.auth.user.role === 'ADMIN' &&
+                  $page.props.auth.user.organisation_id
+                "
+                :href="route('organisation.courses.index')"
+                :active="route().current('organisation.courses.*')"
               >
                 Courses
               </ResponsiveNavLink>
-              <ResponsiveNavLink
+              
+              <!-- Leads Link (Problematic route temporarily removed/commented) -->
+              <!-- The route 'leads.index' caused a Ziggy error as it is currently undefined. -->
+              <!-- <ResponsiveNavLink
                 :href="route('leads.index')"
                 :active="route().current('leads.index')"
               >
                 Leads
-              </ResponsiveNavLink>
+              </ResponsiveNavLink> -->
             </div>
 
             <!-- Responsive Settings Options -->

@@ -1,185 +1,207 @@
-<script lang="ts" setup>
-import { Label } from "@/Components/ui/label";
-import { Input } from "@/Components/ui/input";
-import { Button } from "@/Components/ui/button";
-import { watch, ref, computed } from "vue";
-import InputError from "@/Components/InputError.vue";
-import { Slider } from "@/Components/ui/slider";
-import { X, Plus, Weight } from "lucide-vue-next";
+<script setup lang="ts">
+import { ref } from 'vue'; // <-- Import ref
+import { router } from '@inertiajs/vue3';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Label } from '@/Components/ui/label';
+import { toast } from 'vue-sonner';
+import { Lesson } from '@/types';
+import { DEFAULT_12_ARCHETYPES, defaultArchetypes } from './constants';
+import PersonalityTraitManager from './PersonalityTraitManager.vue';
+import PersonalityQuestionEditor from './PersonalityQuestionEditor.vue';
+import { usePersonalityQuizManager } from './use-personality-quiz-manager';
 import {
-  PersonalityQuestion,
-  PersonalityTrait,
-  PersonalityAnswerOption,
-} from "./types";
-import { nanoid } from "nanoid";
-import PersonalityTraitScoreInput from "./PersonalityTraitScoreInput.vue";
-import { nextTick } from "vue";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/Components/ui/dialog';
+import { TagsInput, TagsInputInput, TagsInputItem, TagsInputItemDelete, TagsInputItemText } from '@/Components/ui/tags-input';
+import { WandSparkles, Loader2 } from 'lucide-vue-next';
+import { useForm } from '@inertiajs/vue3'; // <-- We still need useForm for the AI modal form
+import InputError from '@/Components/InputError.vue';
+import axios from 'axios'; // <-- Import axios
 
 const props = defineProps<{
-  question: PersonalityQuestion;
-  traits: PersonalityTrait[];
-  errors: { [key: string]: string } | undefined;
-  questionIndex: number; // To help with error message paths
+    lesson: Lesson;
 }>();
 
-const emit = defineEmits(["update:question", "add-option", "delete-option"]);
+// This is the main form for the whole page
+const { form, addQuestion, removeQuestion, addTrait, removeTrait, addOption, removeOption } =
+    usePersonalityQuizManager(props.lesson.content_json?.personality_quiz);
 
-const editingQuestion = ref<PersonalityQuestion>(
-  JSON.parse(JSON.stringify(props.question)),
-);
+// This is the small form just for the AI generation modal
+const aiForm = useForm({
+    archetypes: defaultArchetypes,
+});
 
-const endEl = ref<HTMLDivElement>();
+const isGenerating = ref(false); // <-- Use ref for axios loading state
+const showAiModal = ref(false);
 
-// // Watch for prop changes to update the local copy (if the parent sends a new question object)
-// watch(
-//   () => props.question,
-//   (newVal) => {
-//     editingQuestion.value = JSON.parse(JSON.stringify(newVal));
-//   },
-//   { deep: true },
-// );
-
-// // Emit updates back to the parent whenever the local copy changes
-// watch(
-//   () => editingQuestion.value,
-//   (newVal) => {
-//     emit("update:question", newVal);
-//   },
-//   { deep: true },
-// );
-
-function save() {
-  emit("update:question", editingQuestion.value);
+function submit() {
+    form.patch(route('quizzes.update', props.lesson.id), {
+        onSuccess: () => {
+            toast.success('Quiz saved successfully');
+        },
+        onError: () => {
+            toast.error('Error saving quiz', {
+                description: 'Please check the form for errors and try again.',
+            });
+        },
+    });
 }
 
-const getTraitScoreError = (oIndex: number, traitId: string) => {
-  return props.errors?.[
-    `quiz.${props.questionIndex}.options.${oIndex}.scores.${traitId}`
-  ];
-};
+// This function is now completely changed to use axios
+async function generateQuiz() {
+    aiForm.clearErrors();
+    isGenerating.value = true;
 
-const ensureScoresInitialized = (option: PersonalityAnswerOption) => {
-  if (!option.scores) {
-    option.scores = {};
-  }
-};
+    try {
+        const response = await axios.post(route('ai.generate-personality-quiz'), {
+            archetypes: aiForm.archetypes
+        });
 
-const addLocalOption = async () => {
-  editingQuestion.value.options.push({
-    id: nanoid(),
-    text: "",
-    scores: {},
-  });
+        // IMPORTANT: Update the *main* form with the AI-generated data
+        form.personality_quiz.archetypes = response.data.archetypes;
+        form.personality_quiz.questions = response.data.questions;
 
-  await nextTick();
-  endEl.value?.scrollIntoView({ behavior: "smooth", block: "end" });
-};
+        toast.success('Quiz Generated!', {
+            description: 'Archetypes and questions have been populated.'
+        });
 
-const deleteLocalOption = (optionIndex: number) => {
-  if (editingQuestion.value.options.length > 1) {
-    editingQuestion.value.options.splice(optionIndex, 1);
-  }
-};
+        // Close the modal
+        showAiModal.value = false;
+
+    } catch (error: any) {
+        console.error('AI Generation Error:', error);
+        let errorMessage = 'An unknown error occurred.';
+
+        if (error.response && error.response.data && error.response.data.error) {
+            errorMessage = error.response.data.error;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+
+        toast.error('Generation Failed', {
+            description: errorMessage
+        });
+        
+        // Set form error on the aiForm
+        aiForm.setError('archetypes', 'AI generation failed. Please check your inputs or try again.');
+
+    } finally {
+        isGenerating.value = false;
+    }
+}
+
+function resetAiForm() {
+    aiForm.reset();
+    aiForm.clearErrors();
+}
+
+function resetQuiz() {
+    if (confirm('Are you sure you want to clear the entire quiz? This will remove all archetypes and questions.')) {
+        form.reset();
+        toast.info('Quiz cleared. Remember to save your changes.');
+    }
+}
 </script>
 
 <template>
-  <div>
-    <div class="space-y-4">
-      <div class="space-y-4 px-4">
-        <div>
-          <Label :for="'editor-q-text-' + editingQuestion.id"
-            >Question Text:</Label
-          >
-          <Input
-            type="text"
-            :id="'editor-q-text-' + editingQuestion.id"
-            v-model="editingQuestion.text"
-            placeholder="Enter question text"
-            class="mt-1"
-          />
-          <InputError
-            class="mt-1"
-            :message="errors?.[`quiz.${questionIndex}.text`]"
-          />
+    <form @submit.prevent="submit">
+        <div class="space-y-6">
+            <!-- Header Card -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Quiz Details</CardTitle>
+                    <CardDescription>
+                        Basic settings for your personality quiz. The title and slug are managed on the main edit page.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent class="flex justify-between items-center">
+                    <Dialog v-model:open="showAiModal">
+                        <DialogTrigger as-child>
+                            <Button type="button" variant="outline" @click="resetAiForm">
+                                <WandSparkles class="w-4 h-4 mr-2" />
+                                Generate with AI
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent class="sm:max-w-[600px]">
+                            <form @submit.prevent="generateQuiz">
+                                <DialogHeader>
+                                    <DialogTitle>Generate Quiz with AI</DialogTitle>
+                                    <DialogDescription>
+                                        Enter 12 personality archetypes (e.g., "The Innovator", "The Mentor"). The AI
+                                        will generate descriptions and 12 questions based on them.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div class="py-6 space-y-4">
+                                    <div class="space-y-2">
+                                        <Label for="archetypes">12 Nigerian Corporate Archetypes</Label>
+                                        <TagsInput id="archetypes" v-model="aiForm.archetypes" :max="12">
+                                            <TagsInputItem v-for="(item, index) in aiForm.archetypes" :key="index"
+                                                :value="item">
+                                                <TagsInputItemText />
+                                                <TagsInputItemDelete />
+                                            </TagsInputItem>
+                                            <TagsInputInput
+                                                :placeholder="aiForm.archetypes.length < 12 ? 'Add archetype...' : '12 archetypes added.'"
+                                                :disabled="aiForm.archetypes.length >= 12" />
+                                        </TagsInput>
+                                        <p class="text-sm text-muted-foreground">
+                                            You have {{ aiForm.archetypes.length }} of 12 archetypes.
+                                        </p>
+                                        <InputError :message="aiForm.errors.archetypes" />
+                                    </div>
+                                    <Button type="button" variant="link" class="p-0 h-auto"
+                                        @click="aiForm.archetypes = DEFAULT_12_ARCHETYPES">
+                                        Use default archetypes
+                                    </Button>
+                                </div>
+                                <DialogFooter>
+                                    <Button type="button" variant="ghost" @click="showAiModal = false">
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit" :disabled="isGenerating || aiForm.archetypes.length < 12">
+                                        <Loader2 v-if="isGenerating" class="w-4 h-4 mr-2 animate-spin" />
+                                        Generate Quiz
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Button type="button" variant="destructive-outline" @click="resetQuiz">
+                        Clear Quiz
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <!-- Archetypes / Traits Card -->
+            <PersonalityTraitManager :form="form" :addTrait="addTrait" :removeTrait="removeTrait" />
+
+            <!-- Questions Card -->
+            <PersonalityQuestionEditor :form="form" :addQuestion="addQuestion" :removeQuestion="removeQuestion"
+                :addOption="addOption" :removeOption="removeOption" />
+
+            <!-- Save Card -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Save Changes</CardTitle>
+                    <CardDescription>
+                        Don't forget to save your progress.
+                    </CardDescription>
+                </CardHeader>
+                <CardFooter class="flex justify-end">
+                    <Button type="submit" :disabled="form.processing">
+                        <Loader2 v-if="form.processing" class="w-4 h-4 mr-2 animate-spin" />
+                        Save Quiz
+                    </Button>
+                </CardFooter>
+            </Card>
         </div>
-
-        <h4 class="mt-4 text-sm font-semibold">Answer Options:</h4>
-        <ul class="grid gap-4">
-          <li
-            v-for="(option, oIndex) in editingQuestion.options"
-            :key="option.id"
-            class="space-y-4 rounded-lg border bg-gray-50 p-4"
-          >
-            <div class="flex items-center justify-between gap-2">
-              <Label :for="'editor-o-text-' + option.id"
-                >Option {{ oIndex + 1 }}:</Label
-              >
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                class="size-8 text-xs"
-                @click="deleteLocalOption(oIndex)"
-              >
-                <X :size="14" />
-              </Button>
-            </div>
-            <Input
-              type="text"
-              :id="'editor-o-text-' + option.id"
-              v-model="option.text"
-              placeholder="Enter option text"
-              class="mt-1"
-            />
-            <InputError
-              class="mt-1"
-              :message="
-                errors?.[`quiz.${questionIndex}.options.${oIndex}.text`]
-              "
-            />
-
-            <div class="mt-3 space-y-1 border-t pt-2">
-              <Label
-                class="text-muted-foreground flex items-center gap-1 text-sm"
-              >
-                <Weight :size="16" />
-                Archetype Weights (0-100):
-              </Label>
-
-              <p v-if="!traits.length" class="text-xs text-red-500">
-                Please define traits in the main builder to assign scores.
-              </p>
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <PersonalityTraitScoreInput
-                  v-for="trait in traits"
-                  :key="trait.id"
-                  :trait="trait"
-                  v-model="option.scores[trait.id]"
-                  :option-id="option.id"
-                  :errors="getTraitScoreError(oIndex, trait.id)"
-                  @focus="ensureScoresInitialized(option)"
-                />
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-      <div class="bg-background sticky bottom-0 border-t px-4 py-4">
-        <div class="flex items-center justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            class="mt-1"
-            @click="addLocalOption"
-          >
-            Add option
-          </Button>
-          <Button type="button" class="mt-1" @click="save"> Save </Button>
-        </div>
-      </div>
-    </div>
-
-    <div :ref="(el) => (endEl = el as HTMLDivElement)" />
-  </div>
+    </form>
 </template>

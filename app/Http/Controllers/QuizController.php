@@ -12,11 +12,22 @@ class QuizController extends Controller
     // List all quizzes for the logged-in user
     public function index()
     {
-        // Assuming you might want to only show the user's own quizzes later.
-        // For now, we'll show all for simplicity, or you can add ->where('user_id', auth()->id()) if you add a user_id to lessons.
+        // Filter quizzes to only show those created by the currently authenticated user
+        // and only quizzes of the 'PERSONALITY_QUIZ' type, as this controller manages that.
         $quizzes = Lesson::query()
+            ->where('user_id', auth()->id())
+            ->where('type', 'PERSONALITY_QUIZ')
             ->orderByDesc('created_at')
-            ->get();
+            // Map the collection to ensure only necessary, simple data is sent to the frontend
+            ->get()
+            ->map(fn (Lesson $quiz) => [
+                'id' => $quiz->id,
+                'title' => $quiz->title,
+                'slug' => $quiz->slug,
+                'type' => $quiz->type,
+                // Add is_published if the frontend uses it for display
+                'is_published' => (bool) $quiz->is_published,
+            ]);
 
         return Inertia::render('Quiz/Index', [
             'quizzes' => $quizzes
@@ -28,7 +39,7 @@ class QuizController extends Controller
         return Inertia::render('Quiz/Create');
     }
 
-  public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -40,21 +51,22 @@ class QuizController extends Controller
             'slug' => Str::slug($validated['title']) . '-' . Str::random(6),
             'type' => 'PERSONALITY_QUIZ', // <-- Hardcode the type here
             'content_json' => [],
+            'user_id' => auth()->id(), // <-- MANDATORY: Set ownership for the logged-in user
         ]);
 
         return redirect()->route('quizzes.edit', $quiz->id);
     }
 
     public function edit(Lesson $quiz)
-{
-    return Inertia::render('Quiz/Edit', [
-        'lesson' => $quiz
-    ]);
-}
+    {
+        return Inertia::render('Quiz/Edit', [
+            'lesson' => $quiz
+        ]);
+    }
 
     public function update(Request $request, Lesson $quiz)
     {
-         $validated = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:lessons,slug,' . $quiz->id,
             'content' => 'nullable|string',
@@ -63,11 +75,11 @@ class QuizController extends Controller
             'is_published' => 'required',
         ]);
 
-         // Map the frontend 'quiz' or 'personality_quiz' data to the 'content_json' column
+        // Map the frontend 'quiz' or 'personality_quiz' data to the 'content_json' column
         if ($quiz->type === 'PERSONALITY_QUIZ') {
-             $validated['content_json'] = $validated['personality_quiz'];
+            $validated['content_json'] = $validated['personality_quiz'];
         } else {
-             $validated['content_json'] = $validated['quiz'];
+            $validated['content_json'] = $validated['quiz'];
         }
 
         unset($validated['quiz']);
