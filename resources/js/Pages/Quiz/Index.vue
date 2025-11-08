@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
-import { Lesson } in "@/types"; // We are re-using the 'Lesson' type for our Quizzes
+import { Lesson } from "@/types"; // We are re-using the 'Lesson' type for our Quizzes
 import { Button } from "@/Components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/Components/ui/card";
 import { PlusCircle } from "lucide-vue-next";
