@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public; // <--- NAMESPACE MUST BE THIS
 
+use App\Http\Controllers\Controller; // <--- MUST IMPORT BASE CONTROLLER
 use App\Models\Course;
-use App\Models\CourseEnrollment;
 use App\Models\Lesson;
-use App\Models\UserLesson;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 

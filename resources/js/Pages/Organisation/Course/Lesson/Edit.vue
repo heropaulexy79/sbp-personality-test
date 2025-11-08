@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-import { Course, Lesson } from "@/types";
-import UpdateLessonForm from "./Partials/UpdateLessonForm.vue";
+import { Lesson } from "@/types"; // Ensure Lesson type doesn't require course_id strictly if you changed it
+import UpdateLessonForm from "@/Pages/Organisation/Course/Lesson/Partials/UpdateLessonForm.vue"; // You might want to move this component too later
 import BaseBreadcrumb from "@/Components/ui/BaseBreadcrumb.vue";
 
-defineProps<{ course: Course; lesson: Lesson }>();
+// We no longer expect a 'course' prop
+defineProps<{ lesson: Lesson }>();
 </script>
 
 <template>
@@ -18,14 +19,8 @@ defineProps<{ course: Course; lesson: Lesson }>();
                     <BaseBreadcrumb
                         :items="[
                             {
-                                href: route('course.index'),
-                                label: 'Courses',
-                            },
-                            {
-                                href: route('course.show', {
-                                    course: course.id,
-                                }),
-                                label: course.title,
+                                href: route('dashboard'),
+                                label: 'Dashboard',
                             },
                             { label: lesson.title },
                         ]"
@@ -35,7 +30,6 @@ defineProps<{ course: Course; lesson: Lesson }>();
         </header>
         <div class="py-12">
             <div class="container">
-                <!-- Form -->
                 <UpdateLessonForm :lesson="lesson" />
             </div>
         </div>

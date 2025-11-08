@@ -3,12 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Organisation;
-use App\Models\OrganisationInvitation;
-use App\Models\OrganisationUser;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +13,7 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 
+
 class RegisteredUserController extends Controller
 {
     /**
@@ -24,17 +21,10 @@ class RegisteredUserController extends Controller
      */
     public function create(Request $request): Response
     {
-
-        $invitationEmail = '';
-
-        if ($request->has('tk')) {
-            $invitation = OrganisationInvitation::where('token', $request->get('tk'))->first();
-            $invitationEmail = $invitation->email ?? '';
-        }
-
+        // Remove all logic related to Organisation invitations
         return Inertia::render('Auth/Register', [
             'prefilled' => [
-                'email' => $invitationEmail,
+                'email' => '',
             ],
         ]);
     }
@@ -50,8 +40,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'course_id' => 'nullable|exists:courses,id', // <-- NEW
-            // 'invitation_token' => 'nullable|string',
+            // 'course_id' => 'nullable|exists:courses,id', // <-- Removed
         ]);
 
         $user = User::create([
@@ -60,28 +49,20 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        OrganisationUser::create([
-            "user_id" => $user->id,
-            "organisation_id" => 1,
-            "role" => 'ADMIN'
-        ]);
+        // --- THIS IS THE BLOCK TO REMOVE ---
+        // OrganisationUser::create([
+        //     "user_id" => $user->id,
+        //     "organisation_id" => 1,
+        //     "role" => 'ADMIN'
+        // ]);
+        // --- END OF REMOVED BLOCK ---
 
 
-        if ($request->filled('course_id')) {
-            $user->enrolledCourses()->attach($request->course_id);
-        }
+        // --- REMOVED 'if ($request->filled('course_id'))' BLOCK ---
 
         event(new Registered($user));
 
         Auth::login($user);
-
-        if ($request->filled('course_id')) {
-
-            return redirect(route('dashboard', absolute: false))->with(['global:message' => [
-                'status' => 'success',
-                'message' => 'Successfully enrolled in the course!',
-            ]], 201);
-        }
 
         return redirect(route('dashboard', absolute: false));
     }
