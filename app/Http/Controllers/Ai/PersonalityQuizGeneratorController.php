@@ -20,6 +20,7 @@ class PersonalityQuizGeneratorController extends Controller
     {
         // 1. Fetch Archetypes from Database directly
         // We no longer rely on the user to send them in the request.
+        set_time_limit(300);
         $archetypes = PersonalityTrait::all()->pluck('name')->toArray();
 
         // 2. Validate we have enough archetypes seeded
@@ -38,7 +39,7 @@ class PersonalityQuizGeneratorController extends Controller
             return response()->json(['error' => 'AI service is not configured correctly.'], 500);
         }
 
-        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=' . $apiKey;
+        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey;
 
         // --- Schema Definition (Unchanged) ---
         $responseSchema = [
