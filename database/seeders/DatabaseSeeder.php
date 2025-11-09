@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             OrganisationSeeder::class,
+            ArchetypeSeeder::class,
         ]);
 
         // Move the User factory call out here
@@ -25,4 +26,5 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
     }
+    
 }

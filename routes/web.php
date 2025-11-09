@@ -7,6 +7,7 @@ use App\Http\Controllers\Public\ClassroomController as PublicClassroomController
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\PersonalityTraitController;
 
 // --- PUBLIC HOME ---
 Route::get('/', function () {
@@ -43,5 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/api/personality-traits', [PersonalityTraitController::class, 'index'])
+     ->middleware('auth')
+     ->name('api.personality-traits.index');
 
 require __DIR__ . '/auth.php';

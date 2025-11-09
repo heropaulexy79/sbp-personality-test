@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Ai;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log; // Added for logging
-use App\Models\Lesson; // Keep Lesson model for potential future use or context
-use Illuminate\Support\Facades\Gate; // Keep Gate for potential future use or context
+use Illuminate\Support\Facades\Log;
+use App\Models\PersonalityTrait; // Ensure this is imported
 
 class PersonalityQuizGeneratorController extends Controller
 {
@@ -19,16 +18,29 @@ class PersonalityQuizGeneratorController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $request->validate([
-            'archetypes' => 'required|array|min:12',
-            'archetypes.*' => 'string',
-        ]);
+        // 1. Fetch Archetypes from Database directly
+        // We no longer rely on the user to send them in the request.
+        $archetypes = PersonalityTrait::all()->pluck('name')->toArray();
 
-        $archetypesList = implode(", ", $request->input('archetypes'));
-        $apiKey = ''; // API key is handled by the environment
-        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=' . $apiKey;
+        // 2. Validate we have enough archetypes seeded
+        if (count($archetypes) < 12) {
+             Log::error('Not enough archetypes found in DB for quiz generation.', ['count' => count($archetypes)]);
+             return response()->json(['error' => 'System error: Not enough archetypes configured. Please contact support.'], 500);
+        }
 
-        // Define the structured JSON response we want from the AI
+        $archetypesList = implode(", ", $archetypes);
+
+        // 3. Get API Key from Config
+        $apiKey = config('services.gemini.api_key');
+
+        if (empty($apiKey)) {
+            Log::critical('GEMINI_API_KEY is missing in configuration.');
+            return response()->json(['error' => 'AI service is not configured correctly.'], 500);
+        }
+
+        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=' . $apiKey;
+
+        // --- Schema Definition (Unchanged) ---
         $responseSchema = [
             'type' => 'OBJECT',
             'properties' => [
@@ -78,14 +90,13 @@ class PersonalityQuizGeneratorController extends Controller
             'required' => ['archetypes', 'questions']
         ];
 
-        // Define the prompt and system instructions for the AI
+        // --- Prompt Definition (Unchanged) ---
         $systemPrompt = "You are an expert in occupational psychology and quiz design, specializing in Nigerian corporate culture.
 Your task is to generate a 12-question personality quiz based on the 12 Nigerian Corporate Archetypes provided.
 - You MUST generate a 2-3 sentence description for each of the 12 archetypes.
-- You MUST generate exactly 12 scenario-based questions (e.g., 'When faced with a tight deadline, you are most likely to...').
+- You MUST generate exactly 12 scenario-based questions.
 - Each question MUST have exactly 4 multiple-choice options.
-- Each of the 4 options MUST be mapped directly to *one* of the 12 provided personality archetypes. An option cannot map to more than one archetype.
-- Your goal is to create questions where the answers help determine which archetype the user fits most.
+- Each of the 4 options MUST be mapped directly to *one* of the 12 provided personality archetypes.
 - You MUST return the data in the requested JSON schema.";
 
         $userQuery = "Here are the 12 Nigerian Corporate Archetypes: {$archetypesList}.
@@ -105,48 +116,35 @@ Please generate the complete personality quiz package (archetype descriptions an
         ];
 
         try {
-            // Use exponential backoff for retries
-            $response = Http::withOptions(['timeout' => 120]) // Increase timeout for long generation
-                ->retry(3, 1000, function ($exception, $request) {
-                    return $exception instanceof \Illuminate\Http\Client\ConnectionException || $exception instanceof \Illuminate\Http\Client\RequestException;
-                }, false) // Use exponential backoff
+            $response = Http::withOptions(['timeout' => 120])
+                ->retry(3, 1000)
                 ->post($apiUrl, $payload);
 
             if (!$response->successful()) {
                 Log::error('Gemini API request failed', [
                     'status' => $response->status(),
-                    'response' => $response->body()
+                    'body' => $response->body()
                 ]);
-                return response()->json(['error' => 'Failed to generate quiz. The AI service returned an error.'], $response->status());
+                return response()->json(['error' => 'Failed to generate quiz. Please try again later.'], $response->status());
             }
 
             $result = $response->json();
 
             if (empty($result['candidates'][0]['content']['parts'][0]['text'])) {
                  Log::error('Gemini API returned empty content', ['response' => $result]);
-                return response()->json(['error' => 'Failed to parse AI response. The AI returned empty content.'], 500);
+                return response()->json(['error' => 'AI returned empty content.'], 500);
             }
 
-            // The response text *is* the JSON string
             $jsonString = $result['candidates'][0]['content']['parts'][0]['text'];
             $quizData = json_decode($jsonString, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                Log::error('Failed to decode JSON from Gemini', ['json_string' => $jsonString, 'error' => json_last_error_msg()]);
-                return response()->json(['error' => 'Failed to parse AI response. Invalid JSON format.'], 500);
-            }
-
-            // Validate the structure we received
-            if (empty($quizData['archetypes']) || empty($quizData['questions'])) {
-                 Log::error('Gemini API returned incomplete JSON structure', ['data' => $quizData]);
-                 return response()->json(['error' => 'Failed to parse AI response. Incomplete data.'], 500);
+                Log::error('Failed to decode JSON from Gemini', ['error' => json_last_error_msg()]);
+                return response()->json(['error' => 'Invalid response format from AI.'], 500);
             }
 
             return response()->json($quizData);
 
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            Log::error('Gemini API connection error', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Could not connect to AI service. Please try again later.'], 504); // Gateway Timeout
         } catch (\Exception $e) {
             Log::error('PersonalityQuizGeneratorController error', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'An unexpected error occurred.'], 500);
