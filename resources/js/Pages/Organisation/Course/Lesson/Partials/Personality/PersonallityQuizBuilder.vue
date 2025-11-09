@@ -2,7 +2,7 @@
 import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
 import { watch, ref, onMounted } from "vue";
-import { X, Edit, WandSparklesIcon } from "lucide-vue-next";
+import { X, Edit, WandSparklesIcon, SaveIcon } from "lucide-vue-next"; // Added SaveIcon
 import { usePersonalityQuizManager } from "./use-personality-quiz-manager";
 import {
   DropdownMenu,
@@ -25,11 +25,16 @@ import { toast } from "vue-sonner";
 import PersonalityTraitManager from "./PersonalityTraitManager.vue";
 import axios from "axios";
 import { generateId } from "../utils";
+import { router, usePage } from "@inertiajs/vue3"; // Import router
+import { PageProps } from "@/types";
 
 defineProps<{ errors: { [key: string]: string } | undefined }>();
 
 const questionsModel = defineModel<PersonalityQuestion[]>();
 const traitsModel = defineModel<PersonalityTrait[]>("traits");
+
+// Get course from page props, default to null if not present
+const course = (usePage().props as PageProps).course ?? null;
 
 const {
   questions,
@@ -48,7 +53,9 @@ const currentQuestionIndex = ref<number | null>(null);
 
 // --- AI GENERATION LOGIC START ---
 const isGenerating = ref(false);
+const isSaving = ref(false); // Added saving state
 const hasFetchedTraits = ref(false);
+const generatedQuizData = ref<any | null>(null); // Store generated data
 
 // We'll fetch the traits from the DB on load,
 // so the UI reflects what the AI will use.
@@ -57,11 +64,7 @@ const fetchInitialTraits = async () => {
   if (traits.value.length === 0 && !hasFetchedTraits.value) {
     hasFetchedTraits.value = true; // Mark that we've attempted
     try {
-      // NOTE: You will need to create this route in routes/web.php
-      // Route::get('/api/personality-traits', [PersonalityTraitController::class, 'index'])->name('api.personality-traits.index');
       const response = await axios.get(route("api.personality-traits.index"));
-
-      // Map DB traits to the local component trait structure
       traits.value = response.data.map((trait: any) => ({
         id: generateId(), // Generate a local frontend ID
         name: trait.name,
@@ -81,7 +84,6 @@ onMounted(() => {
 const generateWithAi = async () => {
   if (traits.value.length < 12) {
     toast.error("Waiting for archetypes to load. Please try again in a moment.");
-    // Optionally try fetching again if it failed the first time
     if (!hasFetchedTraits.value) {
       await fetchInitialTraits();
     }
@@ -89,20 +91,21 @@ const generateWithAi = async () => {
   }
 
   isGenerating.value = true;
+  generatedQuizData.value = null; // Clear previous generation
   const loadingToast = toast.loading("Generating quiz with AI... This may take a minute.");
 
   try {
-    const response = await axios.post(route("ai.generate-personality-quiz"));
-
+    const response = await axios.post(route("ai.quiz.generate"));
     const data = response.data;
+
+    // --- Store data for saving ---
+    generatedQuizData.value = data; // <-- STORE THE RAW AI DATA
 
     // Update Trait Descriptions if AI provided them
     if (data.archetypes) {
-      // Clear existing descriptions to ensure they match the AI's context
       traits.value.forEach((trait) => {
         trait.description = "";
       });
-
       data.archetypes.forEach((aiTrait: any) => {
         const localTrait = traits.value.find(
           (t: any) => t.name.toLowerCase() === aiTrait.name.toLowerCase()
@@ -119,7 +122,6 @@ const generateWithAi = async () => {
     // Add Generated Questions
     if (data.questions) {
       data.questions.forEach((q: any) => {
-        // Map AI options to internal Trait IDs
         const mappedOptions = q.options.map((o: any) => {
           const matchedTrait = traits.value.find(
             (t) => t.name.toLowerCase() === o.maps_to_archetype.toLowerCase()
@@ -146,15 +148,59 @@ const generateWithAi = async () => {
       });
     }
 
-    toast.success("Quiz generated successfully!");
+    toast.success("Quiz generated successfully! Review the questions below or save.");
   } catch (error: any) {
     console.error("AI Generation Error:", error);
     toast.error(error.response?.data?.error || "Failed to generate quiz. Please try again.");
+    generatedQuizData.value = null; // Clear on failure
   } finally {
     toast.dismiss(loadingToast);
     isGenerating.value = false;
   }
 };
+
+// --- NEW FUNCTION TO SAVE THE QUIZ ---
+const saveGeneratedQuiz = async () => {
+    if (!generatedQuizData.value) {
+        toast.error("No generated quiz data to save.");
+        return;
+    }
+
+    // Prompt for a title
+    const title = window.prompt("Please enter a title for this new quiz:", "New Personality Quiz");
+    if (!title) {
+        return; // User cancelled
+    }
+
+    isSaving.value = true;
+    const loadingToast = toast.loading("Saving your new quiz...");
+
+    try {
+        const payload = {
+            title: title,
+            course_id: course ? course.id : null, // Use course ID if available
+            quiz_data: generatedQuizData.value, // Send the stored AI data
+        };
+
+        const response = await axios.post(route('ai.quiz.store'), payload);
+
+        toast.dismiss(loadingToast);
+        toast.success(response.data.message || "Quiz saved successfully!");
+
+        // Redirect to the new lesson page
+        if (response.data.redirect_url) {
+            router.visit(response.data.redirect_url);
+        }
+
+    } catch (error: any) {
+        console.error("Failed to save quiz:", error);
+        toast.dismiss(loadingToast);
+        toast.error(error.response?.data?.error || "Failed to save quiz.");
+    } finally {
+        isSaving.value = false;
+    }
+};
+
 // --- AI GENERATION LOGIC END ---
 
 watch(
@@ -187,10 +233,42 @@ watch(
         <Label class="font-semibold">Personality Questions</Label>
 
         <div class="flex items-center gap-2">
-          <Button type="button" variant="secondary" @click="generateWithAi" :disabled="isGenerating">
-            <WandSparklesIcon class="mr-2 size-4" :class="{ 'animate-pulse': isGenerating }" />
-            {{ isGenerating ? "Generating..." : "Generate with AI" }}
-          </Button>
+            <!-- Show Save button after generation -->
+            <Button
+                v-if="generatedQuizData"
+                type="button"
+                variant="default"
+                @click="saveGeneratedQuiz"
+                :disabled="isSaving"
+            >
+                <SaveIcon class="mr-2 size-4" :class="{ 'animate-pulse': isSaving }" />
+                {{ isSaving ? "Saving..." : "Save Quiz" }}
+            </Button>
+
+            <!-- Show Generate button if not generated yet -->
+            <Button
+                v-if="!generatedQuizData"
+                type="button"
+                variant="secondary"
+                @click="generateWithAi"
+                :disabled="isGenerating"
+            >
+                <WandSparklesIcon class="mr-2 size-4" :class="{ 'animate-pulse': isGenerating }" />
+                {{ isGenerating ? "Generating..." : "Generate with AI" }}
+            </Button>
+
+            <!-- Button to clear generation and show Generate again -->
+            <Button
+                v-if="generatedQuizData"
+                type="button"
+                variant="ghost"
+                size="icon"
+                @click="generatedQuizData = null"
+                title="Generate new quiz"
+            >
+                <X class="size-4" />
+            </Button>
+
 
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
