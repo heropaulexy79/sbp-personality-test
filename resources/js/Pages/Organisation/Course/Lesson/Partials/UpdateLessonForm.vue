@@ -21,6 +21,13 @@ import PersonallityQuizBuilder from "./Personality/PersonallityQuizBuilder.vue";
 
 const props = defineProps<{ lesson: Lesson }>();
 
+// --- DEBUGGING: Add these logs ---
+console.log("--- UpdateLessonForm ---");
+console.log("Lesson Prop Received:", props.lesson);
+console.log("Lesson Type:", props.lesson.type);
+console.log("Lesson Content JSON:", props.lesson.content_json);
+// --- End Debugging ---
+
 const quizData = props.lesson.content_json as Question[];
 const personalityQuizData = props.lesson.content_json as PersonalityQuiz;
 
@@ -51,9 +58,13 @@ const form = useForm({
           traits: [],
           questions: [],
         },
-  type: props.lesson.type?.toLowerCase() ?? "default",
-  is_published: props.lesson.is_published ? String(props.lesson.is_published) : "false",
+  type: props.lesson.type ?? "default",
+  is_published: props.lesson.is_published ? props.lesson.is_published + "" : "false",
 });
+
+// --- DEBUGGING ---
+console.log("Form Initialized:", form.personality_quiz);
+// --- End Debugging ---
 
 function submit() {
   form.patch(
@@ -62,7 +73,9 @@ function submit() {
     }),
     {
       onSuccess() {},
-      onError() {},
+      onError(error) {
+        console.error("Form submission error:", error);
+      },
       preserveScroll: true,
     },
   );
@@ -88,7 +101,9 @@ function generateSlug() {
 
 <template>
   <form @submit.prevent="submit">
-    <div class="relative grid gap-6 md:grid-cols-[1fr_200px] md:gap-10 lg:grid-cols-[1fr_250px]">
+    <div
+      class="relative grid gap-6 md:grid-cols-[1fr_200px] md:gap-10 lg:grid-cols-[1fr_250px]"
+    >
       <!-- Left -->
       <div class="bg-background grid gap-6 rounded-md px-4 py-4 md:grid-cols-2">
         <div>

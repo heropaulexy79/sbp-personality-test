@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class LessonController extends Controller
@@ -24,7 +25,6 @@ class LessonController extends Controller
      */
     public function create(Request $request, Course $course)
     {
-        //
         $user = $request->user();
         $organisation = $user->organisation();
 
@@ -33,7 +33,6 @@ class LessonController extends Controller
         }
 
         return Inertia::render('Organisation/Course/Lesson/Create', [
-            // 'organisation' => $organisation,
             'course' => $course,
         ]);
     }
@@ -43,7 +42,6 @@ class LessonController extends Controller
      */
     public function store(StoreLessonRequest $request, Course $course)
     {
-        //
         $lesson = new Lesson;
 
         $lesson->title = $request->input('title');
@@ -51,22 +49,20 @@ class LessonController extends Controller
         $lesson->slug = $request->input('slug');
         $lesson->is_published = $request->input('is_published', false);
 
-        if ($request->input('type', 'DEFAULT')) {
-            $lesson->type = $request->type;
-            if ($lesson->type === Lesson::TYPE_QUIZ) {
-                $lesson->content_json = $request->quiz;
-            } else if ($lesson->type === Lesson::TYPE_PERSONALITY_QUIZ) {
-                $lesson->content_json = $request->personality_quiz;
-            } else {
-                $lesson->content = $request->content;
-            }
+        $lesson->type = $request->input('type', Lesson::TYPE_DEFAULT);
+
+        if ($lesson->type === Lesson::TYPE_QUIZ) {
+            $lesson->content_json = $request->quiz;
+        } elseif ($lesson->type === Lesson::TYPE_PERSONALITY_QUIZ) {
+            $lesson->content_json = $request->personality_quiz;
+        } else {
+            $lesson->content = $request->content;
         }
 
         $lesson->save();
 
         return redirect(route('course.show', [
             'course' => $course->id,
-            // 'organisation' => $organisation->id
         ]));
     }
 
@@ -75,19 +71,14 @@ class LessonController extends Controller
      */
     public function show(Request $request, Course $course, Lesson $lesson)
     {
-        //
         $user = $request->user();
         $organisation = $user->organisation();
 
-        if ($user->cannot('view', $user->organisation) || $organisation->id !== $course->organisation_id) {
+        if ($user->cannot('view', $organisation) || $organisation->id !== $course->organisation_id) {
             return abort(404);
         }
 
-        // $lesson->content_json = json_decode($lesson->content_json);
-
         return Inertia::render('Organisation/Course/Lesson/View', [
-            // 'organisation' => $user->organisation,
-            // 'course' => $course,
             'lesson' => $lesson,
         ]);
     }
@@ -95,25 +86,11 @@ class LessonController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Course $course, Lesson $lesson)
+    public function edit(Lesson $lesson)
     {
-        //
-        $user = $request->user();
-        $organisation = $user->organisation();
-
-        // dd($request->user()->cannot('view', $user->organisation),)
-
-        if ($user->cannot('view', $organisation) || $organisation->id !== $lesson->course->organisation_id) {
-            return abort(404);
-        }
-
-        // $lesson->content_json = json_decode($lesson->content_json);
-        // $lesson->content_json = Arr::except($lesson->content_json, ['correct_option']);
-        // $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
+        $lesson->load('course');
 
         return Inertia::render('Organisation/Course/Lesson/Edit', [
-            // 'organisation' => $user->organisation,
-            'course' => $course,
             'lesson' => $lesson,
         ]);
     }
@@ -121,37 +98,34 @@ class LessonController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreLessonRequest $request, Course $course, Lesson $lesson)
+    public function update(StoreLessonRequest $request, Lesson $lesson)
     {
+        $validated = $request->validated();
 
-        $lesson->title = $request->input('title');
-        $lesson->is_published = $request->input('is_published');
-        $lesson->slug = $request->input('slug');
+        if (isset($validated['title']) && empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(6);
+        }
 
-        if ($request->input('type', 'DEFAULT')) {
-            $lesson->type = $request->type;
-            if ($request->has('content') || $request->has('quiz')) {
-                if ($lesson->type === Lesson::TYPE_QUIZ) {
-                    $lesson->content_json = $request->quiz;
-                } else if ($lesson->type === Lesson::TYPE_PERSONALITY_QUIZ) {
-                    $lesson->content_json = $request->personality_quiz;
-                } else {
-                    $lesson->content = $request->content;
-                }
+        if (isset($validated['type'])) {
+            if ($validated['type'] === Lesson::TYPE_DEFAULT) {
+                $validated['content_json'] = null;
+            } elseif ($validated['type'] === Lesson::TYPE_QUIZ) {
+                $validated['content'] = null;
+                $validated['content_json'] = $validated['quiz'] ?? [];
+            } elseif ($validated['type'] === Lesson::TYPE_PERSONALITY_QUIZ) {
+                $validated['content'] = null;
+                $validated['content_json'] = $validated['personality_quiz'] ?? ['traits' => [], 'questions' => []];
             }
         }
 
-        $lesson->save();
+        $lesson->update($validated);
 
-        return redirect()->back()->with('global:message', [
-            'status' => 'success',
-            'message' => 'Changes have been saved!',
-        ]);
+        return redirect()->route('lesson.edit', $lesson->id)
+                         ->with('success', 'Lesson updated successfully.');
     }
+
     public function updatePosition(Request $request, Course $course, Lesson $lesson)
     {
-
-
         $user = $request->user();
         $organisation = $user->organisation();
 
@@ -162,7 +136,6 @@ class LessonController extends Controller
         $request->validate(['position' => 'numeric']);
 
         $lesson->position = $request->input('position');
-
         $lesson->save();
 
         if ($request->acceptsJson()) {
@@ -185,7 +158,16 @@ class LessonController extends Controller
      */
     public function destroy(Lesson $lesson)
     {
-        // TODO: Delete a lesson
-        // Cannot delete lesson if ?
+        $courseId = $lesson->course_id;
+        $lesson->delete();
+
+        if ($courseId) {
+            return redirect()->route('course.edit', [
+                'course' => $courseId,
+                'tab' => 'lessons',
+            ])->with('success', 'Lesson deleted.');
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Lesson deleted.');
     }
 }
