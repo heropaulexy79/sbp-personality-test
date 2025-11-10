@@ -13,10 +13,10 @@ class QuizController extends Controller
     public function index()
     {
         // Filter quizzes to only show those created by the currently authenticated user
-        // We ensure the type filter matches the value saved by the generator controller ('personality_quiz').
+        // and filter by the correct lowercase type ('personality_quiz').
         $quizzes = Lesson::query()
-            ->where('user_id', auth()->id())
-            ->where('type', 'personality_quiz') // <-- CHANGED to lowercase 'personality_quiz'
+            ->where('user_id', auth()->id()) // <-- RESTORING THE USER FILTER
+            ->where('type', 'personality_quiz')
             ->orderByDesc('created_at')
             // Map the collection to ensure only necessary, simple data is sent to the frontend
             ->get()
@@ -49,7 +49,7 @@ class QuizController extends Controller
         $quiz = Lesson::create([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']) . '-' . Str::random(6),
-            'type' => 'personality_quiz', // <-- CHANGED to lowercase 'personality_quiz'
+            'type' => 'personality_quiz', // <-- Correct lowercase type
             'content_json' => [],
             'user_id' => auth()->id(), // <-- MANDATORY: Set ownership for the logged-in user
         ]);
