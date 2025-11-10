@@ -13,10 +13,10 @@ class QuizController extends Controller
     public function index()
     {
         // Filter quizzes to only show those created by the currently authenticated user
-        // and only quizzes of the 'PERSONALITY_QUIZ' type, as this controller manages that.
+        // We ensure the type filter matches the value saved by the generator controller ('personality_quiz').
         $quizzes = Lesson::query()
             ->where('user_id', auth()->id())
-            ->where('type', 'PERSONALITY_QUIZ')
+            ->where('type', 'personality_quiz') // <-- CHANGED to lowercase 'personality_quiz'
             ->orderByDesc('created_at')
             // Map the collection to ensure only necessary, simple data is sent to the frontend
             ->get()
@@ -49,7 +49,7 @@ class QuizController extends Controller
         $quiz = Lesson::create([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']) . '-' . Str::random(6),
-            'type' => 'PERSONALITY_QUIZ', // <-- Hardcode the type here
+            'type' => 'personality_quiz', // <-- CHANGED to lowercase 'personality_quiz'
             'content_json' => [],
             'user_id' => auth()->id(), // <-- MANDATORY: Set ownership for the logged-in user
         ]);
@@ -76,7 +76,8 @@ class QuizController extends Controller
         ]);
 
         // Map the frontend 'quiz' or 'personality_quiz' data to the 'content_json' column
-        if ($quiz->type === 'PERSONALITY_QUIZ') {
+        // We use lowercase 'personality_quiz' here for consistency
+        if ($quiz->type === 'personality_quiz') {
             $validated['content_json'] = $validated['personality_quiz'];
         } else {
             $validated['content_json'] = $validated['quiz'];

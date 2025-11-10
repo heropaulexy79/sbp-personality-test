@@ -158,16 +158,18 @@ class PersonalityQuizGeneratorController extends Controller
             $lesson->title = $request->title;
             // Generate a unique slug
             $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
+            // Ensure this type matches the one queried by QuizController@index
             $lesson->type = 'personality_quiz';
             // Store the entire quiz JSON package in the content field
             $lesson->content = json_encode($request->quiz_data);
             $lesson->is_published = true; // Or false if you want to draft it first
             $lesson->save();
 
+            // UPDATED: Change the redirect_url to the named 'dashboard' route
             return response()->json([
                 'message' => 'Personality Quiz saved successfully!',
                 'lesson_id' => $lesson->id,
-                'redirect_url' => "/classrooms/lessons/{$lesson->slug}" // Adjust based on your actual route
+                'redirect_url' => route('dashboard')
             ], 201);
 
         } catch (\Exception $e) {
