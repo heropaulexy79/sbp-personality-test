@@ -82,32 +82,27 @@ class PersonalityQuizGeneratorController extends Controller
             'required' => ['archetypes', 'questions']
         ];
 
-        // --- START OF FIX ---
         // We merge the system prompt and user query into a single prompt
-        // as the 'systemInstruction' field was causing a 400 error.
-
+        // as the 'systemInstruction' field can sometimes cause issues depending on API version.
         $systemPrompt = "You are an expert in occupational psychology. Generate a 12-question personality quiz based on the 12 provided Nigerian Corporate Archetypes. Return ONLY JSON matching the requested schema.";
         $userQuery = "Archetypes: {$archetypesList}. Generate the quiz package.";
 
-        // MERGE PROMPTS: Combine system and user prompts for reliable execution
         $fullPrompt = $systemPrompt . "\n\n" . $userQuery;
 
         $payload = [
             'contents' => [
                 [
-                    'role' => 'user', // Send the combined prompt as the user
+                    'role' => 'user',
                     'parts' => [
                         ['text' => $fullPrompt]
                     ]
                 ]
             ],
-            // 'systemInstruction' field is removed
             'generationConfig' => [
                 'responseMimeType' => 'application/json',
                 'responseSchema' => $responseSchema,
             ],
         ];
-        // --- END OF FIX ---
 
         try {
             $response = Http::withOptions(['timeout' => 120])->retry(3, 1000)->post($apiUrl, $payload);
@@ -124,7 +119,6 @@ class PersonalityQuizGeneratorController extends Controller
 
             $quizData = json_decode($result['candidates'][0]['content']['parts'][0]['text'], true);
 
-            // Validate if quiz data is correctly decoded
             if (json_last_error() !== JSON_ERROR_NONE || !is_array($quizData)) {
                 Log::error('Failed to decode AI response JSON', ['response_text' => $result['candidates'][0]['content']['parts'][0]['text'] ?? 'NULL']);
                 return response()->json(['error' => 'AI returned invalid JSON format.'], 500);
@@ -149,23 +143,32 @@ class PersonalityQuizGeneratorController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'course_id' => 'nullable|exists:courses,id',
-            'quiz_data' => 'required|array', // The JSON returned by the generate method
+            'quiz_data' => 'required|array',
         ]);
 
         try {
             $lesson = new Lesson();
             $lesson->course_id = $request->course_id;
             $lesson->title = $request->title;
-            // Generate a unique slug
             $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
-            // Ensure this type matches the one queried by QuizController@index
+            // Ensure this type matches the lowercase constant in your Lesson model
             $lesson->type = 'personality_quiz';
-            // Store the entire quiz JSON package in the content field
-            $lesson->content = json_encode($request->quiz_data);
-            $lesson->is_published = true; // Or false if you want to draft it first
+            $lesson->is_published = true;
+            // Fix: Ensure user_id is saved so it appears on the dashboard
+            $lesson->user_id = auth()->id();
+
+            // Fix: Map AI 'archetypes' to 'traits' for compatibility with Lesson model and frontend
+            $quizData = $request->quiz_data;
+            if (isset($quizData['archetypes'])) {
+                $quizData['traits'] = $quizData['archetypes'];
+                unset($quizData['archetypes']);
+            }
+
+            // Fix: Save to content_json (automatically cast to JSON by model) instead of content
+            $lesson->content_json = $quizData;
+
             $lesson->save();
 
-            // UPDATED: Change the redirect_url to the named 'dashboard' route
             return response()->json([
                 'message' => 'Personality Quiz saved successfully!',
                 'lesson_id' => $lesson->id,

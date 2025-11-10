@@ -18,9 +18,9 @@ class Lesson extends Model
     ];
 
 
-    const TYPE_DEFAULT = 'DEFAULT';
-    const TYPE_QUIZ = 'QUIZ';
-    const TYPE_PERSONALITY_QUIZ = 'PERSONALITY_QUIZ';
+    const TYPE_DEFAULT = 'default';
+    const TYPE_QUIZ = 'quiz';
+    const TYPE_PERSONALITY_QUIZ = 'personality_quiz';
 
     public function scopePublished($query)
     {
