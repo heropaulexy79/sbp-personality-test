@@ -2,7 +2,7 @@
 import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
 import { watch, ref, onMounted } from "vue";
-import { X, Edit, WandSparklesIcon, SaveIcon } from "lucide-vue-next"; // Added SaveIcon
+import { X, Edit, WandSparklesIcon, SaveIcon } from "lucide-vue-next";
 import { usePersonalityQuizManager } from "./use-personality-quiz-manager";
 import {
   DropdownMenu,
@@ -25,7 +25,7 @@ import { toast } from "vue-sonner";
 import PersonalityTraitManager from "./PersonalityTraitManager.vue";
 import axios from "axios";
 import { generateId } from "../utils";
-import { router, usePage } from "@inertiajs/vue3"; // Import router
+import { router, usePage } from "@inertiajs/vue3";
 import { PageProps } from "@/types";
 
 defineProps<{ errors: { [key: string]: string } | undefined }>();
@@ -53,9 +53,9 @@ const currentQuestionIndex = ref<number | null>(null);
 
 // --- AI GENERATION LOGIC START ---
 const isGenerating = ref(false);
-const isSaving = ref(false); // Added saving state
+const isSaving = ref(false);
 const hasFetchedTraits = ref(false);
-const generatedQuizData = ref<any | null>(null); // Store generated data
+const generatedQuizData = ref<any | null>(null);
 
 // We'll fetch the traits from the DB on load,
 // so the UI reflects what the AI will use.
@@ -131,11 +131,17 @@ const generateWithAi = async () => {
               `AI option "${o.option_text}" mapped to unknown archetype "${o.maps_to_archetype}".`
             );
           }
+
+          // FIX: Use 'scores' object instead of flat trait_id/points
+          const scores: { [key: string]: number } = {};
+          if (matchedTrait) {
+            scores[matchedTrait.id] = 1;
+          }
+
           return {
             id: generateId(),
             text: o.option_text,
-            trait_id: matchedTrait ? matchedTrait.id : "",
-            points: 1,
+            scores: scores,
           };
         });
 
@@ -233,7 +239,6 @@ watch(
         <Label class="font-semibold">Personality Questions</Label>
 
         <div class="flex items-center gap-2">
-            <!-- Show Save button after generation -->
             <Button
                 v-if="generatedQuizData"
                 type="button"
@@ -245,7 +250,6 @@ watch(
                 {{ isSaving ? "Saving..." : "Save Quiz" }}
             </Button>
 
-            <!-- Show Generate button if not generated yet -->
             <Button
                 v-if="!generatedQuizData"
                 type="button"
@@ -257,7 +261,6 @@ watch(
                 {{ isGenerating ? "Generating..." : "Generate with AI" }}
             </Button>
 
-            <!-- Button to clear generation and show Generate again -->
             <Button
                 v-if="generatedQuizData"
                 type="button"
