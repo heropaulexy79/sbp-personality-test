@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PersonalityTraitController;
 
+
 // --- PUBLIC HOME ---
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -20,22 +21,24 @@ Route::get('/', function () {
 });
 
 // --- PUBLIC QUIZ TAKING ROUTES ---
-// Use the aliased controller name here
 Route::get('/quiz/{lesson:slug}', [PublicClassroomController::class, 'showLessonPublic'])->name('public.quiz.show');
 Route::patch('/quiz/{lesson:slug}/answer-personality', [PublicClassroomController::class, 'answerPersonalityQuiz'])->name('public.quiz.answerPersonality');
 
 
 // --- ADMIN / DASHBOARD ROUTES ---
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard redirects to the quiz list
+    // Dashboard
     Route::get('/dashboard', [QuizController::class, 'index'])->name('dashboard');
 
-    // Simplified Quiz Management
+    // Quiz Management
     Route::resource('quizzes', QuizController::class)->except(['show']);
 
-    // AI Generator
-    Route::post('/ai/generate-personality-quiz', PersonalityQuizGeneratorController::class)
-        ->name('ai.generate-personality-quiz');
+    // AI Generator (UPDATED)
+    Route::post('/ai/generate-quiz', [PersonalityQuizGeneratorController::class, 'generate'])->name('ai.quiz.generate');
+    Route::post('/ai/save-quiz', [PersonalityQuizGeneratorController::class, 'store'])->name('ai.quiz.store');
+
+    // API for traits
+    Route::get('/api/personality-traits', [PersonalityTraitController::class, 'index'])->name('api.personality-traits.index');
 });
 
 // --- PROFILE ROUTES ---
@@ -44,9 +47,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-Route::get('/api/personality-traits', [PersonalityTraitController::class, 'index'])
-     ->middleware('auth')
-     ->name('api.personality-traits.index');
 
 require __DIR__ . '/auth.php';
