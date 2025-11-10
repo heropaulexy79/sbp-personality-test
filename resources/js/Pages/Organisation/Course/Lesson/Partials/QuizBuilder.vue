@@ -6,149 +6,153 @@ import { Button } from "@/Components/ui/button";
 import { watch } from "vue";
 import InputError from "@/Components/InputError.vue";
 import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
-// import {
-//     Select,
-//     SelectContent,
-//     SelectItem,
-//     SelectTrigger,
-//     SelectValue,
-// } from "@/Components/ui/select";
 import { X } from "lucide-vue-next";
 import { Question } from "@/types";
+import { cloneDeep } from "lodash-es"; // Import cloneDeep
 
 defineProps<{ errors: { [key: string]: string } | undefined }>();
 
 const model = defineModel<Question[]>();
 const {
-    questions,
-    addOption,
-    addQuestion,
-    deleteOption,
-    deleteQuestion,
-    // updateOption,
-    // updateQuestion,
+  questions,
+  addOption,
+  addQuestion,
+  deleteOption,
+  deleteQuestion,
 } = useQuizManager(model.value ?? []);
 
 watch(
-    () => questions.value,
-    (n) => {
-        model.value = n;
-    },
-    { deep: true },
+  () => questions.value,
+  (n) => {
+    model.value = n;
+  },
+  { deep: true }
+);
+
+watch(
+  () => model.value,
+  (newValue) => {
+    // Ensure we don't overwrite with standard reactivity if the values are effectively the same
+    // to prevent potential infinite loops or unnecessary re-renders, though Vue handles this well usually.
+    if (newValue && JSON.stringify(newValue) !== JSON.stringify(questions.value)) {
+      // Use cloneDeep to prevent mutating the prop array
+      questions.value = cloneDeep(newValue);
+    }
+  },
+  { deep: true }
 );
 </script>
 
 <template>
-    <ul class="space-y-6">
-        <li
-            v-for="(question, index) in questions"
-            class="border-b border-border pb-6 last:border-transparent"
-        >
+  <ul class="space-y-6">
+    <li
+      v-for="(question, index) in questions"
+      :key="question.id"
+      class="border-b border-border pb-6 last:border-transparent"
+    >
+      <div>
+        <div class="flex items-center justify-between gap-4">
+          <Label :for="'q.' + question.id">Question {{ index + 1 }}:</Label>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            class="size-9 text-xs"
+            @click="deleteQuestion(index)"
+          >
+            <X :size="16" />
+          </Button>
+        </div>
+
+        <div>
+          <Input
+            type="text"
+            :id="'q.' + question.id"
+            v-model="question.text"
+            placeholder="Enter question text"
+            class="mt-2"
+          />
+          <InputError
+            class="mt-2"
+            :message="errors?.[`quiz.${index}.text`]"
+          />
+          <InputError
+            class="mt-2"
+            :message="errors?.[`quiz.${index}.correct_option`]"
+          />
+        </div>
+      </div>
+
+      <RadioGroup
+        v-model="question.correct_option"
+        v-if="question.type === 'single_choice'"
+      >
+        <ul class="mt-4 grid gap-4 md:grid-cols-2">
+          <li
+            v-for="(option, optionIndex) in question.options"
+            :key="option.id"
+          >
             <div>
-                <div class="flex items-center justify-between gap-4">
-                    <Label :for="'q.' + question.id"
-                        >Question {{ index + 1 }}:</Label
-                    >
+              <div class="flex items-center justify-between gap-4">
+                <Label
+                  :for="'q.' + question.id + '.o.' + option.id"
+                >
+                  Option {{ optionIndex + 1 }}:
+                </Label>
 
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        class="size-9 text-xs"
-                        @click="deleteQuestion(index)"
-                    >
-                        <X :size="16" />
-                    </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  class="size-9 text-xs"
+                  @click="deleteOption(index, optionIndex)"
+                >
+                  <X :size="16" />
+                </Button>
+              </div>
 
-                <div>
-                    <Input
-                        type="text"
-                        :id="'q.' + question.id"
-                        v-model="question.text"
-                        placeholder="Enter question text"
-                        class="mt-2"
-                    />
-                    <InputError
-                        class="mt-2"
-                        :message="errors?.[`quiz.${index}.text`]"
-                    />
-                    <InputError
-                        class="mt-2"
-                        :message="errors?.[`quiz.${index}.correct_option`]"
-                    />
-                </div>
+              <div class="flex items-center gap-2">
+                <RadioGroupItem
+                  :value="option.id"
+                  :id="'rb-' + option.id"
+                  v-if="question.type === 'single_choice'"
+                />
+                <Input
+                  type="text"
+                  :id="'q.' + question.id + '.o.' + option.id"
+                  v-model="option.text"
+                  placeholder="Enter option text"
+                  class="mt-2 flex-1"
+                />
+              </div>
+
+              <InputError
+                class="mt-2"
+                :message="errors?.[`quiz.${index}.options.${optionIndex}.text`]"
+              />
             </div>
-            <RadioGroup
-                v-model="question.correct_option"
-                v-if="question.type === 'single_choice'"
-            >
-                <ul class="mt-4 grid gap-4 md:grid-cols-2">
-                    <li v-for="(option, optionIndex) in question.options">
-                        <div>
-                            <div
-                                class="flex items-center justify-between gap-4"
-                            >
-                                <Label
-                                    :for="
-                                        'q.' + question.id + '.o.' + option.id
-                                    "
-                                    >Option {{ optionIndex + 1 }}:</Label
-                                >
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    class="size-9 text-xs"
-                                    @click="deleteOption(index, optionIndex)"
-                                >
-                                    <X :size="16" />
-                                </Button>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <RadioGroupItem
-                                    :value="option.id"
-                                    :id="'rb-' + option.id"
-                                    v-if="question.type === 'single_choice'"
-                                />
+          </li>
 
-                                <Input
-                                    type="text"
-                                    :id="'q.' + question.id + '.o.' + option.id"
-                                    v-model="option.text"
-                                    placeholder="Enter option text"
-                                    class="mt-2 flex-1"
-                                />
-                            </div>
-                            <InputError
-                                class="mt-2"
-                                :message="
-                                    errors?.[
-                                        `quiz.${index}.options.${optionIndex}.text`
-                                    ]
-                                "
-                            />
-                        </div>
-                    </li>
-                    <li>
-                        <div>
-                            <div class="h-9"></div>
+          <li>
+            <div>
+              <div class="h-9"></div>
+              <Button
+                type="button"
+                variant="outline"
+                class="mt-2 w-full"
+                @click="addOption(index)"
+              >
+                Add option
+              </Button>
+            </div>
+          </li>
+        </ul>
+      </RadioGroup>
+    </li>
+  </ul>
 
-                            <Button
-                                type="button"
-                                variant="outline"
-                                class="mt-2 w-full"
-                                @click="addOption(index)"
-                                >Add option</Button
-                            >
-                        </div>
-                    </li>
-                </ul>
-            </RadioGroup>
-        </li>
-    </ul>
-
-    <Button class="mt-8" type="button" variant="outline" @click="addQuestion">
-        Add question
-    </Button>
+  <Button class="mt-8" type="button" variant="outline" @click="addQuestion">
+    Add question
+  </Button>
 </template>
