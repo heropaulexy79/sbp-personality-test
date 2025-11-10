@@ -33,8 +33,37 @@ defineProps<{ errors: { [key: string]: string } | undefined }>();
 const questionsModel = defineModel<PersonalityQuestion[]>();
 const traitsModel = defineModel<PersonalityTrait[]>("traits");
 
-// Get course from page props, default to null if not present
 const course = (usePage().props as PageProps).course ?? null;
+
+
+// ======================================================================
+// CRITICAL FIX: Robustly parse JSON and DEEP CLONE the data for the hook.
+// This prevents VNode corruption caused by shared references.
+// ======================================================================
+let initialQuestions: PersonalityQuestion[] = [];
+const modelValue = questionsModel.value;
+
+try {
+    let parsedData: any = [];
+
+    // 1. Parse string data (if it came as a raw JSON string from DB/Inertia)
+    if (typeof modelValue === 'string' && modelValue.length > 0) {
+        parsedData = JSON.parse(modelValue);
+    } else if (Array.isArray(modelValue)) {
+        parsedData = modelValue;
+    }
+
+    // 2. Deep clone the data to break any shared memory references
+    if (Array.isArray(parsedData) && parsedData.length > 0) {
+        // Use JSON methods for a fast deep clone of simple data structures
+        initialQuestions = JSON.parse(JSON.stringify(parsedData));
+    }
+} catch (e) {
+    console.error("Failed to process initial questions data.", e);
+    // initialQuestions remains []
+}
+// ======================================================================
+
 
 const {
   questions,
@@ -44,9 +73,17 @@ const {
   addTrait,
   deleteTrait,
 } = usePersonalityQuizManager({
-  initialQuestions: questionsModel.value ?? [],
+  initialQuestions: initialQuestions, // Pass the clean, cloned array
   initialTraits: traitsModel.value ?? [],
 });
+
+// ======================================================================
+// FIX #3: Reactivity Sync (Required after cloning to ensure model is updated)
+// ======================================================================
+questionsModel.value = questions.value;
+traitsModel.value = traits.value;
+// ======================================================================
+
 
 const isEditorOpen = ref(false);
 const currentQuestionIndex = ref<number | null>(null);
@@ -57,16 +94,13 @@ const isSaving = ref(false);
 const hasFetchedTraits = ref(false);
 const generatedQuizData = ref<any | null>(null);
 
-// We'll fetch the traits from the DB on load,
-// so the UI reflects what the AI will use.
 const fetchInitialTraits = async () => {
-  // Only fetch if traits are empty and we haven't tried before
   if (traits.value.length === 0 && !hasFetchedTraits.value) {
-    hasFetchedTraits.value = true; // Mark that we've attempted
+    hasFetchedTraits.value = true;
     try {
       const response = await axios.get(route("api.personality-traits.index"));
       traits.value = response.data.map((trait: any) => ({
-        id: generateId(), // Generate a local frontend ID
+        id: generateId(),
         name: trait.name,
         description: trait.description || "",
       }));
@@ -91,17 +125,15 @@ const generateWithAi = async () => {
   }
 
   isGenerating.value = true;
-  generatedQuizData.value = null; // Clear previous generation
+  generatedQuizData.value = null;
   const loadingToast = toast.loading("Generating quiz with AI... This may take a minute.");
 
   try {
     const response = await axios.post(route("ai.quiz.generate"));
     const data = response.data;
 
-    // --- Store data for saving ---
-    generatedQuizData.value = data; // <-- STORE THE RAW AI DATA
+    generatedQuizData.value = data;
 
-    // Update Trait Descriptions if AI provided them
     if (data.archetypes) {
       traits.value.forEach((trait) => {
         trait.description = "";
@@ -116,10 +148,8 @@ const generateWithAi = async () => {
       });
     }
 
-    // Clear old questions before adding new ones
     questions.value = [];
 
-    // Add Generated Questions
     if (data.questions) {
       data.questions.forEach((q: any) => {
         const mappedOptions = q.options.map((o: any) => {
@@ -132,7 +162,7 @@ const generateWithAi = async () => {
             );
           }
 
-          // FIX: Use 'scores' object instead of flat trait_id/points
+          // FIX #1: The mandatory saving logic correction (nested 'scores')
           const scores: { [key: string]: number } = {};
           if (matchedTrait) {
             scores[matchedTrait.id] = 1;
@@ -158,24 +188,22 @@ const generateWithAi = async () => {
   } catch (error: any) {
     console.error("AI Generation Error:", error);
     toast.error(error.response?.data?.error || "Failed to generate quiz. Please try again.");
-    generatedQuizData.value = null; // Clear on failure
+    generatedQuizData.value = null;
   } finally {
     toast.dismiss(loadingToast);
     isGenerating.value = false;
   }
 };
 
-// --- NEW FUNCTION TO SAVE THE QUIZ ---
 const saveGeneratedQuiz = async () => {
     if (!generatedQuizData.value) {
         toast.error("No generated quiz data to save.");
         return;
     }
 
-    // Prompt for a title
     const title = window.prompt("Please enter a title for this new quiz:", "New Personality Quiz");
     if (!title) {
-        return; // User cancelled
+        return;
     }
 
     isSaving.value = true;
@@ -184,8 +212,8 @@ const saveGeneratedQuiz = async () => {
     try {
         const payload = {
             title: title,
-            course_id: course ? course.id : null, // Use course ID if available
-            quiz_data: generatedQuizData.value, // Send the stored AI data
+            course_id: course ? course.id : null,
+            quiz_data: generatedQuizData.value,
         };
 
         const response = await axios.post(route('ai.quiz.store'), payload);
@@ -193,7 +221,6 @@ const saveGeneratedQuiz = async () => {
         toast.dismiss(loadingToast);
         toast.success(response.data.message || "Quiz saved successfully!");
 
-        // Redirect to the new lesson page
         if (response.data.redirect_url) {
             router.visit(response.data.redirect_url);
         }
@@ -206,8 +233,6 @@ const saveGeneratedQuiz = async () => {
         isSaving.value = false;
     }
 };
-
-// --- AI GENERATION LOGIC END ---
 
 watch(
   () => questions.value,
