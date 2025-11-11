@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\Ai\PersonalityQuizGeneratorController;
 use App\Http\Controllers\Public\ClassroomController as PublicClassroomController;
+// FIX: Import the LessonController
+use App\Http\Controllers\LessonController; 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,6 +35,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Quiz Management
     Route::resource('quizzes', QuizController::class)->except(['show']);
 
+    // FIX: ADD LESSON ROUTES (nested under courses)
+    // This adds lesson.store, lesson.create, lesson.edit, lesson.update, etc.
+    Route::resource('courses/{course}/lessons', LessonController::class)
+        ->shallow()
+        ->names([
+            'create' => 'lesson.create',
+            'store' => 'lesson.store',
+            'show' => 'lesson.show',
+            'edit' => 'lesson.edit',
+            'update' => 'lesson.update',
+            'destroy' => 'lesson.destroy',
+        ]);
+    
     // AI Generator (UPDATED)
     Route::post('/ai/generate-quiz', [PersonalityQuizGeneratorController::class, 'generate'])->name('ai.quiz.generate');
     Route::post('/ai/save-quiz', [PersonalityQuizGeneratorController::class, 'store'])->name('ai.quiz.store');
