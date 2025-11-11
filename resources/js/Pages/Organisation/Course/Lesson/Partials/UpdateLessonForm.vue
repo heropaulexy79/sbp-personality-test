@@ -21,15 +21,10 @@ import PersonallityQuizBuilder from "./Personality/PersonallityQuizBuilder.vue";
 
 const props = defineProps<{ lesson: Lesson }>();
 
-// --- DEBUGGING: Add these logs ---
-console.log("--- UpdateLessonForm ---");
-console.log("Lesson Prop Received:", props.lesson);
-console.log("Lesson Type:", props.lesson.type);
-console.log("Lesson Content JSON:", props.lesson.content_json);
-// --- End Debugging ---
-
+// --- FIX START ---
+// Get data from the appended accessor 'personality_quiz_data' for personality quizzes
 const quizData = props.lesson.content_json as Question[];
-const personalityQuizData = props.lesson.content_json as PersonalityQuiz;
+const personalityQuizData = props.lesson.personality_quiz_data as PersonalityQuiz; // <<< CORRECTED LINE
 
 const form = useForm({
   title: props.lesson.title,
@@ -50,10 +45,11 @@ const form = useForm({
           },
         ],
   personality_quiz:
+    // Check type and use the appended 'personality_quiz_data' property
     props.lesson.type === "personality_quiz" &&
     personalityQuizData &&
-    typeof personalityQuizData !== "string"
-      ? (personalityQuizData as any)
+    personalityQuizData.questions.length > 0 // Ensure we have content
+      ? personalityQuizData as any // Use the full structured object
       : {
           traits: [],
           questions: [],
@@ -61,10 +57,8 @@ const form = useForm({
   type: props.lesson.type ?? "default",
   is_published: props.lesson.is_published ? props.lesson.is_published + "" : "false",
 });
+// --- FIX END ---
 
-// --- DEBUGGING ---
-console.log("Form Initialized:", form.personality_quiz);
-// --- End Debugging ---
 
 function submit() {
   form.patch(
@@ -104,7 +98,6 @@ function generateSlug() {
     <div
       class="relative grid gap-6 md:grid-cols-[1fr_200px] md:gap-10 lg:grid-cols-[1fr_250px]"
     >
-      <!-- Left -->
       <div class="bg-background grid gap-6 rounded-md px-4 py-4 md:grid-cols-2">
         <div>
           <Label for="title">Title</Label>
@@ -162,7 +155,6 @@ function generateSlug() {
         </div>
       </div>
 
-      <!-- Right -->
       <aside class="sticky top-4 space-y-6 self-start rounded-md px-4">
         <Button
           type="submit"
