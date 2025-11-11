@@ -28,21 +28,21 @@ class Lesson extends Model
 
     /**
      * The accessors to append to the model's array form.
-     * This ensures the frontend gets the structured personality quiz data.
      *
      * @var array
      */
-    protected $appends = ['personality_quiz_data'];
+    // We removed 'personality_quiz_data' because $casts makes it redundant
+    protected $appends = [];
 
 
     /**
      * The attributes that should be cast to native types.
-     * Casting content_json to 'array' ensures it's decoded from JSON
-     * into a PHP array automatically.
      *
      * @var array<string, string>
      */
     protected $casts = [
+        // This cast automatically handles JSON encoding/decoding
+        // and provides a default empty array if the value is null.
         'content_json' => 'array',
         'is_published' => 'boolean',
     ];
@@ -71,14 +71,28 @@ class Lesson extends Model
     // Relationships
     // -------------------------------------------------------------
 
+    /**
+     * Get the course that this lesson belongs to.
+     */
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
+    /**
+     * Get the user lesson records associated with this lesson.
+     */
     public function userLesson()
     {
         return $this->hasMany(UserLesson::class);
+    }
+
+    /**
+     * Get the user who created this lesson.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     // -------------------------------------------------------------
@@ -103,23 +117,5 @@ class Lesson extends Model
         }
 
         return $filtered;
-    }
-
-    /**
-     * Accessor for personality quiz data.
-     * Returns structured questions and traits arrays.
-     *
-     * @return array
-     */
-    public function getPersonalityQuizDataAttribute(): array
-    {
-        if ($this->type !== self::TYPE_PERSONALITY_QUIZ || !is_array($this->content_json)) {
-            return ['questions' => [], 'traits' => []];
-        }
-
-        return [
-            'questions' => $this->content_json['questions'] ?? [],
-            'traits' => $this->content_json['traits'] ?? [],
-        ];
     }
 }

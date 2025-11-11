@@ -6,23 +6,15 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/Componen
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import InputError from "@/Components/InputError.vue";
-// --- 1. Import the Quiz Builder ---
-import PersonallityQuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/Personality/PersonallityQuizBuilder.vue';
-import { SaveIcon } from "lucide-vue-next"; // Import save icon
 
-// --- 2. Add content_json to the form ---
 const form = useForm({
     title: "",
+    // We hardcode the type to simplify the form,
+    // as your app is now only for personality quizzes.
     type: "PERSONALITY_QUIZ",
-    // We will now manage the quiz content *from this page*
-    content_json: {
-        questions: [],
-        traits: [],
-    },
 });
 
 const submit = () => {
-    // This now saves the title, type, AND all the questions/traits at once
     form.post(route('quizzes.store'));
 };
 </script>
@@ -38,13 +30,13 @@ const submit = () => {
         </header>
 
         <div class="py-12">
-            <div class="container max-w-4xl"> <!-- Made layout wider for builder -->
+            <div class="container max-w-2xl">
                 <form @submit.prevent="submit">
                     <Card>
                         <CardHeader>
                             <CardTitle>Quiz Details</CardTitle>
                         </CardHeader>
-                        <CardContent class="space-y-6"> <!-- Added more space -->
+                        <CardContent class="space-y-4">
                             <div>
                                 <Label for="title">Quiz Title</Label>
                                 <Input
@@ -57,26 +49,11 @@ const submit = () => {
                                 />
                                 <InputError class="mt-2" :message="form.errors.title" />
                             </div>
-
-                            <!-- --- 3. Add the Quiz Builder Here --- -->
-                            <!--
-                                We bind the builder directly to the form's
-                                content_json questions and traits.
-                                When "Generate with AI" is clicked, it will
-                                automatically update `form.content_json.questions`
-                            -->
-                            <PersonallityQuizBuilder
-                                :errors="form.errors"
-                                v-model="form.content_json.questions"
-                                v-model:traits="form.content_json.traits"
-                            />
-
+                             <!-- The 'type' is hidden, as we only create one type -->
                         </CardContent>
                         <CardFooter class="flex justify-end">
-                            <!-- --- 4. Updated Save Button --- -->
                             <Button :disabled="form.processing">
-                                <SaveIcon class="mr-2 size-4" :class="{ 'animate-spin': form.processing }" />
-                                {{ form.processing ? 'Creating...' : 'Create Quiz' }}
+                                {{ form.processing ? 'Creating...' : 'Create & Edit Quiz' }}
                             </Button>
                         </CardFooter>
                     </Card>
