@@ -27,6 +27,15 @@ class Lesson extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     * This ensures the frontend gets the structured personality quiz data.
+     *
+     * @var array
+     */
+    protected $appends = ['personality_quiz_data'];
+
+
+    /**
      * The attributes that should be cast to native types.
      * Casting content_json to 'array' ensures it's decoded from JSON
      * into a PHP array automatically.

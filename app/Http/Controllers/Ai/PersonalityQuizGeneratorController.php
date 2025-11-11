@@ -147,26 +147,43 @@ class PersonalityQuizGeneratorController extends Controller
         ]);
 
         try {
+            $incomingData = $request->input('quiz_data');
+
+            // *** DEBUG LOGGING ADDED HERE ***
+            $questions = $incomingData['questions'] ?? [];
+            $traits = $incomingData['traits'] ?? $incomingData['archetypes'] ?? [];
+
+            Log::info('Personality Quiz Save Debug:', [
+                'questions_count' => count($questions),
+                'traits_count' => count($traits),
+                'questions_content' => json_encode($questions), // Logs the full question content
+            ]);
+            // *******************************
+
             $lesson = new Lesson();
             $lesson->course_id = $request->course_id;
             $lesson->title = $request->title;
             $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
-            // Ensure this type matches the lowercase constant in your Lesson model
             $lesson->type = 'personality_quiz';
             $lesson->is_published = true;
-            // Fix: Ensure user_id is saved so it appears on the dashboard
             $lesson->user_id = auth()->id();
 
-            // Fix: Map AI 'archetypes' to 'traits' for compatibility with Lesson model and frontend
-            $quizData = $request->quiz_data;
-            if (isset($quizData['archetypes'])) {
-                $quizData['traits'] = $quizData['archetypes'];
-                unset($quizData['archetypes']);
+            // SAFER MAPPING LOGIC:
+            // Prefer 'traits' if explicitly set, otherwise fallback to 'archetypes'
+            $traitsToSave = !empty($incomingData['traits']) ? $incomingData['traits'] : ($incomingData['archetypes'] ?? []);
+
+            $finalQuizData = [
+                'traits' => $traitsToSave,
+                'questions' => $questions, // Use the extracted and logged variable
+            ];
+
+            // Final validation check
+            if (empty($finalQuizData['questions'])) {
+                 Log::error('Save failed: Questions array is empty after processing.', ['incoming_keys' => array_keys($incomingData)]);
+                 return response()->json(['error' => 'Cannot save quiz: No questions data found.'], 422);
             }
 
-            // Fix: Save to content_json (automatically cast to JSON by model) instead of content
-            $lesson->content_json = $quizData;
-
+            $lesson->content_json = $finalQuizData;
             $lesson->save();
 
             return response()->json([
