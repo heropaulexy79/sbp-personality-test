@@ -21,10 +21,10 @@ import PersonallityQuizBuilder from "./Personality/PersonallityQuizBuilder.vue";
 
 const props = defineProps<{ lesson: Lesson }>();
 
-// --- FIX START ---
-// Get data from the appended accessor 'personality_quiz_data' for personality quizzes
+// FIX: Change to use the personality_quiz_data accessor 
+// (Requires the $appends property in the Lesson model).
 const quizData = props.lesson.content_json as Question[];
-const personalityQuizData = props.lesson.personality_quiz_data as PersonalityQuiz; // <<< CORRECTED LINE
+const personalityQuizData = props.lesson.personality_quiz_data as PersonalityQuiz; // <-- FIX: Use appended accessor
 
 const form = useForm({
   title: props.lesson.title,
@@ -45,11 +45,11 @@ const form = useForm({
           },
         ],
   personality_quiz:
-    // Check type and use the appended 'personality_quiz_data' property
+    // FIX: Check lesson type and use the accessor data
     props.lesson.type === "personality_quiz" &&
     personalityQuizData &&
-    personalityQuizData.questions.length > 0 // Ensure we have content
-      ? personalityQuizData as any // Use the full structured object
+    personalityQuizData.questions.length > 0 // Safely check for content
+      ? (personalityQuizData as any)
       : {
           traits: [],
           questions: [],
@@ -57,8 +57,6 @@ const form = useForm({
   type: props.lesson.type ?? "default",
   is_published: props.lesson.is_published ? props.lesson.is_published + "" : "false",
 });
-// --- FIX END ---
-
 
 function submit() {
   form.patch(

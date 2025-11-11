@@ -37,30 +37,18 @@ const course = (usePage().props as PageProps).course ?? null;
 
 
 // ======================================================================
-// CRITICAL FIX: Robustly parse JSON and DEEP CLONE the data for the hook.
-// This prevents VNode corruption caused by shared references.
+// FIX: Simplify initialization and safely clone the data.
+// Since the data is already a JS array (due to Laravel accessor and Vue component fix),
+// we just need a clean clone for the usePersonalityQuizManager hook.
 // ======================================================================
 let initialQuestions: PersonalityQuestion[] = [];
-const modelValue = questionsModel.value;
-
-try {
-    let parsedData: any = [];
-
-    // 1. Parse string data (if it came as a raw JSON string from DB/Inertia)
-    if (typeof modelValue === 'string' && modelValue.length > 0) {
-        parsedData = JSON.parse(modelValue);
-    } else if (Array.isArray(modelValue)) {
-        parsedData = modelValue;
-    }
-
-    // 2. Deep clone the data to break any shared memory references
-    if (Array.isArray(parsedData) && parsedData.length > 0) {
-        // Use JSON methods for a fast deep clone of simple data structures
-        initialQuestions = JSON.parse(JSON.stringify(parsedData));
-    }
-} catch (e) {
-    console.error("Failed to process initial questions data.", e);
-    // initialQuestions remains []
+if (Array.isArray(questionsModel.value) && questionsModel.value.length > 0) {
+    // Deep clone the incoming data to ensure the usePersonalityQuizManager hook
+    // has its own independent copy for local mutation.
+    initialQuestions = JSON.parse(JSON.stringify(questionsModel.value));
+} else if (Array.isArray(questionsModel.value)) {
+    // Initialize as empty if it's an empty array
+    initialQuestions = [];
 }
 // ======================================================================
 
@@ -78,10 +66,9 @@ const {
 });
 
 // ======================================================================
-// FIX #3: Reactivity Sync (Required after cloning to ensure model is updated)
-// ======================================================================
-questionsModel.value = questions.value;
-traitsModel.value = traits.value;
+// FIX: REMOVED redundant: questionsModel.value = questions.value;
+// The watchers below handle synchronization, and this line was likely overwriting
+// the valid incoming data right after component initialization.
 // ======================================================================
 
 
