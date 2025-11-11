@@ -149,7 +149,7 @@ const generateWithAi = async () => {
             );
           }
 
-          // FIX #1: The mandatory saving logic correction (nested 'scores')
+          // This logic correctly creates the nested 'scores' object
           const scores: { [key: string]: number } = {};
           if (matchedTrait) {
             scores[matchedTrait.id] = 1;
@@ -183,6 +183,12 @@ const generateWithAi = async () => {
 };
 
 const saveGeneratedQuiz = async () => {
+    // ======================================================================
+    // FIX: This function was sending the raw `generatedQuizData.value`.
+    // We must send the transformed data from `questions.value` and `traits.value`
+    // to match the format the editor expects.
+    // ======================================================================
+
     if (!generatedQuizData.value) {
         toast.error("No generated quiz data to save.");
         return;
@@ -200,7 +206,15 @@ const saveGeneratedQuiz = async () => {
         const payload = {
             title: title,
             course_id: course ? course.id : null,
-            quiz_data: generatedQuizData.value,
+            // UPDATED PAYLOAD:
+            // Send the transformed, reactive data instead of the raw AI response.
+            quiz_data: {
+                questions: questions.value,
+                traits: traits.value,
+                // We can still pass the original archetypes if the backend
+                // needs them for description saving.
+                archetypes: generatedQuizData.value?.archetypes ?? [],
+            },
         };
 
         const response = await axios.post(route('ai.quiz.store'), payload);

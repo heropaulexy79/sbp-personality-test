@@ -19,26 +19,48 @@ interface UsePersonalityQuizManagerOptions {
 // ======================================================
 
 /**
- * Normalizes question options from the old flat format (trait_id/points)
- * to the required nested format (scores).
+ * Normalizes question options from multiple possible formats
+ * (new 'scores', old 'trait_id', raw 'maps_to_archetype')
+ * into the required nested format (scores).
  */
-function normalizeOptions(options: any[]): PersonalityAnswerOption[] {
+function normalizeOptions(
+  options: any[],
+  initialTraits: PersonalityTrait[],
+): PersonalityAnswerOption[] {
   return options.map((option) => {
-    // If the old flat format is detected (but not the new scores format)
-    if (option && option.trait_id && option.points !== undefined && !option.scores) {
-      const scores: { [key: string]: number } = {};
-      // Convert old flat fields into the required nested scores object
-      scores[option.trait_id] = option.points;
-
-      return {
-        id: option.id || nanoid(),
-        text: option.text,
-        scores: scores, // <-- Required format for the editor
-      } as PersonalityAnswerOption;
+    // Case 1: Already in correct format (or a new blank option)
+    // We check for option.scores and also ensure it's an object.
+    if (option && typeof option.scores === "object" && option.scores !== null) {
+      return option as PersonalityAnswerOption;
     }
 
-    // If it's the new, correct format (or a manually added option), return it
-    return option as PersonalityAnswerOption;
+    // Create a base option to populate.
+    // Use 'text' from new/old format, or 'option_text' from raw AI format
+    const newOption: PersonalityAnswerOption = {
+      id: option.id || nanoid(),
+      text: option.text || option.option_text || "",
+      scores: {},
+    };
+
+    // Case 2: Old DB format ('trait_id' and 'points')
+    if (option && option.trait_id && option.points !== undefined) {
+      newOption.scores[option.trait_id] = option.points;
+    }
+    // Case 3: Raw AI format ('maps_to_archetype')
+    else if (option && option.maps_to_archetype) {
+      const traitName = option.maps_to_archetype.toLowerCase();
+      // Find the corresponding trait from the traits list
+      const matchedTrait = initialTraits.find(
+        (t) => t.name.toLowerCase() === traitName,
+      );
+      if (matchedTrait) {
+        // Assign 1 point by default, using the trait's ID
+        newOption.scores[matchedTrait.id] = 1;
+      }
+    }
+
+    // Return the normalized option
+    return newOption;
   });
 }
 
@@ -46,15 +68,18 @@ function normalizeOptions(options: any[]): PersonalityAnswerOption[] {
  * Ensures initial questions are correctly mapped and converts any non-array/null
  * options property into an empty array to prevent rendering errors.
  */
-function normalizeQuestions(initialQuestions: any[]): PersonalityQuestion[] {
+function normalizeQuestions(
+  initialQuestions: any[],
+  initialTraits: PersonalityTrait[],
+): PersonalityQuestion[] {
   // 1. Filter out null/bad questions, and map to enforce the question structure
   return initialQuestions
     .filter((q) => q && q.id)
     .map((question) => ({
       ...question,
-      // 2. Ensure 'options' is always an array
+      // 2. Ensure 'options' is always an array and normalize them
       options: Array.isArray(question.options)
-        ? normalizeOptions(question.options)
+        ? normalizeOptions(question.options, initialTraits) // Pass traits to helper
         : [],
     })) as PersonalityQuestion[];
 }
@@ -67,8 +92,12 @@ export function usePersonalityQuizManager(
   options: UsePersonalityQuizManagerOptions = {},
 ) {
   // Normalize initial data
-  const normalizedInitialQuestions = normalizeQuestions(options.initialQuestions || []);
-
+  // Pass both questions and traits to the normalization functions
+  const normalizedInitialQuestions = normalizeQuestions(
+    options.initialQuestions || [],
+    options.initialTraits || [],
+  );
+  
   const questions = ref<PersonalityQuestion[]>(normalizedInitialQuestions);
   const traits = ref<PersonalityTrait[]>(options.initialTraits || []);
 
