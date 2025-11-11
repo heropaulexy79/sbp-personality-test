@@ -25,12 +25,13 @@ interface UsePersonalityQuizManagerOptions {
  */
 function normalizeOptions(
   options: any[],
-  initialTraits: PersonalityTrait[], // <-- We need traits to map AI data
+  initialTraits: PersonalityTrait[],
 ): PersonalityAnswerOption[] {
+  // Robustness check: Ensure options is an array before mapping
   if (!Array.isArray(options)) {
     return [];
   }
-  
+
   return options.map((option) => {
     // Case 1: Already in correct format (or a new blank option)
     if (option && typeof option.scores === "object" && option.scores !== null) {
@@ -40,8 +41,8 @@ function normalizeOptions(
     // Create a base option to populate.
     // Use 'text' from new/old format, or 'option_text' from raw AI format
     const newOption: PersonalityAnswerOption = {
-      id: option.id || nanoid(),
-      text: option.text || option.option_text || "",
+      id: option?.id || nanoid(), // Add optional chaining
+      text: option?.text || option?.option_text || "", // Add optional chaining
       scores: {},
     };
 
@@ -71,35 +72,38 @@ function normalizeOptions(
  * Ensures initial questions are correctly mapped and converts any non-array/null
  * options property into an empty array to prevent rendering errors.
  */
-// ======================================================
-// THIS IS THE CORRECTED FUNCTION:
-// ======================================================
 function normalizeQuestions(
   initialQuestions: any[],
-  initialTraits: PersonalityTrait[], // <-- Pass traits down
+  initialTraits: PersonalityTrait[],
 ): PersonalityQuestion[] {
+  // Robustness check: Ensure initialQuestions is an array
   if (!Array.isArray(initialQuestions)) {
     return [];
   }
-  
+
   // 1. Filter out null/bad questions
   return initialQuestions
-    .filter((q) => q) // <-- CORRECTED: Only filter nulls
+    .filter((q) => q) // <-- CORRECT: Only filter nulls
     .map((question) => {
-      // 2. Map to the correct structure, adding an ID if it's missing (from raw AI)
+      // 2. Map to the correct structure, adding an ID if it's missing
       return {
-        id: question.id || nanoid(), // <-- CORRECTED: Add ID if missing
-        text: question.text || question.question_text || "", // Handle AI 'question_text'
-        type: question.type || "multiple_choice", // Default AI questions
-        // 3. Ensure 'options' is always an array and normalize them
-        options: normalizeOptions(question.options, initialTraits), // Pass traits
+        id: question.id || nanoid(), // <-- CORRECT: Add ID if missing
+        text: question.text || question.question_text || "", // <-- CORRECT: Handle AI 'question_text'
+        type: question.type || "multiple_choice", // <-- CORRECT: Default AI questions
+
+        // 3. CRITICAL FIX:
+        //    We must check if options is an array before normalizing it.
+        //    My last suggestion removed this, which caused the error.
+        options: Array.isArray(question.options)
+          ? normalizeOptions(question.options, initialTraits)
+          : [],
       };
     }) as PersonalityQuestion[];
 }
-// ======================================================
-// END OF CORRECTION
-// ======================================================
 
+// ======================================================
+// FIX END
+// ======================================================
 
 export function usePersonalityQuizManager(
   options: UsePersonalityQuizManagerOptions = {},
