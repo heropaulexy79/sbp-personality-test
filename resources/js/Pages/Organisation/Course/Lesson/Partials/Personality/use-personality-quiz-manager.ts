@@ -15,7 +15,7 @@ interface UsePersonalityQuizManagerOptions {
 }
 
 // ======================================================
-// FIX START: Data Normalization with robust checks
+// FIX START: Robust Data Normalization
 // ======================================================
 
 /**
@@ -25,11 +25,14 @@ interface UsePersonalityQuizManagerOptions {
  */
 function normalizeOptions(
   options: any[],
-  initialTraits: PersonalityTrait[],
+  initialTraits: PersonalityTrait[], // <-- We need traits to map AI data
 ): PersonalityAnswerOption[] {
+  if (!Array.isArray(options)) {
+    return [];
+  }
+  
   return options.map((option) => {
     // Case 1: Already in correct format (or a new blank option)
-    // We check for option.scores and also ensure it's an object.
     if (option && typeof option.scores === "object" && option.scores !== null) {
       return option as PersonalityAnswerOption;
     }
@@ -68,36 +71,46 @@ function normalizeOptions(
  * Ensures initial questions are correctly mapped and converts any non-array/null
  * options property into an empty array to prevent rendering errors.
  */
+// ======================================================
+// THIS IS THE CORRECTED FUNCTION:
+// ======================================================
 function normalizeQuestions(
   initialQuestions: any[],
-  initialTraits: PersonalityTrait[],
+  initialTraits: PersonalityTrait[], // <-- Pass traits down
 ): PersonalityQuestion[] {
-  // 1. Filter out null/bad questions, and map to enforce the question structure
+  if (!Array.isArray(initialQuestions)) {
+    return [];
+  }
+  
+  // 1. Filter out null/bad questions
   return initialQuestions
-    .filter((q) => q && q.id)
-    .map((question) => ({
-      ...question,
-      // 2. Ensure 'options' is always an array and normalize them
-      options: Array.isArray(question.options)
-        ? normalizeOptions(question.options, initialTraits) // Pass traits to helper
-        : [],
-    })) as PersonalityQuestion[];
+    .filter((q) => q) // <-- CORRECTED: Only filter nulls
+    .map((question) => {
+      // 2. Map to the correct structure, adding an ID if it's missing (from raw AI)
+      return {
+        id: question.id || nanoid(), // <-- CORRECTED: Add ID if missing
+        text: question.text || question.question_text || "", // Handle AI 'question_text'
+        type: question.type || "multiple_choice", // Default AI questions
+        // 3. Ensure 'options' is always an array and normalize them
+        options: normalizeOptions(question.options, initialTraits), // Pass traits
+      };
+    }) as PersonalityQuestion[];
 }
+// ======================================================
+// END OF CORRECTION
+// ======================================================
 
-// ======================================================
-// FIX END
-// ======================================================
 
 export function usePersonalityQuizManager(
   options: UsePersonalityQuizManagerOptions = {},
 ) {
   // Normalize initial data
-  // Pass both questions and traits to the normalization functions
+  // We MUST pass both questions and traits to the normalization functions
   const normalizedInitialQuestions = normalizeQuestions(
     options.initialQuestions || [],
     options.initialTraits || [],
   );
-  
+
   const questions = ref<PersonalityQuestion[]>(normalizedInitialQuestions);
   const traits = ref<PersonalityTrait[]>(options.initialTraits || []);
 
