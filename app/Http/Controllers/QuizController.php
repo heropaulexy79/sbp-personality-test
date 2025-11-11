@@ -43,18 +43,28 @@ class QuizController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            // 'type' is no longer needed from the request
+            'type' => 'required|string|in:PERSONALITY_QUIZ,STANDARD_QUIZ',
+            // --- 1. ADD VALIDATION FOR YOUR QUIZ DATA ---
+            'content_json' => 'present|array', 
+            'content_json.questions' => 'nullable|array',
+            'content_json.traits' => 'nullable|array',
         ]);
 
-        $quiz = Lesson::create([
+        $lesson = Lesson::create([
             'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']) . '-' . Str::random(6),
-            'type' => 'personality_quiz', // Correct lowercase type
-            'content_json' => [],
-            'user_id' => auth()->id(), // Set ownership for the logged-in user
+            'type' => $validated['type'],
+            'user_id' => $request->user()->id,
+            // --- 2. ADD THE SLUG ---
+            'slug' => Str::slug($validated['title']), // This creates a slug like "my-new-quiz"
+            // --- 3. USE THE VALIDATED DATA, NOT AN EMPTY ARRAY ---
+            'content_json' => $validated['content_json'] ?? [
+                'questions' => [],
+                'traits' => [],
+                'archetypes' => [],
+            ]
         ]);
 
-        return redirect()->route('quizzes.edit', $quiz->id);
+        return redirect()->route('quizzes.edit', $lesson);
     }
 
     public function edit(Lesson $quiz)

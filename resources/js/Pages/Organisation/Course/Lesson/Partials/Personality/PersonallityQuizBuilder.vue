@@ -2,7 +2,7 @@
 import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
 import { watch, ref, onMounted } from "vue";
-import { X, Edit, WandSparklesIcon, SaveIcon } from "lucide-vue-next";
+import { X, Edit, WandSparklesIcon } from "lucide-vue-next"; // Removed SaveIcon
 import { usePersonalityQuizManager } from "./use-personality-quiz-manager";
 import {
   DropdownMenu,
@@ -25,21 +25,17 @@ import { toast } from "vue-sonner";
 import PersonalityTraitManager from "./PersonalityTraitManager.vue";
 import axios from "axios";
 import { generateId } from "../utils";
-import { router, usePage } from "@inertiajs/vue3";
-import { PageProps } from "@/types";
+// Removed router, usePage, and PageProps as they are no longer needed
 
 defineProps<{ errors: { [key: string]: string } | undefined }>();
 
 const questionsModel = defineModel<PersonalityQuestion[]>();
 const traitsModel = defineModel<PersonalityTrait[]>("traits");
 
-const course = (usePage().props as PageProps).course ?? null;
-
+// Removed 'course' constant
 
 // ======================================================================
 // FIX: Simplify initialization and safely clone the data.
-// Since the data is already a JS array (due to Laravel accessor and Vue component fix),
-// we just need a clean clone for the usePersonalityQuizManager hook.
 // ======================================================================
 let initialQuestions: PersonalityQuestion[] = [];
 if (Array.isArray(questionsModel.value) && questionsModel.value.length > 0) {
@@ -67,8 +63,6 @@ const {
 
 // ======================================================================
 // FIX: REMOVED redundant: questionsModel.value = questions.value;
-// The watchers below handle synchronization, and this line was likely overwriting
-// the valid incoming data right after component initialization.
 // ======================================================================
 
 
@@ -77,7 +71,7 @@ const currentQuestionIndex = ref<number | null>(null);
 
 // --- AI GENERATION LOGIC START ---
 const isGenerating = ref(false);
-const isSaving = ref(false);
+// Removed 'isSaving' ref
 const hasFetchedTraits = ref(false);
 const generatedQuizData = ref<any | null>(null);
 
@@ -182,58 +176,7 @@ const generateWithAi = async () => {
   }
 };
 
-const saveGeneratedQuiz = async () => {
-    // ======================================================================
-    // FIX: This function was sending the raw `generatedQuizData.value`.
-    // We must send the transformed data from `questions.value` and `traits.value`
-    // to match the format the editor expects.
-    // ======================================================================
-
-    if (!generatedQuizData.value) {
-        toast.error("No generated quiz data to save.");
-        return;
-    }
-
-    const title = window.prompt("Please enter a title for this new quiz:", "New Personality Quiz");
-    if (!title) {
-        return;
-    }
-
-    isSaving.value = true;
-    const loadingToast = toast.loading("Saving your new quiz...");
-
-    try {
-        const payload = {
-            title: title,
-            course_id: course ? course.id : null,
-            // UPDATED PAYLOAD:
-            // Send the transformed, reactive data instead of the raw AI response.
-            quiz_data: {
-                questions: questions.value,
-                traits: traits.value,
-                // We can still pass the original archetypes if the backend
-                // needs them for description saving.
-                archetypes: generatedQuizData.value?.archetypes ?? [],
-            },
-        };
-
-        const response = await axios.post(route('ai.quiz.store'), payload);
-
-        toast.dismiss(loadingToast);
-        toast.success(response.data.message || "Quiz saved successfully!");
-
-        if (response.data.redirect_url) {
-            router.visit(response.data.redirect_url);
-        }
-
-    } catch (error: any) {
-        console.error("Failed to save quiz:", error);
-        toast.dismiss(loadingToast);
-        toast.error(error.response?.data?.error || "Failed to save quiz.");
-    } finally {
-        isSaving.value = false;
-    }
-};
+// Removed the entire 'saveGeneratedQuiz' function
 
 watch(
   () => questions.value,
@@ -265,38 +208,28 @@ watch(
         <Label class="font-semibold">Personality Questions</Label>
 
         <div class="flex items-center gap-2">
-            <Button
-                v-if="generatedQuizData"
-                type="button"
-                variant="default"
-                @click="saveGeneratedQuiz"
-                :disabled="isSaving"
-            >
-                <SaveIcon class="mr-2 size-4" :class="{ 'animate-pulse': isSaving }" />
-                {{ isSaving ? "Saving..." : "Save Quiz" }}
-            </Button>
+            
+          <Button
+            v-if="!generatedQuizData"
+            type="button"
+            variant="secondary"
+            @click="generateWithAi"
+            :disabled="isGenerating"
+          >
+            <WandSparklesIcon class="mr-2 size-4" :class="{ 'animate-pulse': isGenerating }" />
+            {{ isGenerating ? "Generating..." : "Generate with AI" }}
+          </Button>
 
-            <Button
-                v-if="!generatedQuizData"
-                type="button"
-                variant="secondary"
-                @click="generateWithAi"
-                :disabled="isGenerating"
-            >
-                <WandSparklesIcon class="mr-2 size-4" :class="{ 'animate-pulse': isGenerating }" />
-                {{ isGenerating ? "Generating..." : "Generate with AI" }}
-            </Button>
-
-            <Button
-                v-if="generatedQuizData"
-                type="button"
-                variant="ghost"
-                size="icon"
-                @click="generatedQuizData = null"
-                title="Generate new quiz"
-            >
-                <X class="size-4" />
-            </Button>
+          <Button
+            v-if="generatedQuizData"
+            type="button"
+            variant="ghost"
+            size="icon"
+            @click="generatedQuizData = null"
+            title="Generate new quiz"
+          >
+            <X class="size-4" />
+          </Button>
 
 
           <DropdownMenu>
