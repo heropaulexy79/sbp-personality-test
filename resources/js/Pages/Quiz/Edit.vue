@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import OrganisationLayout from '@/Layouts/OrganisationLayout.vue';
 import PersonallityQuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/Personality/PersonallityQuizBuilder.vue';
-import QuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/QuizBuilder.vue'; // <-- ADDED IMPORT
+import QuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/QuizBuilder.vue';
 import { Lesson } from '@/types/index';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/ui/card';
@@ -25,13 +25,13 @@ const form = useForm({
     slug: props.lesson.slug,
     is_published: props.lesson.is_published,
 
-    // Use 'quiz' for standard quizzes - Explicitly extract the nested 'questions' array
-    quiz: props.lesson.type === 'QUIZ' 
+    // CORRECTED: Use lowercase 'quiz' for comparison
+    quiz: props.lesson.type === 'quiz' 
         ? { questions: initialContent.questions || [] } 
         : null,
 
-    // Use 'personality_quiz' for personality quizzes - Explicitly extract sub-arrays
-    personality_quiz: props.lesson.type === 'PERSONALITY_QUIZ' 
+    // CORRECTED: Use lowercase 'personality_quiz' for comparison
+    personality_quiz: props.lesson.type === 'personality_quiz' 
         ? { 
             questions: initialContent.questions || [], 
             traits: initialContent.traits || [], 
@@ -88,17 +88,17 @@ function destroy() {
             <div class="max-w-4xl mx-auto space-y-6">
 
 <PersonallityQuizBuilder
-    v-if="lesson.type === 'PERSONALITY_QUIZ'"
+    v-if="lesson.type === 'personality_quiz'"
     :lesson="lesson"
     :errors="form.errors"
-    v-model="form.personality_quiz.questions"
-    v-model:traits="form.personality_quiz.traits"
+    v-model="form.personality_quiz!.questions"
+    v-model:traits="form.personality_quiz!.traits"
 />
 
 <QuizBuilder
-    v-if="lesson.type === 'QUIZ'"
+    v-if="lesson.type === 'quiz'"
     :errors="form.errors"
-    v-model="form.quiz.questions"
+    v-model="form.quiz!.questions"
 />
 
                 <Card v-if="isStandaloneQuiz" class="border-destructive">
