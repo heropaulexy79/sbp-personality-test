@@ -35,11 +35,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Quiz Management (This is now your Admin/Teacher quiz creator)
-    Route::resource('quizzes', QuizController::class)->except(['show']);
+    // FIX: Explicitly bind the resource route to the 'slug' parameter to prevent 404s if model binding is inconsistent.
+    Route::resource('quizzes', QuizController::class)
+        ->except(['show'])
+        ->parameters(['quizzes' => 'quiz:slug']); 
 
-    // --- 1. ADD THIS BLOCK FOR ENROLLMENT ---
-    Route::get('/quizzes/{course}/enroll', [CourseEnrollmentController::class, 'edit'])->name('quizzes.enroll');
-    Route::post('/quizzes/{course}/enroll', [CourseEnrollmentController::class, 'update'])->name('quizzes.enroll.update');
+    // --- 1. FIX: Change parameter from {course} to {quiz} ---
+    // This matches the parameter name from Route::resource('quizzes', ...)
+    Route::get('/quizzes/{quiz}/enroll', [CourseEnrollmentController::class, 'edit'])->name('quizzes.enroll');
+    Route::post('/quizzes/{quiz}/enroll', [CourseEnrollmentController::class, 'update'])->name('quizzes.enroll.update');
     // --- END OF BLOCK ---
 
     // =================================================================

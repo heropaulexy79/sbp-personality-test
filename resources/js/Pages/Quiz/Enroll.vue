@@ -5,8 +5,11 @@ import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Checkbox } from '@/Components/ui/checkbox';
 import { Label } from '@/Components/ui/label';
-import { useToast } from '@/Components/ui/toast/use-toast';
-import { Toaster } from '@/Components/ui/toast';
+// FIX: Resolve import issue by explicitly targeting the component and composable files.
+// useToast is typically the composable export.
+import { useToast } from '@/Components/ui/toast/use-toast'; 
+// Toaster is the component, imported as default from its file.
+import Toaster from '@/Components/ui/toast/Toaster.vue'; 
 import { onMounted, watch } from 'vue';
 
 // 1. Define the props coming from CourseEnrollmentController@edit
@@ -29,7 +32,8 @@ const { toast } = useToast();
 
 // 4. Function to handle the form submission
 const submit = () => {
-    form.post(route('quizzes.enroll.update', props.course.id), {
+    // FIX: Passing 'props.course.slug' to the route update method.
+    form.post(route('quizzes.enroll.update', props.course.slug), {
         preserveScroll: true,
         // onSuccess is handled by the 'flash' prop watcher
     });

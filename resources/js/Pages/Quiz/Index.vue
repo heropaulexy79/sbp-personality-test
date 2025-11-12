@@ -10,7 +10,7 @@ defineProps<{ quizzes: Lesson[] }>();
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="My Quizzes" />
 
     <AuthenticatedLayout>
         <header class="bg-white shadow-sm dark:bg-gray-800">
@@ -37,34 +37,41 @@ defineProps<{ quizzes: Lesson[] }>();
                         </CardHeader>
                         <CardFooter class="flex justify-end">
                             <Button as-child variant="secondary">
-                                <Link :href="route('quizzes.edit', quiz.id)">
+                                <!-- 
+                                  FIX: Pass 'quiz.slug' instead of 'quiz.id'
+                                  Your Course model uses 'slug' for route model binding.
+                                -->
+                                <Link :href="route('quizzes.edit', quiz.slug)">
                                     Edit
                                 </Link>
-                                <Link :href="route('quizzes.enroll', quiz.id)">
-                                    Enroll
-                                </Link>
                             </Button>
-                            <!-- <Link :href="route('quizzes.enroll', quiz.id)" class="ml-2">
-                                    <Button variant="secondary">Enroll</Button>
-                                </Link> -->
+                            
+                            <!-- 
+                              FIX: Pass 'quiz.slug' instead of 'quiz.id'
+                              This route also uses model binding on the Course,
+                              which is keyed by 'slug'.
+                            -->
+                            <Link :href="route('quizzes.enroll', quiz.slug)" class="ml-2">
+                                <Button variant="secondary">Enroll</Button>
+                            </Link>
                         </CardFooter>
                     </Card>
                 </div>
                 <div v-else class="text-center rounded-lg border-2 border-dashed border-gray-300 p-12">
-                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        No quizzes found
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Get started by creating your first quiz.
-                    </p>
-                    <div class="mt-6">
-                         <Button as-child>
-                            <Link :href="route('quizzes.create')">
-                                <PlusCircle class="mr-2 h-4 w-4" />
-                                Create New Quiz
-                            </Link>
-                        </Button>
-                    </div>
+                       <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                           No quizzes found
+                       </h3>
+                       <p class="mt-1 text-sm text-gray-500">
+                           Get started by creating your first quiz.
+                       </p>
+                       <div class="mt-6">
+                           <Button as-child>
+                               <Link :href="route('quizzes.create')">
+                                   <PlusCircle class="mr-2 h-4 w-4" />
+                                   Create New Quiz
+                               </Link>
+                           </Button>
+                       </div>
                 </div>
             </div>
         </div>

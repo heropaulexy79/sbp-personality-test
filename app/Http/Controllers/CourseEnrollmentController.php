@@ -14,13 +14,13 @@ class CourseEnrollmentController extends Controller
     /**
      * Display the enrollment management page for a specific course.
      * This is the new 'edit' method for our route.
+     * * @param  \App\Models\Course  $quiz  The Course model instance (aliased as quiz in routes).
      */
-    public function edit(Request $request, Course $course)
+    public function edit(Request $request, Course $quiz)
     {
         // 3. Optional: Ensure only the quiz creator can enroll users
-        //    If you don't have a 'user_id' on your Course model, you can
-        //    remove this check or adjust it to your admin logic.
-        // if ($course->user_id !== Auth::id()) {
+        //    (Uncomment if you want a security check)
+        // if ($quiz->user_id !== Auth::id()) {
         //     abort(403);
         // }
 
@@ -30,14 +30,14 @@ class CourseEnrollmentController extends Controller
 
         // 5. Get a simple list (an array) of IDs for users
         //    who are ALREADY enrolled in this course.
-        $enrolledUserIds = CourseEnrollment::where('course_id', $course->id)
+        $enrolledUserIds = CourseEnrollment::where('course_id', $quiz->id)
             ->pluck('user_id')
             ->all();
 
         // 6. Return the new 'Enroll' page, passing in the course,
         //    all users, and the list of enrolled IDs as props.
         return Inertia::render('Quiz/Enroll', [
-            'course' => $course,
+            'course' => $quiz, 
             'allUsers' => $allUsers,
             'enrolledUserIds' => $enrolledUserIds,
         ]);
@@ -46,11 +46,13 @@ class CourseEnrollmentController extends Controller
     /**
      * Update the enrollment status for a specific course.
      * This is the new 'update' method for our route.
+     * * @param  \App\App\Http\Controllers\Request  $request
+     * @param  \App\Models\Course  $quiz  The Course model instance (aliased as quiz in routes).
      */
-    public function update(Request $request, Course $course)
+    public function update(Request $request, Course $quiz)
     {
         // Optional: Add the same authorization check as in edit()
-        // if ($course->user_id !== Auth::id()) {
+        // if ($quiz->user_id !== Auth::id()) {
         //     abort(403);
         // }
 
@@ -62,32 +64,30 @@ class CourseEnrollmentController extends Controller
         ]);
 
         // 8. Sync the enrollments
-        // This is a common pattern:
         // - Get all user IDs from the request.
         // - Map them into the format needed for CourseEnrollment.
-        $enrollments = collect($validated['user_ids'])->map(function ($userId) use ($course) {
+        $enrollments = collect($validated['user_ids'])->map(function ($userId) use ($quiz) {
             return [
                 'user_id' => $userId,
-                'course_id' => $course->id,
+                'course_id' => $quiz->id,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         });
 
         // 9. Start a database transaction for safety
-        \DB::transaction(function () use ($course, $enrollments) {
+        \DB::transaction(function () use ($quiz, $enrollments) {
             // 10. First, remove ALL existing enrollments for this course.
-            CourseEnrollment::where('course_id', $course->id)->delete();
+            CourseEnrollment::where('course_id', $quiz->id)->delete();
 
             // 11. Second, insert all the new enrollments from the form.
-            //     If the array is empty (no users checked), this does nothing.
             if ($enrollments->isNotEmpty()) {
                 CourseEnrollment::insert($enrollments->all());
             }
         });
 
         // 12. Redirect back to the enrollment page with a success message
-        return to_route('quizzes.enroll', $course->id)->with('success', 'Enrollment updated successfully!');
+        return to_route('quizzes.enroll', $quiz->slug)->with('success', 'Enrollment updated successfully!'); 
     }
 
 
