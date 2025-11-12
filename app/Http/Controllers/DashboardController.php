@@ -2,51 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
+use App\Models\CourseEnrollment; // 1. Import the model
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth; // 2. Ensure Auth is imported
 
 class DashboardController extends Controller
 {
-    //
-
+    /**
+     * Handle the incoming request.
+     * We use index() since your file already has it.
+     */
     public function index(Request $request)
     {
+        // 3. Get the ID of the currently logged-in user
+        $userId = Auth::id();
 
-        return redirect(route('course.index'));
+        // 4. Fetch all enrollments for this user
+        // We eagerly load the 'course' and its 'lessons' to get the title
+        // and the link for the "Take Quiz" button
+        $enrollments = CourseEnrollment::where('user_id', $userId)
+            ->with(['course' => function ($query) {
+                // Ensure lessons are loaded, you might need to order them
+                $query->with(['lessons' => function ($lessonQuery) {
+                    $lessonQuery->orderBy('id'); // Or by an 'order' column if you have one
+                }]);
+            }])
+            ->get();
 
-        $user = $request->user();
+        // 5. Extract just the courses from the enrollment records
+        // We also find the first lesson for the "Take Quiz" link
+        $enrolledCourses = $enrollments->map(function ($enrollment) {
+            if ($enrollment->course) {
+                // Get the first lesson to build the "Take Quiz" link
+                $firstLesson = $enrollment->course->lessons->first();
+                $enrollment->course->first_lesson_slug = $firstLesson ? $firstLesson->slug : null;
+                return $enrollment->course;
+            }
+            return null;
+        })->filter(); // filter() removes any nulls if a course was deleted
 
-        if ($user->account_type === "TEACHER") {
-            return Inertia::render(
-                'Teacher/TeacherDashboard',
-                [
-                    'courses' => $request->user()->createdCourses()->paginate()
-                ]
-            );
-        }
-
-
-        $status = $request->query('status');
-
-        switch ($status) {
-            case 'all_enrolled':
-                $courses = Course::whereHas('enrolledUsers.organisationNew', function ($query) use ($user) {
-                    $query->where('organisation_id', $user->organisationNew->organisation_id);
-                    $query->where('is_published', true);
-                })->paginate()->withQueryString();
-                break;
-
-            default:
-                $courses = $request->user()->enrolledCourses()->where("is_completed", $status === "completed" ? "1" : "0")->where("is_published", true)
-                    ->paginate()->withQueryString();
-                break;
-        }
-
-
-        return Inertia::render(
-            'Organisation/OrganisationDashboard',
-            ['courses' => $courses]
-        );
+        // 6. Pass the 'enrolledCourses' data as a prop to your new Vue page
+        return Inertia::render('Dashboard', [ // This now points to 'Dashboard.vue'
+            'enrolledCourses' => $enrolledCourses,
+        ]);
     }
 }
