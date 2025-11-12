@@ -7,11 +7,19 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import InputError from "@/Components/InputError.vue";
 
+// AFTER
 const form = useForm({
     title: "",
     // We hardcode the type to simplify the form,
     // as your app is now only for personality quizzes.
     type: "PERSONALITY_QUIZ",
+    
+    // Add this default structure to pass validation
+    content_json: {
+        questions: [],
+        traits: [],
+        archetypes: [],
+    },
 });
 
 const submit = () => {

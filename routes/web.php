@@ -35,8 +35,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Quiz Management
     Route::resource('quizzes', QuizController::class)->except(['show']);
 
-    // FIX: ADD LESSON ROUTES (nested under courses)
-    // This adds lesson.store, lesson.create, lesson.edit, lesson.update, etc.
+    // =================================================================
+    // FIX: ADD THIS BLOCK
+    // This adds all the necessary lesson routes like lesson.store, 
+    // lesson.create, lesson.edit, lesson.update, etc.
+    // =================================================================
     Route::resource('courses/{course}/lessons', LessonController::class)
         ->shallow()
         ->names([
@@ -47,7 +50,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'update' => 'lesson.update',
             'destroy' => 'lesson.destroy',
         ]);
-    
+    // =================================================================
+    // END OF FIX
+    // =================================================================
+
     // AI Generator (UPDATED)
     Route::post('/ai/generate-quiz', [PersonalityQuizGeneratorController::class, 'generate'])->name('ai.quiz.generate');
     Route::post('/ai/save-quiz', [PersonalityQuizGeneratorController::class, 'store'])->name('ai.quiz.store');

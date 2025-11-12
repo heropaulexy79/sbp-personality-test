@@ -1,34 +1,45 @@
 <script setup lang="ts">
 import OrganisationLayout from '@/Layouts/OrganisationLayout.vue';
 import PersonallityQuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/Personality/PersonallityQuizBuilder.vue';
+import QuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/QuizBuilder.vue'; // <-- ADDED IMPORT
 import { Lesson } from '@/types/index';
-import { Head, Link, useForm } from '@inertiajs/vue3'; // <-- Import useForm
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/ui/card';
 import DangerButton from '@/Components/DangerButton.vue';
 import { toast } from 'vue-sonner';
 import { computed } from 'vue';
-import { Button } from '@/Components/ui/button'; // <-- Import Button
-import { SaveIcon } from 'lucide-vue-next'; // <-- Import SaveIcon
+import { Button } from '@/Components/ui/button';
+import { SaveIcon } from 'lucide-vue-next';
 
 const props = defineProps<{
     lesson: Lesson;
     errors: { [key: string]: string };
 }>();
 
-// =================================================================
-// FIX: Create an Inertia form to manage and save the quiz data
-// =================================================================
+// Safely get the parsed content (which should be an object/array thanks to Laravel's $casts)
+// If it's null, we default to an empty object to prevent runtime errors.
+const initialContent = props.lesson.content_json || {};
+
 const form = useForm({
     title: props.lesson.title,
-    // We must ensure content_json and its properties exist
-    content_json: {
-        questions: props.lesson.content_json?.questions || [],
-        traits: props.lesson.content_json?.traits || [],
-        // You might need other properties from content_json here
-    },
+    slug: props.lesson.slug,
+    is_published: props.lesson.is_published,
+
+    // Use 'quiz' for standard quizzes - Explicitly extract the nested 'questions' array
+    quiz: props.lesson.type === 'QUIZ' 
+        ? { questions: initialContent.questions || [] } 
+        : null,
+
+    // Use 'personality_quiz' for personality quizzes - Explicitly extract sub-arrays
+    personality_quiz: props.lesson.type === 'PERSONALITY_QUIZ' 
+        ? { 
+            questions: initialContent.questions || [], 
+            traits: initialContent.traits || [], 
+            archetypes: initialContent.archetypes || [] 
+          }
+        : null,
 });
 
-// This function will be called by our new "Save Changes" button
 function saveQuiz() {
     form.patch(route('quizzes.update', props.lesson.id), {
         onSuccess: () => {
@@ -39,9 +50,7 @@ function saveQuiz() {
         },
     });
 }
-// =================================================================
-// END OF FIX
-// =================================================================
+
 
 const deleteForm = useForm({});
 const isStandaloneQuiz = computed(() => !props.lesson.course_id);
@@ -67,23 +76,30 @@ function destroy() {
         <div class="container py-8">
             <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-bold tracking-tight dark:text-white">
-                    Edit Personality Quiz: {{ form.title }}
+                    Edit Quiz: {{ form.title }}
                 </h1>
                 
                 <Button @click="saveQuiz" :disabled="form.processing">
                     <SaveIcon class="mr-2 size-4" :class="{ 'animate-spin': form.processing }" />
                     {{ form.processing ? 'Saving...' : 'Save Changes' }}
                 </Button>
-                </div>
+            </div>
 
             <div class="max-w-4xl mx-auto space-y-6">
 
-                <PersonallityQuizBuilder 
-                    :lesson="lesson" 
-                    :errors="form.errors"  
-                    v-model="form.content_json.questions"
-                    v-model:traits="form.content_json.traits"
-                />
+<PersonallityQuizBuilder
+    v-if="lesson.type === 'PERSONALITY_QUIZ'"
+    :lesson="lesson"
+    :errors="form.errors"
+    v-model="form.personality_quiz.questions"
+    v-model:traits="form.personality_quiz.traits"
+/>
+
+<QuizBuilder
+    v-if="lesson.type === 'QUIZ'"
+    :errors="form.errors"
+    v-model="form.quiz.questions"
+/>
 
                 <Card v-if="isStandaloneQuiz" class="border-destructive">
                     <CardHeader class="flex flex-row items-center justify-between">
