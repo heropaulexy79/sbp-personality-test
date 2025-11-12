@@ -37,11 +37,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Quiz Management (This is now your Admin/Teacher quiz creator)
     Route::resource('quizzes', QuizController::class)->except(['show']);
 
+    // --- 1. ADD THIS BLOCK FOR ENROLLMENT ---
+    Route::get('/quizzes/{course}/enroll', [CourseEnrollmentController::class, 'edit'])->name('quizzes.enroll');
+    Route::post('/quizzes/{course}/enroll', [CourseEnrollmentController::class, 'update'])->name('quizzes.enroll.update');
+    // --- END OF BLOCK ---
+
     // =================================================================
     // FIX: ADD THIS BLOCK
-    // This adds all the necessary lesson routes like lesson.store, 
-    // lesson.create, lesson.edit, lesson.update, etc.
-    // =================================================================
+    // RE-ADDING THIS LINE. It was accidentally deleted.
     Route::resource('courses/{course}/lessons', LessonController::class)
         ->shallow()
         ->names([

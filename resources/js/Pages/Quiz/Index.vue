@@ -40,7 +40,13 @@ defineProps<{ quizzes: Lesson[] }>();
                                 <Link :href="route('quizzes.edit', quiz.id)">
                                     Edit
                                 </Link>
+                                <Link :href="route('quizzes.enroll', quiz.id)">
+                                    Enroll
+                                </Link>
                             </Button>
+                            <!-- <Link :href="route('quizzes.enroll', quiz.id)" class="ml-2">
+                                    <Button variant="secondary">Enroll</Button>
+                                </Link> -->
                         </CardFooter>
                     </Card>
                 </div>
