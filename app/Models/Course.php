@@ -32,6 +32,11 @@ class Course extends Model
     //     return true;
     // }
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);

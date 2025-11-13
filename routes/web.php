@@ -42,8 +42,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // --- 1. FIX: Change parameter from {course} to {quiz} ---
     // This matches the parameter name from Route::resource('quizzes', ...)
-    Route::get('/quizzes/{quiz}/enroll', [CourseEnrollmentController::class, 'edit'])->name('quizzes.enroll');
-    Route::post('/quizzes/{quiz}/enroll', [CourseEnrollmentController::class, 'update'])->name('quizzes.enroll.update');
+    Route::get('/quizzes/{quiz:slug}/enroll', [CourseEnrollmentController::class, 'edit'])->name('quizzes.enroll');
+    Route::post('/quizzes/{quiz:slug}/enroll', [CourseEnrollmentController::class, 'update'])->name('quizzes.enroll.update');
     // --- END OF BLOCK ---
 
     // =================================================================
