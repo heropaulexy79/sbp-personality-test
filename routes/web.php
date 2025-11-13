@@ -64,9 +64,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // END OF FIX
     // =================================================================
 
-    // AI Generator (UPDATED)
-    Route::post('/ai/generate-quiz', [PersonalityQuizGeneratorController::class, 'generate'])->name('ai.quiz.generate');
-    Route::post('/ai/save-quiz', [PersonalityQuizGeneratorController::class, 'store'])->name('ai.quiz.store');
+    // AI Generator (UPDATED FOR NEW FUNCTIONALITY)
+    // FIX: New route for creating a NEW quiz using AI (used on Quiz/Create.vue)
+    Route::post('/ai/quizzes/generate-and-store', [PersonalityQuizGeneratorController::class, 'generateAndStore'])
+        ->name('ai.quizzes.generate_and_store'); 
+        
+    // FIX: New route for UPDATING an existing quiz with AI content (used on Quiz/Edit.vue)
+    Route::post('/quizzes/{lesson}/generate-content', [PersonalityQuizGeneratorController::class, 'generateAndUpdate'])
+        ->name('quizzes.generate_content');
 
     // API for traits
     Route::get('/api/personality-traits', [PersonalityTraitController::class, 'index'])->name('api.personality-traits.index');

@@ -6,15 +6,15 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/Componen
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import InputError from "@/Components/InputError.vue";
+import { SparklesIcon } from "lucide-vue-next"; 
 
-// AFTER
+// --- FIX IS HERE: Use default values, do not read props.lesson ---
 const form = useForm({
-    title: "",
-    // We hardcode the type to simplify the form,
-    // as your app is now only for personality quizzes.
+    title: "", // Default empty string
+    // Set the type directly as it's a personality test quiz factory
     type: "PERSONALITY_QUIZ",
     
-    // Add this default structure to pass validation
+    // Provide an empty JSON structure to satisfy backend validation/schema
     content_json: {
         questions: [],
         traits: [],
@@ -24,6 +24,28 @@ const form = useForm({
 
 const submit = () => {
     form.post(route('quizzes.store'));
+};
+
+// ... (Rest of the AI generation logic remains the same)
+
+// NEW: Separate form for AI generation
+const aiForm = useForm({
+    title: "", // Will sync with the main form's title
+});
+
+const generateWithAi = () => {
+    // Sync the title before submission
+    aiForm.title = form.title;
+    
+    // We post to the route defined in the first response (ai.quizzes.generate_and_store)
+    aiForm.post(route('ai.quizzes.generate_and_store'), {
+        onBefore: () => {
+            form.processing = true; 
+        },
+        onFinish: () => {
+            form.processing = false;
+        }
+    });
 };
 </script>
 
@@ -57,10 +79,19 @@ const submit = () => {
                                 />
                                 <InputError class="mt-2" :message="form.errors.title" />
                             </div>
-                             <!-- The 'type' is hidden, as we only create one type -->
                         </CardContent>
-                        <CardFooter class="flex justify-end">
-                            <Button :disabled="form.processing">
+                        <CardFooter class="flex justify-between">
+                            <Button 
+                                type="button" 
+                                variant="outline"
+                                @click="generateWithAi"
+                                :disabled="form.processing || aiForm.processing || !form.title"
+                            >
+                                <SparklesIcon class="mr-2 size-4" :class="{ 'animate-spin': aiForm.processing }" />
+                                {{ aiForm.processing ? 'Generating...' : 'Generate with AI' }}
+                            </Button>
+                            
+                            <Button :disabled="form.processing || aiForm.processing || !form.title" type="submit">
                                 {{ form.processing ? 'Creating...' : 'Create & Edit Quiz' }}
                             </Button>
                         </CardFooter>

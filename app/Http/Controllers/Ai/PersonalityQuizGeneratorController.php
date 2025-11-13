@@ -133,6 +133,119 @@ class PersonalityQuizGeneratorController extends Controller
     }
 
     /**
+     * Generate the personality quiz JSON via AI and update the existing Lesson.
+     * (Used on the Quiz Edit Page)
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Lesson  $lesson
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function generateAndUpdate(Request $request, Lesson $lesson)
+    {
+        // 1. Call the existing generate function to get the content
+        $response = $this->generate($request);
+        $quizData = $response->getData(true);
+
+        // 2. Handle failure from the generate method
+        if ($response->getStatusCode() !== 200 || isset($quizData['error'])) {
+            return back()->with('error', $quizData['error'] ?? 'AI generation failed.')->withStatus($response->getStatusCode());
+        }
+
+        try {
+            $incomingData = $quizData;
+            $questions = $incomingData['questions'] ?? [];
+            
+            // Map 'archetypes' from AI response to 'traits' and include 'archetypes' for compatibility
+            $traitsToSave = $incomingData['archetypes'] ?? [];
+
+            $finalQuizData = [
+                'traits' => $traitsToSave,
+                'questions' => $questions,
+                'archetypes' => $traitsToSave, // Ensure 'archetypes' key is saved for consistency
+            ];
+
+            if (empty($finalQuizData['questions'])) {
+                 Log::error('Update failed: Questions array is empty after AI processing.');
+                 return back()->with('error', 'Cannot save quiz: No questions data found from AI.');
+            }
+
+            // 3. Update the existing Lesson
+            $lesson->content_json = $finalQuizData;
+            $lesson->save();
+            
+            // 4. Reload the page with the new content
+            return back()->with('success', 'Personality Quiz content successfully generated and updated!');
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update personality quiz lesson with AI content', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to update quiz with AI content.');
+        }
+    }
+
+    /**
+     * Generate the personality quiz JSON via AI and store it as a new Lesson.
+     * (Used on the Quiz Create Page)
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function generateAndStore(Request $request)
+    {
+        // 1. Validate the minimum required input (the title)
+        $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+        
+        // 2. Call the existing generate function to get the quiz content
+        $response = $this->generate($request);
+        $quizData = $response->getData(true);
+
+        if ($response->getStatusCode() !== 200 || isset($quizData['error'])) {
+            // If AI generation fails, redirect back with the error message
+            return back()->with('error', $quizData['error'] ?? 'AI generation failed.')->withStatus($response->getStatusCode());
+        }
+
+        try {
+            $incomingData = $quizData;
+            $questions = $incomingData['questions'] ?? [];
+            $traitsToSave = $incomingData['archetypes'] ?? [];
+
+            $finalQuizData = [
+                'questions' => $questions,
+                'traits' => $traitsToSave,
+                'archetypes' => $traitsToSave, // Ensure 'archetypes' key is saved for consistency
+            ];
+
+            if (empty($finalQuizData['questions'])) {
+                 Log::error('Store failed: Questions array is empty after AI processing.');
+                 return back()->with('error', 'Cannot create quiz: No questions data found from AI.');
+            }
+
+            // 3. Create a new Lesson (Quiz) record
+            $lesson = new Lesson();
+            // Note: Assuming it's a standalone quiz, course_id remains null for this flow
+            $lesson->course_id = null; 
+            $lesson->title = $request->title;
+            // The slug is generated here
+            $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
+            $lesson->type = 'personality_quiz';
+            $lesson->is_published = false; // Start as unpublished
+            $lesson->user_id = auth()->id(); 
+            $lesson->content_json = $finalQuizData;
+            $lesson->save();
+
+            // 4. Redirect to the newly created quiz's edit page, using the SLUG
+            return redirect()
+                ->route('quizzes.edit', $lesson->slug)
+                ->with('success', 'Personality Quiz successfully generated and created!');
+
+        } catch (\Exception $e) {
+            Log::error('Failed to save personality quiz lesson after AI generation', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to save the new quiz after generation.');
+        }
+    }
+
+    /**
      * Save the generated JSON as a new Personality Quiz Lesson.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -175,6 +288,7 @@ class PersonalityQuizGeneratorController extends Controller
             $finalQuizData = [
                 'traits' => $traitsToSave,
                 'questions' => $questions, // Use the extracted and logged variable
+                'archetypes' => $traitsToSave, // ADDED: Ensure 'archetypes' key is present for full consistency
             ];
 
             // Final validation check

@@ -41,7 +41,8 @@ const form = useForm({
 });
 
 function saveQuiz() {
-    form.patch(route('quizzes.update', props.lesson.id), {
+    // FIX: Use lesson.slug instead of lesson.id to match model binding in routes/web.php
+    form.patch(route('quizzes.update', props.lesson.slug), {
         onSuccess: () => {
             toast.success('Quiz Updated Successfully');
         },
@@ -57,7 +58,8 @@ const isStandaloneQuiz = computed(() => !props.lesson.course_id);
 
 function destroy() {
     if (confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) {
-        deleteForm.delete(route('quizzes.destroy', props.lesson.id), {
+        // FIX: Use lesson.slug instead of lesson.id to match model binding in routes/web.php
+        deleteForm.delete(route('quizzes.destroy', props.lesson.slug), {
             onSuccess: () => {
                 toast.success('Quiz Deleted');
             },
