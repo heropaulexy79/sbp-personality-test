@@ -2,49 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CourseEnrollment; // 1. Import the model
+use App\Models\Lesson;
+use App\Models\CourseEnrollment;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth; // 2. Ensure Auth is imported
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     /**
-     * Handle the incoming request.
-     * We use index() since your file already has it.
+     * Display the main dashboard, showing created quizzes and enrolled quizzes.
      */
-    public function index(Request $request)
+    public function index()
     {
-        // 3. Get the ID of the currently logged-in user
-        $userId = Auth::id();
+        $user = Auth::user();
+        
+        // 1. Get Quizzes Created by the User (Teacher View)
+        $createdQuizzes = Lesson::query()
+            ->where('user_id', $user->id)
+            ->where('type', 'personality_quiz')
+            ->orderByDesc('created_at')
+            ->get(['id', 'title', 'slug', 'is_published'])
+            ->map(fn (Lesson $quiz) => [
+                'id' => $quiz->id,
+                'title' => $quiz->title,
+                'slug' => $quiz->slug,
+                'is_published' => (bool) $quiz->is_published,
+            ]);
 
-        // 4. Fetch all enrollments for this user
-        // We eagerly load the 'course' and its 'lessons' to get the title
-        // and the link for the "Take Quiz" button
-        $enrollments = CourseEnrollment::where('user_id', $userId)
-            ->with(['course' => function ($query) {
-                // Ensure lessons are loaded, you might need to order them
-                $query->with(['lessons' => function ($lessonQuery) {
-                    $lessonQuery->orderBy('id'); // Or by an 'order' column if you have one
-                }]);
-            }])
-            ->get();
+        // 2. Get Quizzes the User is Enrolled In (Student View)
+        // Note: CourseEnrollment uses 'course_id' which maps to Lesson ID for quizzes.
+        $enrolledQuizIds = CourseEnrollment::where('user_id', $user->id)
+                                          ->pluck('course_id');
 
-        // 5. Extract just the courses from the enrollment records
-        // We also find the first lesson for the "Take Quiz" link
-        $enrolledCourses = $enrollments->map(function ($enrollment) {
-            if ($enrollment->course) {
-                // Get the first lesson to build the "Take Quiz" link
-                $firstLesson = $enrollment->course->lessons->first();
-                $enrollment->course->first_lesson_slug = $firstLesson ? $firstLesson->slug : null;
-                return $enrollment->course;
-            }
-            return null;
-        })->filter(); // filter() removes any nulls if a course was deleted
+        $enrolledQuizzes = Lesson::query()
+            ->whereIn('id', $enrolledQuizIds)
+            ->where('is_published', true) // Only show published quizzes to students
+            ->orderBy('title')
+            ->get(['id', 'title', 'slug'])
+            ->map(fn (Lesson $quiz) => [
+                'id' => $quiz->id,
+                'title' => $quiz->title,
+                'slug' => $quiz->slug,
+            ]);
 
-        // 6. Pass the 'enrolledCourses' data as a prop to your new Vue page
-        return Inertia::render('Dashboard', [ // This now points to 'Dashboard.vue'
-            'enrolledCourses' => $enrolledCourses,
+        // FIX: Determine if the user has a "Teacher" role based on created quizzes
+        // This ensures a user sees the teacher section if they have created content.
+        $hasCreatedQuizzes = $createdQuizzes->isNotEmpty();
+        
+        // We will default isTeacher to true if they have created quizzes, or fall back
+        // to checking account_type/role if no quizzes are created (original logic, simplified).
+        // Since you are the creator, this will almost certainly be true.
+        $isTeacher = $hasCreatedQuizzes ?: (
+            property_exists($user, 'account_type') 
+            ? ($user->account_type === 'teacher' || $user->account_type === 'admin')
+            : (property_exists($user, 'role') 
+                ? ($user->role === 'teacher' || $user->role === 'admin') 
+                : true
+            )
+        );
+
+        return Inertia::render('Dashboard', [
+            'createdQuizzes' => $createdQuizzes,
+            'enrolledQuizzes' => $enrolledQuizzes,
+            'isTeacher' => $isTeacher, 
         ]);
     }
 }

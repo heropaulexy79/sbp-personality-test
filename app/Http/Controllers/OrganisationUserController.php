@@ -12,26 +12,40 @@ use Illuminate\Http\Request;
 
 class OrganisationUserController extends Controller
 {
-    //
+    /**
+     * Display a list of employees, filtered by search term.
+     */
     public function index(Request $request)
     {
-        //
+        // 1. Get the authenticated user
         $user = $request->user();
+        
+        // 2. Get the search term from the request query parameters
+        $search = $request->input('search');
 
+        // Start building the query to get employees for the current organization
+        $query = $user->organisationNew->organisation->employees()->with("user:id,name,email");
 
+        // 3. Conditionally apply the search filter
+        if ($search) {
+            $query->whereHas('user', function ($q) use ($search) {
+                // Search for the term in the user's name OR email
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        // 4. Execute the query and return the results
         return response([
-            "students" => $user->organisationNew->organisation->employees()->with("user:id,name,email")->get(),
+            "students" => $query->get(),
         ]);
     }
 
-    public  function store(InviteToOrganisationRequest $request, Organisation $organisation)
+    public function store(InviteToOrganisationRequest $request, Organisation $organisation)
     {
         $invites = [];
 
-
-
         foreach ($request->input("invites") as $key => $value) {
-
             $invites[] = [
                 'email' => $value["email"],
                 'organisation_id' => $organisation->id,
@@ -39,8 +53,6 @@ class OrganisationUserController extends Controller
                 'role' => $request->input('role', 'STUDENT'),
             ];
         }
-
-
 
         OrganisationInvitation::insert($invites);
 
@@ -53,7 +65,6 @@ class OrganisationUserController extends Controller
             // Send Notification
             event(new EmployeeInvited($invitation));
         }
-
 
         return back()->with('success', 'Employee invitations sent successfully!');
     }
@@ -103,8 +114,8 @@ class OrganisationUserController extends Controller
         $employee->delete();
 
         // "global:message", [
-        //     "status" => "success",
-        //     "message" => "Uninvited",
+        //     "status" => "success",
+        //     "message" => "Uninvited",
         // ]
         return back();
     }

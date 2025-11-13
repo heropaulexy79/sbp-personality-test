@@ -40,11 +40,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->except(['show'])
         ->parameters(['quizzes' => 'quiz:slug']); 
 
-    // --- 1. FIX: Change parameter from {course} to {quiz} ---
-    // This matches the parameter name from Route::resource('quizzes', ...)
+    // --- ENROLLMENT ROUTES ---
+    // This block includes the existing enrollment routes and the new search API route.
     Route::get('/quizzes/{quiz:slug}/enroll', [CourseEnrollmentController::class, 'edit'])->name('quizzes.enroll');
     Route::post('/quizzes/{quiz:slug}/enroll', [CourseEnrollmentController::class, 'update'])->name('quizzes.enroll.update');
-    // --- END OF BLOCK ---
+
+    // NEW API ROUTE: Server-side search for users during enrollment
+    Route::get('/quizzes/{quiz:slug}/users/search', [CourseEnrollmentController::class, 'searchUsersForEnrollment'])->name('api.quizzes.users.search');
+    // --- END ENROLLMENT ROUTES ---
 
     // =================================================================
     // FIX: ADD THIS BLOCK

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { Course, OrganisationUser, User } from "@/types";
 import axios from "axios";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue"; // <-- ADD 'watch'
+import { debounce } from "lodash"; // <-- ADD debounce utility (requires lodash)
 import {
     ComboboxAnchor,
     ComboboxInput,
@@ -46,31 +47,27 @@ const seletedStudents = computed(() =>
 const wrapperRef = ref<HTMLElement>();
 
 const form = useForm({
-    // students: [] as string[],
+    // Form data is irrelevant as it's transformed, but adding user_ids for clarity
+    user_ids: [] as string[],
 });
-// const studentsMap = computed(()=>{
-//   const n = new Map<number,Student>();
-//
-//   students.value.forEach((r)=>{
-//     n.set(r.id, r);
-//   })
-//
-//   return n;
-// });
 
 const filteredStudents = computed(() =>
     students.value?.filter((i) => !modelValue.value.includes(i.user_id + "")),
 );
 
-async function fetchStudents() {
+// MODIFIED: Accepts an optional search term and passes it to the API
+async function fetchStudents(search: string = "") {
     error.value = null;
-    students.value = [];
+    // Don't clear students.value here, set loading indicator instead
     loading.value = true;
 
     try {
-        // replace `getPost` with your data fetching util / API wrapper
         students.value = (
-            await axios.get(route("organisation.employees"))
+            await axios.get(route("organisation.employees"), {
+                params: {
+                    search: search, // Pass the search term to the backend
+                },
+            })
         ).data.students;
     } catch (err: any) {
         error.value = err.toString();
@@ -79,9 +76,21 @@ async function fetchStudents() {
     }
 }
 
+// NEW: Implement debouncing to prevent excessive API calls while the user types
+const debouncedFetchStudents = debounce((search: string) => {
+    fetchStudents(search);
+}, 300); // 300ms delay
+
+// NEW: Watch the searchTerm and trigger the debounced fetch
+watch(searchTerm, (newSearchTerm) => {
+    debouncedFetchStudents(newSearchTerm);
+});
+
+// MODIFIED & FIXED: Corrected payload key to 'user_ids'
 function enrollStudents() {
     form.transform(() => ({
-        students: modelValue.value,
+        // FIX: Use 'user_ids' as expected by the CourseEnrollmentController
+        user_ids: modelValue.value,
     })).post(route("course.enroll", { course: props.course.slug }), {
         onSuccess() {
             props.onSuccess?.();
@@ -89,6 +98,7 @@ function enrollStudents() {
     });
 }
 
+// MODIFIED: Initial fetch runs without a search term
 onMounted(async () => {
     await fetchStudents();
 });
@@ -146,7 +156,7 @@ onMounted(async () => {
                     <ComboboxPortal :to="wrapperRef">
                         <CommandList
                             position="popper"
-                            class="mt-2 w-(--radix-popper-anchor-width) rounded-md border bg-popover text-popover-foreground shadow-md outline-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                            class="mt-2 w-[--radix-popper-anchor-width] rounded-md border bg-popover text-popover-foreground shadow-md outline-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
                             dismissable
                         >
                             <CommandEmpty> No Students </CommandEmpty>
@@ -160,10 +170,6 @@ onMounted(async () => {
                                     :value="student.user.name"
                                     @select.prevent="
                                         (ev) => {
-                                            // if (typeof ev.detail.value === 'string' ) {
-                                            //     searchTerm = '';
-                                            //     modelValue.value.push(ev.detail.value);
-                                            // }
                                             modelValue.push(
                                                 student.user_id + '',
                                             );

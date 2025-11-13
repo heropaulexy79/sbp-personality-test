@@ -37,49 +37,49 @@ class PersonalityQuizGeneratorController extends Controller
         // 3. Get API Key
         $apiKey = config('services.gemini.api_key');
         if (empty($apiKey)) {
-            return response()->json(['error' => 'AI service is not configured correctly.'], 500);
+             return response()->json(['error' => 'AI service is not configured correctly.'], 500);
         }
 
         // Updated to use a stable model version
         $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey;
 
         $responseSchema = [
-            'type' => 'OBJECT',
-            'properties' => [
-                'archetypes' => [
-                    'type' => 'ARRAY',
-                    'items' => [
-                        'type' => 'OBJECT',
-                        'properties' => [
-                            'name' => ['type' => 'STRING'],
-                            'description' => ['type' => 'STRING']
-                        ],
-                        'required' => ['name', 'description']
-                    ],
-                ],
-                'questions' => [
-                    'type' => 'ARRAY',
-                    'items' => [
-                        'type' => 'OBJECT',
-                        'properties' => [
-                            'question_text' => ['type' => 'STRING'],
-                            'options' => [
-                                'type' => 'ARRAY',
-                                'items' => [
-                                    'type' => 'OBJECT',
-                                    'properties' => [
-                                        'option_text' => ['type' => 'STRING'],
-                                        'maps_to_archetype' => ['type' => 'STRING']
-                                    ],
-                                    'required' => ['option_text', 'maps_to_archetype']
-                                ],
-                            ]
-                        ],
-                        'required' => ['question_text', 'options']
-                    ],
-                ]
-            ],
-            'required' => ['archetypes', 'questions']
+             'type' => 'OBJECT',
+             'properties' => [
+                 'archetypes' => [
+                     'type' => 'ARRAY',
+                     'items' => [
+                         'type' => 'OBJECT',
+                         'properties' => [
+                             'name' => ['type' => 'STRING'],
+                             'description' => ['type' => 'STRING']
+                         ],
+                         'required' => ['name', 'description']
+                     ],
+                 ],
+                 'questions' => [
+                     'type' => 'ARRAY',
+                     'items' => [
+                         'type' => 'OBJECT',
+                         'properties' => [
+                             'question_text' => ['type' => 'STRING'],
+                             'options' => [
+                                 'type' => 'ARRAY',
+                                 'items' => [
+                                     'type' => 'OBJECT',
+                                     'properties' => [
+                                         'option_text' => ['type' => 'STRING'],
+                                         'maps_to_archetype' => ['type' => 'STRING']
+                                     ],
+                                     'required' => ['option_text', 'maps_to_archetype']
+                                 ],
+                             ]
+                         ],
+                         'required' => ['question_text', 'options']
+                     ],
+                 ]
+             ],
+             'required' => ['archetypes', 'questions']
         ];
 
         // We merge the system prompt and user query into a single prompt
@@ -90,45 +90,45 @@ class PersonalityQuizGeneratorController extends Controller
         $fullPrompt = $systemPrompt . "\n\n" . $userQuery;
 
         $payload = [
-            'contents' => [
-                [
-                    'role' => 'user',
-                    'parts' => [
-                        ['text' => $fullPrompt]
-                    ]
-                ]
-            ],
-            'generationConfig' => [
-                'responseMimeType' => 'application/json',
-                'responseSchema' => $responseSchema,
-            ],
+             'contents' => [
+                 [
+                     'role' => 'user',
+                     'parts' => [
+                         ['text' => $fullPrompt]
+                     ]
+                 ]
+             ],
+             'generationConfig' => [
+                 'responseMimeType' => 'application/json',
+                 'responseSchema' => $responseSchema,
+             ],
         ];
 
         try {
-            $response = Http::withOptions(['timeout' => 120])->retry(3, 1000)->post($apiUrl, $payload);
+             $response = Http::withOptions(['timeout' => 120])->retry(3, 1000)->post($apiUrl, $payload);
 
-            if (!$response->successful()) {
-                Log::error('Gemini API request failed', ['body' => $response->body()]);
-                return response()->json(['error' => 'Failed to generate quiz.'], $response->status());
-            }
+             if (!$response->successful()) {
+                 Log::error('Gemini API request failed', ['body' => $response->body()]);
+                 return response()->json(['error' => 'Failed to generate quiz.'], $response->status());
+             }
 
-            $result = $response->json();
-            if (empty($result['candidates'][0]['content']['parts'][0]['text'])) {
-                return response()->json(['error' => 'AI returned empty content.'], 500);
-            }
+             $result = $response->json();
+             if (empty($result['candidates'][0]['content']['parts'][0]['text'])) {
+                 return response()->json(['error' => 'AI returned empty content.'], 500);
+             }
 
-            $quizData = json_decode($result['candidates'][0]['content']['parts'][0]['text'], true);
+             $quizData = json_decode($result['candidates'][0]['content']['parts'][0]['text'], true);
 
-            if (json_last_error() !== JSON_ERROR_NONE || !is_array($quizData)) {
-                Log::error('Failed to decode AI response JSON', ['response_text' => $result['candidates'][0]['content']['parts'][0]['text'] ?? 'NULL']);
-                return response()->json(['error' => 'AI returned invalid JSON format.'], 500);
-            }
+             if (json_last_error() !== JSON_ERROR_NONE || !is_array($quizData)) {
+                 Log::error('Failed to decode AI response JSON', ['response_text' => $result['candidates'][0]['content']['parts'][0]['text'] ?? 'NULL']);
+                 return response()->json(['error' => 'AI returned invalid JSON format.'], 500);
+             }
 
-            return response()->json($quizData);
+             return response()->json($quizData);
 
         } catch (\Exception $e) {
-            Log::error('Quiz Generation Error', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'An unexpected error occurred.'], 500);
+             Log::error('Quiz Generation Error', ['error' => $e->getMessage()]);
+             return response()->json(['error' => 'An unexpected error occurred.'], 500);
         }
     }
 
@@ -148,37 +148,39 @@ class PersonalityQuizGeneratorController extends Controller
 
         // 2. Handle failure from the generate method
         if ($response->getStatusCode() !== 200 || isset($quizData['error'])) {
-            return back()->with('error', $quizData['error'] ?? 'AI generation failed.')->withStatus($response->getStatusCode());
+             return back()->with('error', $quizData['error'] ?? 'AI generation failed.')->withStatus($response->getStatusCode());
         }
 
         try {
-            $incomingData = $quizData;
-            $questions = $incomingData['questions'] ?? [];
-            
-            // Map 'archetypes' from AI response to 'traits' and include 'archetypes' for compatibility
-            $traitsToSave = $incomingData['archetypes'] ?? [];
+             $incomingData = $quizData;
+             $questions = $incomingData['questions'] ?? [];
+             
+             // Map 'archetypes' from AI response to 'traits' and include 'archetypes' for compatibility
+             $traitsToSave = $incomingData['archetypes'] ?? [];
 
-            $finalQuizData = [
-                'traits' => $traitsToSave,
-                'questions' => $questions,
-                'archetypes' => $traitsToSave, // Ensure 'archetypes' key is saved for consistency
-            ];
+             $finalQuizData = [
+                 'traits' => $traitsToSave,
+                 'questions' => $questions,
+                 'archetypes' => $traitsToSave, // Ensure 'archetypes' key is saved for consistency
+             ];
 
-            if (empty($finalQuizData['questions'])) {
-                 Log::error('Update failed: Questions array is empty after AI processing.');
-                 return back()->with('error', 'Cannot save quiz: No questions data found from AI.');
-            }
+             if (empty($finalQuizData['questions'])) {
+                  Log::error('Update failed: Questions array is empty after AI processing.');
+                  return back()->with('error', 'Cannot save quiz: No questions data found from AI.');
+             }
 
-            // 3. Update the existing Lesson
-            $lesson->content_json = $finalQuizData;
-            $lesson->save();
-            
-            // 4. Reload the page with the new content
-            return back()->with('success', 'Personality Quiz content successfully generated and updated!');
+             // 3. Update the existing Lesson
+             $lesson->content_json = $finalQuizData;
+             // FIX: Ensure the lesson is explicitly published after a successful update (if it wasn't already)
+             $lesson->is_published = true; 
+             $lesson->save();
+             
+             // 4. Reload the page with the new content
+             return back()->with('success', 'Personality Quiz content successfully generated and updated!');
 
         } catch (\Exception $e) {
-            Log::error('Failed to update personality quiz lesson with AI content', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Failed to update quiz with AI content.');
+             Log::error('Failed to update personality quiz lesson with AI content', ['error' => $e->getMessage()]);
+             return back()->with('error', 'Failed to update quiz with AI content.');
         }
     }
 
@@ -193,7 +195,7 @@ class PersonalityQuizGeneratorController extends Controller
     {
         // 1. Validate the minimum required input (the title)
         $request->validate([
-            'title' => 'required|string|max:255',
+             'title' => 'required|string|max:255',
         ]);
         
         // 2. Call the existing generate function to get the quiz content
@@ -201,47 +203,48 @@ class PersonalityQuizGeneratorController extends Controller
         $quizData = $response->getData(true);
 
         if ($response->getStatusCode() !== 200 || isset($quizData['error'])) {
-            // If AI generation fails, redirect back with the error message
-            return back()->with('error', $quizData['error'] ?? 'AI generation failed.')->withStatus($response->getStatusCode());
+             // If AI generation fails, redirect back with the error message
+             return back()->with('error', $quizData['error'] ?? 'AI generation failed.')->withStatus($response->getStatusCode());
         }
 
         try {
-            $incomingData = $quizData;
-            $questions = $incomingData['questions'] ?? [];
-            $traitsToSave = $incomingData['archetypes'] ?? [];
+             $incomingData = $quizData;
+             $questions = $incomingData['questions'] ?? [];
+             $traitsToSave = $incomingData['archetypes'] ?? [];
 
-            $finalQuizData = [
-                'questions' => $questions,
-                'traits' => $traitsToSave,
-                'archetypes' => $traitsToSave, // Ensure 'archetypes' key is saved for consistency
-            ];
+             $finalQuizData = [
+                 'questions' => $questions,
+                 'traits' => $traitsToSave,
+                 'archetypes' => $traitsToSave, // Ensure 'archetypes' key is saved for consistency
+             ];
 
-            if (empty($finalQuizData['questions'])) {
-                 Log::error('Store failed: Questions array is empty after AI processing.');
-                 return back()->with('error', 'Cannot create quiz: No questions data found from AI.');
-            }
+             if (empty($finalQuizData['questions'])) {
+                  Log::error('Store failed: Questions array is empty after AI processing.');
+                  return back()->with('error', 'Cannot create quiz: No questions data found from AI.');
+             }
 
-            // 3. Create a new Lesson (Quiz) record
-            $lesson = new Lesson();
-            // Note: Assuming it's a standalone quiz, course_id remains null for this flow
-            $lesson->course_id = null; 
-            $lesson->title = $request->title;
-            // The slug is generated here
-            $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
-            $lesson->type = 'personality_quiz';
-            $lesson->is_published = false; // Start as unpublished
-            $lesson->user_id = auth()->id(); 
-            $lesson->content_json = $finalQuizData;
-            $lesson->save();
+             // 3. Create a new Lesson (Quiz) record
+             $lesson = new Lesson();
+             // Note: Assuming it's a standalone quiz, course_id remains null for this flow
+             $lesson->course_id = null; 
+             $lesson->title = $request->title;
+             // The slug is generated here
+             $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
+             $lesson->type = 'personality_quiz';
+             // FIX: Set to published immediately so the creator can share and users can enroll.
+             $lesson->is_published = true; 
+             $lesson->user_id = auth()->id(); 
+             $lesson->content_json = $finalQuizData;
+             $lesson->save();
 
-            // 4. Redirect to the newly created quiz's edit page, using the SLUG
-            return redirect()
-                ->route('quizzes.edit', $lesson->slug)
-                ->with('success', 'Personality Quiz successfully generated and created!');
+             // 4. Redirect to the newly created quiz's edit page, using the SLUG
+             return redirect()
+                 ->route('quizzes.edit', $lesson->slug)
+                 ->with('success', 'Personality Quiz successfully generated and created! It is now published.');
 
         } catch (\Exception $e) {
-            Log::error('Failed to save personality quiz lesson after AI generation', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Failed to save the new quiz after generation.');
+             Log::error('Failed to save personality quiz lesson after AI generation', ['error' => $e->getMessage()]);
+             return back()->with('error', 'Failed to save the new quiz after generation.');
         }
     }
 
@@ -254,61 +257,61 @@ class PersonalityQuizGeneratorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'course_id' => 'nullable|exists:courses,id',
-            'quiz_data' => 'required|array',
+             'title' => 'required|string|max:255',
+             'course_id' => 'nullable|exists:courses,id',
+             'quiz_data' => 'required|array',
         ]);
 
         try {
-            $incomingData = $request->input('quiz_data');
+             $incomingData = $request->input('quiz_data');
 
-            // *** DEBUG LOGGING ADDED HERE ***
-            $questions = $incomingData['questions'] ?? [];
-            $traits = $incomingData['traits'] ?? $incomingData['archetypes'] ?? [];
+             // *** DEBUG LOGGING RETAINED HERE ***
+             $questions = $incomingData['questions'] ?? [];
+             $traits = $incomingData['traits'] ?? $incomingData['archetypes'] ?? [];
 
-            Log::info('Personality Quiz Save Debug:', [
-                'questions_count' => count($questions),
-                'traits_count' => count($traits),
-                'questions_content' => json_encode($questions), // Logs the full question content
-            ]);
-            // *******************************
+             Log::info('Personality Quiz Save Debug:', [
+                 'questions_count' => count($questions),
+                 'traits_count' => count($traits),
+                 'questions_content' => json_encode($questions), // Logs the full question content
+             ]);
+             // *******************************
 
-            $lesson = new Lesson();
-            $lesson->course_id = $request->course_id;
-            $lesson->title = $request->title;
-            $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
-            $lesson->type = 'personality_quiz';
-            $lesson->is_published = true;
-            $lesson->user_id = auth()->id();
+             $lesson = new Lesson();
+             $lesson->course_id = $request->course_id;
+             $lesson->title = $request->title;
+             $lesson->slug = Str::slug($request->title) . '-' . Str::random(6);
+             $lesson->type = 'personality_quiz';
+             $lesson->is_published = true; // This method was already correct
+             $lesson->user_id = auth()->id();
 
-            // SAFER MAPPING LOGIC:
-            // Prefer 'traits' if explicitly set, otherwise fallback to 'archetypes'
-            $traitsToSave = !empty($incomingData['traits']) ? $incomingData['traits'] : ($incomingData['archetypes'] ?? []);
+             // SAFER MAPPING LOGIC:
+             // Prefer 'traits' if explicitly set, otherwise fallback to 'archetypes'
+             $traitsToSave = !empty($incomingData['traits']) ? $incomingData['traits'] : ($incomingData['archetypes'] ?? []);
 
-            $finalQuizData = [
-                'traits' => $traitsToSave,
-                'questions' => $questions, // Use the extracted and logged variable
-                'archetypes' => $traitsToSave, // ADDED: Ensure 'archetypes' key is present for full consistency
-            ];
+             $finalQuizData = [
+                 'traits' => $traitsToSave,
+                 'questions' => $questions, // Use the extracted and logged variable
+                 'archetypes' => $traitsToSave, // ADDED: Ensure 'archetypes' key is present for full consistency
+             ];
 
-            // Final validation check
-            if (empty($finalQuizData['questions'])) {
-                 Log::error('Save failed: Questions array is empty after processing.', ['incoming_keys' => array_keys($incomingData)]);
-                 return response()->json(['error' => 'Cannot save quiz: No questions data found.'], 422);
-            }
+             // Final validation check
+             if (empty($finalQuizData['questions'])) {
+                  Log::error('Save failed: Questions array is empty after processing.', ['incoming_keys' => array_keys($incomingData)]);
+                  return response()->json(['error' => 'Cannot save quiz: No questions data found.'], 422);
+             }
 
-            $lesson->content_json = $finalQuizData;
-            $lesson->save();
+             $lesson->content_json = $finalQuizData;
+             $lesson->save();
 
-            return response()->json([
-                'message' => 'Personality Quiz saved successfully!',
-                'lesson_id' => $lesson->id,
-                'redirect_url' => route('dashboard')
-            ], 201);
+             return response()->json([
+                 'message' => 'Personality Quiz saved successfully!',
+                 'lesson_id' => $lesson->id,
+                 'redirect_url' => route('dashboard')
+             ], 201);
 
         } catch (\Exception $e) {
-            Log::error('Failed to save personality quiz lesson', ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Failed to save quiz.'], 500);
+             Log::error('Failed to save personality quiz lesson', ['error' => $e->getMessage()]);
+             return response()->json(['error' => 'Failed to save quiz.'], 500);
         }
     }
 }
