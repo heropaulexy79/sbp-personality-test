@@ -78,7 +78,7 @@ const submit = () => {
     }
 
     // Pass the slug explicitly
-    form.post(route('quizzes.enroll.update', props.course.slug), {
+    form.post(route('quizzes.enroll.update', { quiz: props.course.slug }), {
         onSuccess: () => {
             // Display success notification
             toast({
