@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import OrganisationLayout from '@/Layouts/OrganisationLayout.vue';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PersonallityQuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/Personality/PersonallityQuizBuilder.vue';
 import QuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/QuizBuilder.vue';
 import { Lesson } from '@/types/app-types';
@@ -72,7 +72,7 @@ function destroy() {
 <template>
     <Head :title="`Edit Quiz: ${lesson.title}`" />
 
-    <OrganisationLayout>
+    <AuthenticatedLayout>
         <div class="container py-8">
             <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-bold tracking-tight dark:text-white">
@@ -127,5 +127,5 @@ function destroy() {
                 </div>
             </div>
         </div>
-    </OrganisationLayout>
+    </AuthenticatedLayout>
 </template>
