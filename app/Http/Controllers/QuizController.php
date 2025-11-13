@@ -48,6 +48,7 @@ class QuizController extends Controller
             'content_json' => 'present|array', 
             'content_json.questions' => 'nullable|array',
             'content_json.traits' => 'nullable|array',
+            'content_json.archetypes' => 'nullable|array', // <-- ADD THIS LINE
         ]);
 
         $lesson = Lesson::create([

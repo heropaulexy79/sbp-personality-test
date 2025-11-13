@@ -2,7 +2,7 @@
 import OrganisationLayout from '@/Layouts/OrganisationLayout.vue';
 import PersonallityQuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/Personality/PersonallityQuizBuilder.vue';
 import QuizBuilder from '@/Pages/Organisation/Course/Lesson/Partials/QuizBuilder.vue';
-import { Lesson } from '@/types/index';
+import { Lesson } from '@/types/app-types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/ui/card';
 import DangerButton from '@/Components/DangerButton.vue';
