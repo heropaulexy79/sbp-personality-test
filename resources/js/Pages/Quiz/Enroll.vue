@@ -1,129 +1,176 @@
-<script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+<script setup lang="ts">
+import TeacherLayout from '@/Layouts/TeacherLayout.vue';
+import { Head, useForm, router, usePage } from '@inertiajs/vue3'; 
+import { defineProps, computed, onMounted } from 'vue';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Checkbox } from '@/Components/ui/checkbox';
 import { Label } from '@/Components/ui/label';
-// FIX: Resolve import issue by explicitly targeting the component and composable files.
-// useToast is typically the composable export.
+import { Checkbox } from '@/Components/ui/checkbox';
 import { useToast } from '@/Components/ui/toast/use-toast'; 
-// Toaster is the component, imported as default from its file.
 import Toaster from '@/Components/ui/toast/Toaster.vue'; 
-import { onMounted, watch } from 'vue';
 
-// 1. Define the props coming from CourseEnrollmentController@edit
-const props = defineProps({
-    course: Object,
-    allUsers: Array,
-    enrolledUserIds: Array,
-    flash: Object, // To receive the success message
-});
+interface Course {
+    id: number;
+    title: string;
+    slug: string | null; // Allow null/missing slug for robust checking
+}
 
-// 2. Set up the form
-// We initialize the 'user_ids' array with the IDs that
-// were passed from the controller.
-const form = useForm({
-    user_ids: props.enrolledUserIds || [],
-});
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
 
-// 3. Set up the toast notifications
+const props = defineProps<{
+    course: Course;
+    allUsers: User[];
+    enrolledUserIds: number[];
+}>();
+
 const { toast } = useToast();
 
-// 4. Function to handle the form submission
+// Initialize usePage() for stable access to global props (like auth)
+const page = usePage();
+
+const form = useForm({
+    user_ids: props.enrolledUserIds,
+});
+
+// Computed list of users with their current enrollment status
+const userList = computed(() => {
+    // Accessing global props via the reactive usePage() object is safer.
+    // We are excluding the authenticated user (the teacher/admin) from the enrollment list.
+    const authenticatedUserId = (page.props.auth as any).user.id;
+    
+    return props.allUsers
+        .filter(user => user.id !== authenticatedUserId) 
+        .map(user => ({
+            ...user,
+            isEnrolled: form.user_ids.includes(user.id),
+        }))
+        // Sort the list so enrolled users appear first, for easier management
+        .sort((a, b) => (b.isEnrolled as any) - (a.isEnrolled as any));
+});
+
+// Handle checkbox change to add or remove user IDs from the form data
+const toggleEnrollment = (userId: number, isChecked: boolean) => {
+    if (isChecked) {
+        if (!form.user_ids.includes(userId)) {
+            // Add the ID if it's being checked and is not already present
+            form.user_ids.push(userId);
+        }
+    } else {
+        // Remove the ID if it's being unchecked
+        form.user_ids = form.user_ids.filter(id => id !== userId);
+    }
+};
+
 const submit = () => {
-    // FIX: Passing 'props.course.slug' to the route update method.
+    // FIX: Add check for missing slug before attempting to call route()
+    if (!props.course.slug) {
+        toast({
+            title: 'Error',
+            description: 'Cannot update enrollment: Quiz slug is missing.',
+            duration: 5000,
+            variant: 'destructive',
+        });
+        return;
+    }
+
+    // Pass the slug explicitly
     form.post(route('quizzes.enroll.update', props.course.slug), {
-        preserveScroll: true,
-        // onSuccess is handled by the 'flash' prop watcher
+        onSuccess: () => {
+            // Display success notification
+            toast({
+                title: 'Enrollment Updated!',
+                description: `Successfully updated enrollment for ${props.course.title}.`,
+                duration: 3000,
+            });
+        },
+        onError: (errors) => {
+             // Concatenate all error messages for display
+             const errorMessages = Object.values(errors).flat().join(' ');
+             toast({
+                title: 'Error updating enrollment',
+                description: errorMessages || 'Please check the form for errors.',
+                duration: 5000,
+            });
+            console.error(errors);
+        },
     });
 };
 
-// 5. Watch for the 'flash.success' message and show a toast
-watch(() => props.flash.success, (message) => {
-    if (message) {
-        toast({
-            title: 'Success!',
-            description: message,
-        });
+onMounted(() => {
+    // Sync the initial form data with props on mount to ensure reactivity 
+    // and correct initial state of checkboxes.
+    form.user_ids = [...props.enrolledUserIds];
+
+    // FIX: Check if processing is stuck and force a reset if necessary.
+    // This will fix the unclickable button if it's stuck from a previous error.
+    if (form.processing) {
+        console.warn('Form.processing was stuck true on mount. Forcing reset.');
+        form.processing = false;
     }
 });
+
 </script>
 
 <template>
-    <Head :title="`Enroll Users in ${course.title}`" />
-    <Toaster />
-
-    <AuthenticatedLayout>
-        <template #header>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                        Enroll Users in "{{ course.title }}"
-                    </h2>
-                    <p class="mt-2 text-sm text-gray-600">
-                        Select the users you want to enroll in this quiz.
-                    </p>
-                </div>
-                <!-- Add a "Back" button to return to the admin page -->
-                <Link :href="route('quizzes.index')">
-                    <Button variant="outline">Back to Quizzes</Button>
-                </Link>
-            </div>
-        </template>
+    <TeacherLayout>
+        <Head :title="`Enroll Users in ${course.title}`" />
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>User List</CardTitle>
+            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+                <Card class="shadow-lg">
+                    <CardHeader class="border-b">
+                        <CardTitle class="text-2xl font-bold">Enroll Users in Quiz: {{ course.title }}</CardTitle>
+                        <CardDescription>
+                            Select the users who should have access to this quiz.
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <!-- 6. Create the form -->
-                        <form @submit.prevent="submit">
-                            <div class="space-y-6">
-                                <!-- 7. Loop over ALL users -->
-                                <div
-                                    v-for="user in allUsers"
-                                    :key="user.id"
-                                    class="flex items-center space-x-3 rounded-lg border p-4"
-                                >
-                                    <!-- 8. The checkbox
-                                         We use v-model="form.user_ids" and provide
-                                         the user.id as the 'value'. vue-form-helpers
-                                         will automatically add/remove the user.id
-                                         from the form.user_ids array when checked/unchecked.
-                                    -->
-                                    <Checkbox
-                                        :id="`user-${user.id}`"
-                                        v-model:checked="form.user_ids"
-                                        :value="user.id"
-                                    />
-                                    <Label
-                                        :for="`user-${user.id}`"
-                                        class="flex flex-col"
-                                    >
-                                        <span class="font-medium">{{ user.name }}</span>
-                                        <span class="text-sm text-gray-500">{{ user.email }}</span>
+
+                    <form @submit.prevent="submit">
+                        <CardContent class="p-6 space-y-2 max-h-[60vh] overflow-y-auto">
+                            
+                            <!-- Header for the list -->
+                            <div class="flex items-center justify-between font-semibold sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 py-2">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">User</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Enrolled</span>
+                            </div>
+
+                            <!-- User List -->
+                            <div v-for="user in userList" :key="user.id" class="flex items-center justify-between py-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md px-2 -mx-2 transition-colors">
+                                <div class="flex flex-col">
+                                    <Label :for="`user-${user.id}`" class="text-sm font-medium leading-none cursor-pointer">
+                                        {{ user.name }}
                                     </Label>
+                                    <span class="text-xs text-muted-foreground">{{ user.email }}</span>
                                 </div>
-
-                                <!-- 9. Show a message if no users exist -->
-                                <div v-if="allUsers.length === 0">
-                                    <p class="text-gray-500">No users found to enroll.</p>
-                                </div>
+                                
+                                <Checkbox
+                                    :id="`user-${user.id}`"
+                                    :checked="user.isEnrolled"
+                                    @update:checked="toggleEnrollment(user.id, $event as boolean)"
+                                    class="h-5 w-5"
+                                />
                             </div>
 
-                            <!-- 10. The submit button -->
-                            <div class="mt-8 flex justify-end border-t pt-6">
-                                <Button :disabled="form.processing">
-                                    {{ form.processing ? 'Saving...' : 'Update Enrollment' }}
-                                </Button>
+                            <div v-if="userList.length === 0" class="text-center text-gray-500 py-4">
+                                No other users found in the system.
                             </div>
-                        </form>
-                    </CardContent>
+                        </CardContent>
+
+                        <div class="flex items-center justify-end p-6 bg-gray-50 dark:bg-gray-800 border-t rounded-b-lg">
+                            <Button :disabled="form.processing" type="submit">
+                                {{ form.processing ? 'Saving...' : 'Save Enrollments' }}
+                            </Button>
+                        </div>
+                    </form>
                 </Card>
             </div>
         </div>
-    </AuthenticatedLayout>
+
+        <!-- Toast container must be present to display notifications -->
+        <Toaster />
+    </TeacherLayout>
 </template>
