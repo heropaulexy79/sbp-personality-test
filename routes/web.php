@@ -49,7 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =================================================================
     // FIX: ADD THIS BLOCK
     // RE-ADDING THIS LINE. It was accidentally deleted.
-    Route::resource('courses/{course}/lessons', LessonController::class)
+    // FIX: Change parent resource path from 'courses/{course}' to 'quizzes/{quiz}' for consistency
+    Route::resource('quizzes/{quiz}/lessons', LessonController::class)
         ->shallow()
         ->names([
             'create' => 'lesson.create',
@@ -79,6 +80,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // This route was in your file content but the controller wasn't imported. I added the import.
-Route::post('/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll');
+Route::match(['get', 'post'], '/course/{course:slug}/enroll', [CourseEnrollmentController::class, 'storeAll'])->name('course.enroll');
 
 require __DIR__ . '/auth.php';

@@ -87,17 +87,17 @@ const props = defineProps<{
               <Separator />
               <CardFooter class="bor">
                 <Link
-                  :href="
-                    route('classroom.lesson.index', { course: course.slug })
-                  "
-                  class="group w-full gap-2"
-                  :class="buttonVariants({ size: 'lg' })"
-                >
-                  <span>Take course</span>
-                  <ArrowRightIcon
-                    class="size-4 transition-transform group-hover:scale-110"
-                  />
-                </Link>
+  :href="route('course.enroll', { course: course.slug })"
+  method="post"
+  as="button"
+  class="group w-full gap-2"
+  :class="buttonVariants({ size: 'lg' })"
+>
+  <span>Take course</span>
+  <ArrowRightIcon
+    class="size-4 transition-transform group-hover:scale-110"
+  />
+</Link>
               </CardFooter>
             </Card>
           </div>
