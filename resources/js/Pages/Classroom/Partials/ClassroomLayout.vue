@@ -33,11 +33,22 @@ import { Progress } from "@/Components/ui/progress";
 import ResourcesSidenav from "./ResourcesSidenav.vue";
 
 const props = defineProps<{
-  course: Course;
+  course: Course | null; // Updated prop type to allow null
   lessons: WithUserLesson<Omit<Lesson, "content" | "content_json">>[];
   lesson?: WithUserLesson<Lesson>;
 }>();
 
+// Safely provide a title when course is null
+const displayedCourseTitle = computed(() => {
+    return props.course ? props.course.title : 'Standalone Quiz';
+});
+
+// Safely provide resources (empty array if course/metadata is missing)
+const courseResources = computed(() => {
+    return props.course?.metadata?.resources ?? [];
+});
+
+// Calculate progress (Handles empty lessons array if course is null)
 const completed = computed(() => {
   return props.lesson
     ? props.lessons.findIndex((r) => r.id === props.lesson?.id) + 1
@@ -45,18 +56,18 @@ const completed = computed(() => {
 });
 
 const progress = computed(() => {
-  return Math.abs(Math.floor((completed.value / props.lessons.length) * 100));
+  // Use 1 as denominator if lessons.length is 0 to avoid division by zero
+  const totalLessons = props.lessons.length || 1; 
+  return Math.abs(Math.floor((completed.value / totalLessons) * 100));
 });
 </script>
 
 <template>
-  <Head :title="lesson?.title || course.title" />
+  <!-- Use computed title for safety -->
+  <Head :title="lesson?.title || displayedCourseTitle" />
 
   <div class="relative">
-    <!-- class="min-h-[calc(100svh-65px)]" -->
     <SidebarProvider>
-      <!-- class="top-[65px] h-[calc(100svh-65px)]" -->
-      <!-- collapsible="icon" -->
       <Sidebar off-canvas-class="h-full">
         <SidebarHeader>
           <SidebarMenu>
@@ -67,13 +78,15 @@ const progress = computed(() => {
               >
                 <div class="grid flex-1 text-left text-sm leading-tight">
                   <h2 class="text-lg font-semibold">
-                    {{ course.title }}
+                    <!-- FIX: Use computed property here -->
+                    {{ displayedCourseTitle }}
                   </h2>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
-          <div class="space-y-2">
+          <!-- Only show progress if a course is present and there are lessons -->
+          <div v-if="course && lessons.length > 0" class="space-y-2">
             <div class="space-y-1">
               <div class="text-muted-foreground flex justify-between text-sm">
                 <span>Progress</span>
@@ -85,8 +98,11 @@ const progress = computed(() => {
         </SidebarHeader>
 
         <SidebarContent>
-          <LessonsSidenav :course="course" :lessons="lessons" />
-          <ResourcesSidenav :resources="course.metadata?.resources ?? []" />
+          <!-- Only render LessonsSidenav if there is a course or lessons are provided (as per original logic) -->
+          <LessonsSidenav v-if="course" :course="course" :lessons="lessons" />
+          
+          <!-- FIX: Use computed property for resources -->
+          <ResourcesSidenav :resources="courseResources" />
         </SidebarContent>
 
         <SidebarRail />
@@ -101,9 +117,10 @@ const progress = computed(() => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage>{{
-                  lesson?.title || course.title
-                }}</BreadcrumbPage>
+                <BreadcrumbPage>
+                  <!-- FIX: Use computed property here -->
+                  {{ lesson?.title || displayedCourseTitle }}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

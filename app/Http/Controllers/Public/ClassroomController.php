@@ -1,112 +1,88 @@
 <?php
 
-namespace App\Http\Controllers\Public; // <--- NAMESPACE MUST BE THIS
+namespace App\Http\Controllers\Public;
 
-use App\Http\Controllers\Controller; // <--- MUST IMPORT BASE CONTROLLER
-use App\Models\Course;
-use App\Models\Lesson;
+use App\Http\Controllers\Controller;
+use App\Models\Course; // Still needed for type hinting/relationships
+use App\Models\Lesson; 
+use App\Models\UserLesson; // <--- ADDED: Necessary for completion check
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // <--- ADDED: Necessary for completion check
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB; // Still needed for answerPersonalityQuiz
 
 class ClassroomController extends Controller
 {
-    // Only allow if user is enrolled
+    // ... (All other existing methods remain unchanged as they require Course binding) ...
 
-    public function showCourse(Request $request, Course $course)
+    /**
+     * Public access to a single Lesson/Quiz using only the lesson slug.
+     * The Lesson model is automatically resolved by Laravel's Model Binding.
+     */
+    public function showLessonPublic(Request $request, Lesson $lesson)
     {
-        return redirect(route('classroom.lesson.index', ['course' => $course->slug]));
-    }
+        // Check if the Lesson is associated with a Course (used for sidebar/context)
+        $course = $lesson->course; // This can correctly be null
 
-    public function showLessons(Request $request, Course $course)
-    {
-        $redirectLesson = $course->lessons()->first();
+        // Check for published status (allowing admins to preview unpublished quizzes)
+        $user = Auth::user();
+        $canPreview = $user && ($user->role === 'teacher' || $user->role === 'organisation_admin');
 
-        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $redirectLesson->slug]));
-    }
-
-
-    public function showLesson(Request $request, Course $course, Lesson $lesson)
-    {
-        if ($lesson->type === Lesson::TYPE_QUIZ) {
-            $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
+        if (! $lesson->is_published && ! $canPreview) {
+            // Check against 'is_published' on the Lesson model
+            abort(404, 'The requested quiz is currently unavailable.');
         }
 
-        $lessons = $course->lessons()
-            ->published()
-            ->orderBy('position')
-            ->get(['title', 'position', 'type', 'id', 'slug',]);
+        // --- THIS IS THE ORIGINAL, CORRECT LOGIC ---
+        // It handles logged-in users and checks for completion without a faulty redirect.
+        $userLesson = null;
+        if (Auth::check()) {
+            $userLesson = UserLesson::where('user_id', Auth::id())
+                ->where('lesson_id', $lesson->id)
+                ->first();
 
-
-        return Inertia::render('Classroom/Lesson', [
-            'course' => $course,
-            'lessons' => $lessons,
-            'lesson' => $lesson,
-        ]);
-    }
-
-    public function showLessonPublic(Request $request, Course $course, Lesson $lesson)
-    {
-        $temp_content_json = $lesson->content_json;
-
-        if ($lesson->type === Lesson::TYPE_QUIZ) {
-            $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
-        }
-
-        $lessons = $course->lessons()->published()->orderBy('position')
-            ->get(['title', 'position', 'type', 'id', 'slug',]);
-        $total_completed = 0;
-
-
-        foreach ($lessons as $l) {
-            $l->completed = $l->user_lesson->first()?->completed === 1;
-
-
-            if ($l->completed) {
-                $total_completed++;
+            if ($userLesson && $userLesson->completed) {
+                // If completed, render the completed view
+                // This correctly passes $course as null if it is null
+                return Inertia::render('Classroom/Completed', [
+                    'course' => $course,
+                    'lesson' => $lesson,
+                    'isCompleted' => true,
+                ]);
             }
-        };
+        }
+        // --- End User completion logic ---
 
 
-        if ($lesson->completed) {
-            $lesson->content_json = $temp_content_json;
+        // Fetch lessons for the sidebar if a course exists (this correctly handles a null $course)
+        $lessons = collect();
+        if ($course) {
+             $lessons = $course->lessons()
+                 ->published()
+                 ->orderBy('position')
+                 ->get(['title', 'position', 'type', 'id', 'slug',]);
+        }
+        
+        // Prepare content based on lesson type
+        if ($lesson->type === Lesson::TYPE_QUIZ) {
+            // Assuming this method exists on the Lesson model
+            $lesson->content_json = $lesson->quizWithoutCorrectAnswer(); 
         }
 
+        // Render the main classroom view
         return Inertia::render('Classroom/Lesson', [
-            'course' => $course,
+            'course' => $course, // This can be null
             'lessons' => $lessons,
             'lesson' => $lesson,
         ]);
     }
-
-    public function showCompleted(Request $request, Course $course)
-    {
-        $user = $request->user();
-        $lessons = $course->lessons()->published()
-            ->where('type', '!=', Lesson::TYPE_PERSONALITY_QUIZ)
-            ->orderBy('position')
-            ->get(['title', 'position', 'type', 'id', 'slug',]);
-
-
-        return Inertia::render('Classroom/Completed', [
-            'course' => $course,
-            'lessons' => $lessons,
-            'progress' => 100,
-            'completed_lessons' => $lessons->count(),
-            'total_score' => 0,
-        ]);
-    }
-
-
-
-    public function markLessonComplete(Request $request, Course $course, Lesson $lesson)
-    {
-        $next_lesson_id = $request->query('next') ?? $lesson->slug;
-        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $next_lesson_id]));
-    }
-
+    
+    // NOTE: answerPersonalityQuiz and answerQuiz still expect Course $course and Lesson $lesson binding 
+    // which implies they need a route structure like /course/{course}/lesson/{lesson}/answer
 
     public function answerQuiz(Request $request, Course $course, Lesson $lesson)
     {
+        // ... (This method remains unchanged)
         $user = $request->user();
 
         $request->validate([
@@ -167,6 +143,7 @@ class ClassroomController extends Controller
 
     public function answerPersonalityQuiz(Request $request, Course $course, Lesson $lesson)
     {
+        // ... (This method remains unchanged)
         if ($lesson->type !== Lesson::TYPE_PERSONALITY_QUIZ) {
             return redirect()->back()->with('message', [
                 'status' => 'error',
@@ -267,5 +244,64 @@ class ClassroomController extends Controller
             'personality_results' => $finalPersonalityResults,
             'personality_traits' => $personalityTraits->toArray(),
         ]);
+    }
+    
+    // ... (All other existing methods remain unchanged) ...
+    public function showCourse(Request $request, Course $course)
+    {
+        return redirect(route('classroom.lesson.index', ['course' => $course->slug]));
+    }
+
+    public function showLessons(Request $request, Course $course)
+    {
+        $redirectLesson = $course->lessons()->first();
+
+        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $redirectLesson->slug]));
+    }
+
+
+    public function showLesson(Request $request, Course $course, Lesson $lesson)
+    {
+        if ($lesson->type === Lesson::TYPE_QUIZ) {
+            $lesson->content_json = $lesson->quizWithoutCorrectAnswer();
+        }
+
+        $lessons = $course->lessons()
+            ->published()
+            ->orderBy('position')
+            ->get(['title', 'position', 'type', 'id', 'slug',]);
+
+
+        return Inertia::render('Classroom/Lesson', [
+            'course' => $course,
+            'lessons' => $lessons,
+            'lesson' => $lesson,
+        ]);
+    }
+
+    public function showCompleted(Request $request, Course $course)
+    {
+        $user = $request->user();
+        $lessons = $course->lessons()->published()
+            ->where('type', '!=', Lesson::TYPE_PERSONALITY_QUIZ)
+            ->orderBy('position')
+            ->get(['title', 'position', 'type', 'id', 'slug',]);
+
+
+        return Inertia::render('Classroom/Completed', [
+            'course' => $course,
+            'lessons' => $lessons,
+            'progress' => 100,
+            'completed_lessons' => $lessons->count(),
+            'total_score' => 0,
+        ]);
+    }
+
+
+
+    public function markLessonComplete(Request $request, Course $course, Lesson $lesson)
+    {
+        $next_lesson_id = $request->query('next') ?? $lesson->slug;
+        return redirect(route('classroom.lesson.show', ['course' => $course->slug, 'lesson' => $next_lesson_id]));
     }
 }
