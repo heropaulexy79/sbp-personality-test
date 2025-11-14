@@ -12,6 +12,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\PersonalityTraitController;
 use App\Http\Controllers\CourseEnrollmentController; // Make sure this is imported for the enroll route
 use App\Http\Controllers\DashboardController; // <-- 1. IMPORT THE NEW CONTROLLER
+use App\Models\Lesson; // ADDED: Import Lesson for the temporary route fix
+
 
 // --- PUBLIC HOME ---
 Route::get('/', function () {

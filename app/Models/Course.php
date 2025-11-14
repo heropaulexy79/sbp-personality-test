@@ -4,61 +4,49 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Course extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'slug',
-        'teacher_id',
+        'user_id',
         'organisation_id',
-        'is_published',
+        'title',
+        'slug',
+        'description',
         'banner_image',
-        'metadata'
+        'is_published',
     ];
 
     protected $casts = [
-        'metadata' => 'json',
         'is_published' => 'boolean',
     ];
 
-    // public function getIsPublishedAttribute($value)
-    // {
-    //     if ($value === "" || $value === 0) return false;
-    //     return true;
-    // }
-
-    public function getRouteKeyName()
+    /**
+     * Get the user who created the course (the teacher).
+     */
+    public function user(): BelongsTo
     {
-        return 'slug';
+        return $this->belongsTo(User::class);
     }
 
-    public function scopePublished($query)
+    /**
+     * Get the lessons for the course.
+     */
+    public function lessons(): HasMany
     {
-        return $query->where('is_published', true);
+        return $this->hasMany(Lesson::class);
     }
 
-    public function teacher()
+    /**
+     * Get the enrollments for the course.
+     * This is required by the DashboardController to count enrolled students.
+     */
+    public function enrollments(): HasMany
     {
-        return $this->belongsTo(User::class, 'teacher_id');
-    }
-
-    public function organisation()
-    {
-        return $this->belongsTo(Organisation::class, 'organisation_id');
-    }
-
-    public function lessons()
-    {
-        return $this->hasMany(Lesson::class, 'course_id');
-    }
-
-    public function enrolledUsers()
-    {
-        return $this->belongsToMany(User::class, 'course_enrollments');
+        return $this->hasMany(CourseEnrollment::class);
     }
 }

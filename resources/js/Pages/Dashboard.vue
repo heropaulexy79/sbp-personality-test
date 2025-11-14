@@ -11,12 +11,18 @@ interface Quiz {
     title: string;
     slug: string;
     is_published?: boolean;
+    // Added for managed quizzes count
+    total_responses?: number;
 }
 
 const props = defineProps<{
-    createdQuizzes: Quiz[];
+    // FIX: Expecting 'managedQuizzes' (for teachers) and 'enrolledQuizzes' (for all users)
+    managedQuizzes: Quiz[];
     enrolledQuizzes: Quiz[];
+    // FIX: Added the missing required prop
     isTeacher: boolean;
+    // NOTE: managedCourses and enrolledCourses are typically passed here too, 
+    // but omitted from the prop definition above for brevity as they weren't used in the provided template
 }>();
 </script>
 
@@ -57,7 +63,8 @@ const props = defineProps<{
                     </div>
                 </div>
 
-                <Separator v-if="isTeacher && enrolledQuizzes.length > 0 && createdQuizzes.length > 0" />
+                <!-- Separator only visible if there's both teacher-managed and student-enrolled content -->
+                <Separator v-if="isTeacher && enrolledQuizzes.length > 0 && managedQuizzes.length > 0" />
 
                 <!-- === TEACHER VIEW: CREATED QUIZZES === -->
                 <div v-if="isTeacher" class="space-y-6">
@@ -73,16 +80,22 @@ const props = defineProps<{
                         </Link>
                     </div>
 
-                    <div v-if="createdQuizzes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <Card v-for="quiz in createdQuizzes" :key="quiz.id" class="border-2" :class="{'border-primary shadow-md': quiz.is_published, 'border-dashed border-gray-400': !quiz.is_published}">
+                    <div v-if="managedQuizzes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Card v-for="quiz in managedQuizzes" :key="quiz.id" class="border-2" :class="{'border-primary shadow-md': quiz.is_published, 'border-dashed border-gray-400': !quiz.is_published}">
                             <CardHeader>
                                 <CardTitle class="text-lg">{{ quiz.title }}</CardTitle>
-                                <CardDescription class="flex items-center">
-                                    Status: 
-                                    <span v-if="quiz.is_published" class="text-green-600 dark:text-green-400 ml-1 flex items-center">
-                                        <CircleCheck class="w-4 h-4 mr-1"/> Published
+                                <CardDescription class="flex items-center space-y-1">
+                                    <span class="flex items-center">
+                                        Status: 
+                                        <span v-if="quiz.is_published" class="text-green-600 dark:text-green-400 ml-1 flex items-center">
+                                            <CircleCheck class="w-4 h-4 mr-1"/> Published
+                                        </span>
+                                        <span v-else class="text-red-500 dark:text-red-400 ml-1">Draft</span>
                                     </span>
-                                    <span v-else class="text-red-500 dark:text-red-400 ml-1">Draft</span>
+                                    <!-- Display responses count if available -->
+                                    <span v-if="quiz.total_responses !== undefined" class="text-sm text-gray-500 dark:text-gray-400 ml-4">
+                                        ({{ quiz.total_responses }} responses)
+                                    </span>
                                 </CardDescription>
                             </CardHeader>
                             <CardContent class="flex justify-end space-x-2 pt-0">

@@ -1,12 +1,7 @@
 <script lang="ts" setup>
 import { Button } from "@/Components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/Components/ui/dialog";
+// Removed unused Dialog imports
+// import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from "@/Components/ui/dialog"; 
 import { Label } from "@/Components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
 import { Course, Lesson, PersonalityQuiz } from "@/types";
@@ -18,7 +13,7 @@ import { usePersonalityQuizAnswerManager } from "./use-personality-quiz-answer-m
 import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-vue-next";
 import { Progress } from "@/Components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/ui/card";
 import { PersonalityTrait } from "@/Pages/Organisation/Course/Lesson/Partials/Personality/types";
 import PersonalityQuizFinalResults from "./PersonalityQuizFinalResults.vue";
 import PersonalityQuizOptionTile from "./PersonalityQuizOptionTile.vue";
@@ -59,16 +54,36 @@ const {
   props.lesson.answers ?? null,
 );
 
-const resultsDialog = ref(false);
-const finalPersonalityResults = ref<{ [traitId: string]: number } | null>(null);
+// Initialize with existing scores if available (e.g., on page reload after email capture)
+const finalPersonalityResults = ref<{ [traitId: string]: number } | null>(
+    props.lesson.personality_scores || null
+);
 const emailSubmittedViaCookie = ref(getCookie("email_captured") === "true");
-const showEmailCollection = ref(false);
+
+// Flag to track the state after clicking 'Submit'. Used for the transition to results or lead capture.
+const quizSubmitted = ref(false); 
+
+// Computed property to determine if the email wall should be shown
+const showLeadCaptureCard = computed(() => {
+    // Show email wall if quiz was submitted, no final results are present, AND email is not yet captured via cookie
+    return quizSubmitted.value && !finalPersonalityResults.value && !emailSubmittedViaCookie.value;
+});
+
+// Computed property to determine if the quiz questions should be shown
+const showQuizCard = computed(() => {
+    // Show quiz if no final results, and we are not in a submitted state
+    return !finalPersonalityResults.value && !quizSubmitted.value;
+});
 
 const completionForm = useForm({
   answers: [],
 });
 
 function submitPersonalityQuiz() {
+  // Set submission state and clear any old final results
+  quizSubmitted.value = true;
+  finalPersonalityResults.value = null;
+
   completionForm
     .transform((d) => {
       const ansArray = Array.from(answers.value.values());
@@ -76,13 +91,11 @@ function submitPersonalityQuiz() {
     })
     .patch(
       route("classroom.lesson.answerPersonalityQuiz", {
-        // Use the new backend route
         course: props.course.slug,
         lesson: props.lesson.slug,
       }),
       {
         onSuccess(page) {
-          showEmailCollection.value = true;
           const flashMessage = page.props.flash.message as
             | {
                 status: string;
@@ -93,15 +106,22 @@ function submitPersonalityQuiz() {
             | undefined;
 
           if (flashMessage && flashMessage.status === "success") {
-            finalPersonalityResults.value =
-              flashMessage.personality_results || null;
-            // You might want to update the traits here too if they are dynamic
-            // personalityQuizTraits.value = flashMessage.personality_traits || []; // Not necessary if traits are loaded from lesson initially
-            resultsDialog.value = true;
+            const results = flashMessage.personality_results || null;
+
+            if (results) {
+                // Results received, show them
+                finalPersonalityResults.value = results;
+                quizSubmitted.value = false; // Clear state as results are available
+            }
+            // If results are null, the template will transition to the email capture card (if cookie is not set)
+            // or remain in quizSubmitted state awaiting external factors (if cookie is set but results are null - shouldn't happen)
+
           } else if (flashMessage && flashMessage.status === "error") {
             toast.error(flashMessage.message);
+            quizSubmitted.value = false; // Clear state on error
           } else {
             toast.error("An unknown error occurred during submission.");
+            quizSubmitted.value = false; // Clear state on error
           }
         },
         onError(error) {
@@ -109,10 +129,28 @@ function submitPersonalityQuiz() {
           toast.error(
             "Failed to submit quiz. Please check your answers and try again.",
           );
+          quizSubmitted.value = false; // Clear state on error
         },
       },
     );
 }
+
+// Function to handle the successful submission of the email capture form
+function handleEmailCaptureSuccess() {
+    emailSubmittedViaCookie.value = true;
+
+    // After email capture, we need to reload the page/component
+    // so the backend re-evaluates the lesson and sends the personality_scores.
+    router.reload({
+        preserveScroll: true,
+        onFinish: () => {
+            toast.success("Thank you! Loading your results now...");
+            // The reload will set finalPersonalityResults via props on the next render
+            // and the component will switch to the results view.
+        },
+    });
+}
+
 
 const isCompleted = computed(() => props.lesson.completed);
 
@@ -142,161 +180,147 @@ const handleOptionUpdate = (selectedValue: string) => {
   <div
     class="bg-background flex min-h-[calc(100svh)] flex-col items-center justify-center p-4"
   >
+    <!-- 1. QUIZ CARD -->
     <Card
-      v-if="!finalPersonalityResults && !showEmailCollection"
-      class="mx-auto w-full max-w-(--breakpoint-md) rounded-md"
+      v-if="showQuizCard"
+      class="mx-auto w-full max-w-xl rounded-xl shadow-2xl p-6"
     >
-      <CardHeader>
-        <div class="mb-2 flex items-center justify-end gap-4">
+      <CardHeader class="pt-0">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <span class="text-sm font-medium text-primary">
+            Question {{ currentQuestionIdx + 1 }} of {{ totalQuestions }}
+          </span>
           <Progress
             :model-value="((currentQuestionIdx + 1) / totalQuestions) * 100"
-            class="h-2"
+            class="h-2 flex-grow max-w-[200px]"
           />
-          <span class="shrink-0">
-            {{ currentQuestionIdx + 1 }} /
-            {{ totalQuestions }}
-          </span>
         </div>
 
-        <CardTitle class="mb-6 text-center text-lg font-bold">
+        <CardTitle class="text-center text-2xl font-extrabold text-gray-800 dark:text-gray-100 leading-snug">
           {{ currentQuestion.text }}
         </CardTitle>
       </CardHeader>
-      <CardContent class="">
+      <CardContent class="pt-6">
         <div class="relative">
-          <div class="">
-            <div class="grid gap-4 sm:grid-cols-2">
-              <PersonalityQuizOptionTile
-                v-for="option in currentQuestion.options"
-                :key="option.id"
-                :value="option.id"
-                :model-value="currentAnswer as string | undefined"
-                @update:model-value="handleOptionUpdate"
-              >
-                <!-- :disabled="isCompleted" -->
-                {{ option.text }}
-              </PersonalityQuizOptionTile>
-            </div>
-
-            <!-- <p v-else class="text-red-500">
-              Unknown question type: {{ currentQuestion.type }}
-            </p> -->
+          <div class="grid gap-4 sm:grid-cols-2">
+            <!-- Render personality options as tiles -->
+            <PersonalityQuizOptionTile
+              v-for="option in currentQuestion.options"
+              :key="option.id"
+              :value="option.id"
+              :model-value="currentAnswer as string | undefined"
+              @update:model-value="handleOptionUpdate"
+            >
+              {{ option.text }}
+            </PersonalityQuizOptionTile>
           </div>
 
           <div
-            class="mt-6 flex items-center justify-between gap-4 [&_button]:min-w-20"
+            class="mt-8 flex items-center justify-between gap-4 [&_button]:min-w-28"
           >
             <Button
               class="group"
               variant="secondary"
-              size="sm"
+              size="lg"
               @click="previousQuestion"
               :disabled="!hasPreviousQuestion"
             >
               <ArrowLeft
-                :size="16"
-                class="transition-all group-hover:-translate-x-2"
+                :size="18"
+                class="transition-all group-hover:-translate-x-1 mr-2"
               />
               Previous
             </Button>
             <Button
               class="group"
-              size="sm"
+              size="lg"
               @click="nextQuestion"
               :disabled="!hasNextQuestion || !currentAnswer"
               v-if="hasNextQuestion"
             >
               Next
               <ArrowRight
-                :size="16"
-                class="transition-all group-hover:translate-x-2"
+                :size="18"
+                class="transition-all group-hover:translate-x-1 ml-2"
               />
             </Button>
 
             <Button
               class="group"
-              size="sm"
+              size="lg"
               @click="submitPersonalityQuiz"
-              :disabled="!currentAnswer"
+              :disabled="!currentAnswer || completionForm.processing"
               v-if="!hasNextQuestion"
             >
-              Submit
-              <ArrowRight
-                :size="16"
-                class="transition-all group-hover:translate-x-2"
-              />
+              <span v-if="completionForm.processing">Submitting...</span>
+              <span v-else>
+                Submit
+                <ArrowRight
+                  :size="18"
+                  class="transition-all group-hover:translate-x-1 ml-2"
+                />
+              </span>
             </Button>
-            <!-- Show Next/Continue if quiz is completed -->
-            <!-- <Button
-              class="group"
-              size="sm"
-              @click="onContinue"
-              v-if="isCompleted"
-            >
-              Continue
-              <ArrowRight
-                :size="16"
-                class="transition-all group-hover:translate-x-2"
-              />
-            </Button> -->
           </div>
         </div>
       </CardContent>
     </Card>
 
-    <!-- <Card
-      v-else-if=""
-      class="mx-auto w-full max-w-(--breakpoint-md) rounded-md"
+    <!-- 2. EMAIL CAPTURE CARD (Replaces the empty screen + modal logic) -->
+    <Card
+      v-else-if="showLeadCaptureCard"
+      class="mx-auto w-full max-w-lg rounded-xl shadow-2xl border-4 border-primary/50 bg-white dark:bg-gray-900 p-6"
     >
-      <CardHeader>
-        <CardTitle class="mb-6 text-center text-lg font-bold">
-          Enter your email to see your results!
+      <CardHeader class="text-center space-y-4">
+        <CardTitle class="text-3xl font-extrabold text-primary">
+          🎉 Quiz Complete! 🎉
         </CardTitle>
+        <CardDescription class="text-base text-muted-foreground">
+          Enter your email to instantly receive your personalized results and a free guide to understanding your new profile.
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-
+      <CardContent class="pt-6">
+        <MarketingEmailCapture
+          :metadata="{
+            quizResults: {
+              courseId: course.id,
+              courseName: course.title,
+              // Send answers to allow backend to calculate results after lead capture
+              answers: Array.from(answers.values()), 
+            },
+          }"
+          @on-success="handleEmailCaptureSuccess"
+        />
       </CardContent>
-    </Card> -->
+    </Card>
 
-    <div v-else-if="finalPersonalityResults" class="mx-auto w-full">
+    <!-- 3. FINAL RESULTS VIEW -->
+    <div v-else-if="finalPersonalityResults" class="mx-auto w-full max-w-4xl">
       <PersonalityQuizFinalResults
         :final-personality-results="finalPersonalityResults"
         :personality-quiz-traits="personalityQuizTraits"
         :resources="course.metadata.resources || []"
         :course="course"
       />
-    </div>
-
-    <Dialog :open="showEmailCollection && !emailSubmittedViaCookie">
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle> Enter your email to see your results! </DialogTitle>
-        </DialogHeader>
-        <div>
-          <MarketingEmailCapture
-            :metadata="{
-              quizResults: {
-                courseId: course.id,
-                courseName: course.title,
-                results: finalPersonalityResults,
-              },
-            }"
-            @on-success="
-              () => {
-                emailSubmittedViaCookie = true; // Update local ref
-                showEmailCollection = false; // Hide the form
-                // resultsDialog.value = true; // Show results immediately
-              }
-            "
+      <!-- Add a continue button after results -->
+      <div class="mt-8 flex justify-center">
+        <Button size="lg" @click="onContinue" class="shadow-lg">
+          Continue to next lesson
+          <ArrowRight
+            :size="18"
+            class="transition-all group-hover:translate-x-1 ml-2"
           />
-        </div>
-      </DialogContent>
-    </Dialog>
-  </div>
+        </Button>
+      </div>
+    </div>
+    
+    <!-- Fallback/Loading State -->
+    <div v-else class="text-center p-8">
+        <p class="text-muted-foreground">Loading quiz data...</p>
+    </div>
+  </div >
 </template>
 
 <style>
-[data-slot="dialog-overlay"] {
-  backdrop-filter: blur(var(--blur-md));
-}
+/* No styles needed for this component, Tailwind handles them. */
 </style>

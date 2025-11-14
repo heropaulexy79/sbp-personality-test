@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Added import
+use Illuminate\Database\Eloquent\Relations\HasMany; // Added import
+
 
 class Lesson extends Model
 {
@@ -74,15 +77,16 @@ class Lesson extends Model
     /**
      * Get the course that this lesson belongs to.
      */
-    public function course()
+    public function course(): BelongsTo // Added type hint
     {
         return $this->belongsTo(Course::class);
     }
 
     /**
-     * Get the user lesson records associated with this lesson.
+     * Get the user lesson records associated with this lesson (quiz responses).
+     * Renamed from userLesson() to userLessons() to match DashboardController's usage.
      */
-    public function userLesson()
+    public function userLessons(): HasMany // Renamed and added type hint
     {
         return $this->hasMany(UserLesson::class);
     }
@@ -90,7 +94,7 @@ class Lesson extends Model
     /**
      * Get the user who created this lesson.
      */
-    public function user()
+    public function user(): BelongsTo // Added type hint
     {
         return $this->belongsTo(User::class);
     }
